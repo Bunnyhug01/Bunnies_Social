@@ -2,15 +2,22 @@ import { Accordion, AccordionSummary, Box, Typography, AccordionDetails } from '
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { VideoUploadDate } from '../video/video';
 import { Video } from '@/app/firebase/video';
+import { Audio } from '@/app/firebase/audio';
+import { Image } from '@/app/firebase/image';
+import { AudioUploadDate } from '../audio/audio';
+import { ImageUploadDate } from '../image/image';
 
 
 interface Props {
-  video: Video;
+  video?: Video;
+  audio?: Audio;
+  image?: Image;
   langDictionary: any;
 }
 
 
-export default function VideoDescription({ video, langDictionary } : Props) {
+export default function Description({ video, audio, image, langDictionary } : Props) {
+    
   return (
     <Accordion
       sx={{bgcolor: 'background.additional'}}
@@ -28,18 +35,22 @@ export default function VideoDescription({ video, langDictionary } : Props) {
         id="panel2a-header"
       >
         <Box className="mx-4">
-          <Typography sx={{fontWeight: 'bold', fontSize: 14}}>{video?.views} {langDictionary['views']}</Typography>
+          <Typography sx={{fontWeight: 'bold', fontSize: 14}}>{(video) ? (video.views) : ((audio) ? (audio.views) : (image?.views))} {langDictionary['views']}</Typography>
         </Box>
 
         <Box className="mx-4">
           <Typography sx={{fontWeight: 'bold', fontSize: 14}}>
-            <VideoUploadDate />
+            {
+              (video) ? <VideoUploadDate /> : ((audio) ? <AudioUploadDate /> : <ImageUploadDate />)
+            }
           </Typography>
         </Box>
       </AccordionSummary>
       <AccordionDetails>
         <Typography>
-          {video.details}
+          {
+            (video) ? (video.details) : ((audio) ? (audio.details) : (image?.details))
+          }
         </Typography>
       </AccordionDetails>
     </Accordion>

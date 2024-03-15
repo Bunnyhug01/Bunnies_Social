@@ -12,7 +12,6 @@ import Typography from '@mui/material/Typography';
 
 import Header from '../../../components/Header/Header';
 import RecommendedList from '../../../components/RecommendedList/RecommendedList';
-import VideoContainer from '../../../components/VideoContainer/VideoContainer';
 import BottomNav from '../../../components/BottomNav/BottomNav';
 
 import { ColorModeContext, getDesignTokens } from '../../../styles/designTokens';
@@ -20,7 +19,7 @@ import { ColorModeContext, getDesignTokens } from '../../../styles/designTokens'
 import translation from '@/app/locales/translation';
 import { auth } from '@/app/firebase/firebase';
 import { Audio, addToHistory, addView, getOneAudio, getRecommendations } from '@/app/firebase/audio';
-import AudioPreviewContainer from '@/app/components/AudioPreviewContainer/AudioPreviewContainer';
+import AudioContainer from '@/app/components/AudioContainer/AudioContainer';
 
 
 function Audio() {
@@ -111,7 +110,7 @@ function Audio() {
             {/* Video Container */}
             <Box className='sm:col-span-6 md:col-span-2 rounded-lg overflow-hidden items-center justify-center flex'>
               {/* <VideoContainer video={video} langDictionary={langDictionary} /> */}
-              <AudioPreviewContainer audio={audio} langDictionary={langDictionary} />
+              <AudioContainer audio={audio} langDictionary={langDictionary} />
             </Box>
 
             {/* Recommended list */} 
@@ -144,7 +143,7 @@ function Audio() {
             </Box>
 
           </Box>
-
+          
           {/* Bottom Section */}
           <BottomNav language={{langDictionary: langDictionary, lang: lang}} />
 

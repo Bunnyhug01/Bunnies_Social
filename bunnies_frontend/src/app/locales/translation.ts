@@ -46,13 +46,16 @@ const translation:any = {
         "user_videos": "Your Videos",
         "user_videos_list": "You don't have any videos",
         "user_images": "Your Images",
-        "user_music": "Your Music",
+        "user_audios": "Your Audios",
         "delete": "Delete",
         "delete_message": "You deleted the video",
         "replace_message": "You changed information about the video",
         "videos": "Videos",
         "images": "Images",
-        "music": "Music",
+        "audios": "Audios",
+        "last_videos": "Last Videos",
+        "last_images": "Last Images",
+        "last_audio": "Last Audios",
     },
 
     "ru": {
@@ -101,13 +104,16 @@ const translation:any = {
         "user_videos": "Ваши видео",
         "user_videos_list": "У вас нет видео",
         "user_images": "Ваши изображения",
-        "user_music": "Ваша музыка",
+        "user_audios": "Ваша музыка",
         "delete": "Удалить",
         "delete_message": "Вы удалили видео",
         "replace_message": "Вы изменили информацию о видео",
         "videos": "Видео",
         "images": "Изображения",
-        "music": "Музыка",
+        "audios": "Музыка",
+        "last_videos": "Последние видео",
+        "last_images": "Последние изображения",
+        "last_audio": "Последняя музыка",
     }
 }
 

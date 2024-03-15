@@ -5,38 +5,38 @@ import UserIcon from "../UserIcon/UserIcon";
 import MobileVideoDescription from "../MobileVideoDescription/MobileVideoDescription";
 import Description from "../Description/Description";
 import { useEffect, useState } from "react";
-import { Video, addDisLike, addLike, removeDisLike, removeLike } from "@/app/firebase/video";
 import { addSubscribe, hasDisLike, hasLike, hasSubscribe, removeSubscribe } from "@/app/firebase/user";
 import { auth } from "@/app/firebase/firebase";
+import { Audio, addDisLike, addLike, removeDisLike, removeLike } from "@/app/firebase/audio";
 
 
 interface Props {
-  video : Video
-  langDictionary: any
+    audio : Audio
+    langDictionary: any
 }
 
 
-export default function VideoInformation({ video, langDictionary } : Props) {
+export default function AudioInformation({ audio, langDictionary } : Props) {
 
-  const [likeView, setViewLike] = useState(video?.likes)
-  const [dislikeView, setViewDislike] = useState(video?.dislikes)
+  const [likeView, setViewLike] = useState(audio?.likes)
+  const [dislikeView, setViewDislike] = useState(audio?.dislikes)
   const [subscribeView, setSubscribeView] = useState<boolean | undefined>(undefined)
 
   async function handleLike() {
 
-    if (await hasDisLike(video.id!)) {
-      await removeDisLike(video.id!)
+    if (await hasDisLike(audio.id!)) {
+      await removeDisLike(audio.id!)
       setViewDislike(dislikeView - 1)
     }
 
-    if (await hasLike(video.id!))
+    if (await hasLike(audio.id!))
     {
-      removeLike(video.id!)
+      removeLike(audio.id!)
       setViewLike(likeView - 1)
     }
     else
     {
-      addLike(video.id!)
+      addLike(audio.id!)
       setViewLike(likeView + 1)
     }
 
@@ -44,20 +44,20 @@ export default function VideoInformation({ video, langDictionary } : Props) {
 
   async function handleDislike() {
 
-    if (await hasLike(video.id!))
+    if (await hasLike(audio.id!))
     {
-      await removeLike(video.id!)
+      await removeLike(audio.id!)
       setViewLike(likeView - 1)
     }
 
-    if (await hasDisLike(video.id!))
+    if (await hasDisLike(audio.id!))
     {
-      removeDisLike(video.id!)
+      removeDisLike(audio.id!)
       setViewDislike(dislikeView - 1)
     }
     else
     {
-      addDisLike(video.id!)
+      addDisLike(audio.id!)
       setViewDislike(dislikeView + 1)
     }
 
@@ -65,20 +65,20 @@ export default function VideoInformation({ video, langDictionary } : Props) {
 
   async function handleSubscribe() {
     
-    if (await hasSubscribe(video.owner)) {
-      await removeSubscribe(video.owner)
+    if (await hasSubscribe(audio.owner)) {
+      await removeSubscribe(audio.owner)
       setSubscribeView(false)
     }
     else
     {
-      await addSubscribe(video.owner)
+      await addSubscribe(audio.owner)
       setSubscribeView(true)
     }
 
   }
 
   useEffect(() => {
-    hasSubscribe(video.owner).then((result) => {
+    hasSubscribe(audio.owner).then((result) => {
       if (result) {
         setSubscribeView(true)
       }
@@ -92,7 +92,7 @@ export default function VideoInformation({ video, langDictionary } : Props) {
 
         <Box>
           <Box className="inline-block">
-            <UserIcon userId={video.owner} langDictionary={langDictionary} />
+            <UserIcon userId={audio.owner} langDictionary={langDictionary} />
           </Box>
           
           <Box className="inline-block">
@@ -102,7 +102,7 @@ export default function VideoInformation({ video, langDictionary } : Props) {
               disableElevation
               onClick={handleSubscribe}
               className="font-bold"
-              disabled={video.owner === auth.currentUser?.uid}
+              disabled={audio.owner === auth.currentUser?.uid}
             >
               {
                 subscribeView
@@ -130,9 +130,9 @@ export default function VideoInformation({ video, langDictionary } : Props) {
         </Box>
       </Box>
       
-      <Box className='md:w-[100%] sm:w-[100%] lg:w-[100%]'>
-        <Description video={video} langDictionary={langDictionary} />
-        <MobileVideoDescription video={video} langDictionary={langDictionary} />
+      <Box className='md:w-[76%] sm:w-[76%] lg:w-[76%]'>
+        <Description audio={audio} langDictionary={langDictionary} />
+        {/* <MobileVideoDescription video={audio} langDictionary={langDictionary} /> */}
       </Box>
 
     </Box>

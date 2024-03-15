@@ -101,13 +101,13 @@ export default function SwipeableTemporaryDrawer({ language }: Props) {
           </ListItem>
         </Link>
 
-        <Link href={`/${language.lang}/music`}>
-          <ListItem key={'Music'} disablePadding>
+        <Link href={`/${language.lang}/audios`}>
+          <ListItem key={'Audios'} disablePadding>
             <ListItemButton>
               <ListItemIcon>
                 <MusicNoteIcon />
               </ListItemIcon>
-              <ListItemText primary={language.langDictionary['music']} />
+              <ListItemText primary={language.langDictionary['audios']} />
             </ListItemButton>
           </ListItem>
         </Link>
@@ -166,7 +166,7 @@ export default function SwipeableTemporaryDrawer({ language }: Props) {
               <ListItemIcon>
                 <LibraryMusicIcon />
               </ListItemIcon>
-              <ListItemText primary={language.langDictionary['user_music']} />
+              <ListItemText primary={language.langDictionary['user_audios']} />
             </ListItemButton>
           </ListItem>
         </Link>
