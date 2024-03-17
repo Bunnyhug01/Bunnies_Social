@@ -98,14 +98,17 @@ export function Audios() {
         <Box
           className="grid grid-cols-3 gap-4 ml-2 mr-2 pb-4"
         >
-          {data.map((audio) => (
-            <Link 
-              key={audio.id}
-              href={`/${lang}/audio/${audio.id}`}
-            >
-              <AudioList audio={audio} langDictionary={langDictionary} />
-            </Link>
-          ))}
+          {data.length !== 0
+            ? data.map((audio) => (
+              <Link 
+                key={audio.id}
+                href={`/${lang}/audio/${audio.id}`}
+              >
+                <AudioList audio={audio} langDictionary={langDictionary} />
+              </Link>
+            ))
+            : <Typography className="my-2 px-2">{langDictionary['no_audios']}</Typography>
+          }
         </Box>
 
       </Box>

@@ -9,6 +9,14 @@ main {
   @apply h-screen overflow-hidden flex flex-col;
 }
 
+audio::-webkit-media-controls-panel {
+  background-color: #b1b1b1;
+}
+/* #100f14 */
+audio {
+  background-color: #b1b1b1;
+}
+
 nextjs-portal {
   display: none;
 }

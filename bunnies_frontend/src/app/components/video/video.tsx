@@ -141,7 +141,7 @@ export function VideoLogoPlayer({}) {
             disablePictureInPicture
             onMouseOver={handleOnMouseOver}
             onMouseOut={handleOnMouseOut}
-            className="w-full h-full rounded-lg object-cover lg:max-h-[32vh] sm:max-h-[9vh] md:max-h-[12vh]"
+            className="w-full h-auto rounded-lg object-cover lg:max-h-[32vh] sm:max-h-[9vh] md:max-h-[20vh]"
         />
     )
 }

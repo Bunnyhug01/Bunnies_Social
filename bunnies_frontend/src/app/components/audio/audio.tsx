@@ -41,13 +41,13 @@ export function AudioUploadDate({}) {
 export function AudioLogo({}) {
     const audio = useContext(AudioContext)!!
     return (
-        <Box className='group relative'>
+        <Box className='group relative inline-block text-center'>
             <img
                 src={audio.logoUrl}
                 alt=""
-                className="rounded-lg object-cover lg:h-[30vh] sm:h-[12vh] lg:w-[17vw] group-hover:opacity-70"
+                className="rounded-md max-w-full h-auto block group-hover:opacity-70"
             />
-            <PlayCircleFilledWhiteIcon className='absolute w-[12vw] h-[12vh] lg:top-[9vh] lg:left-[2.5vw] invisible group-hover:visible' />
+            <PlayCircleFilledWhiteIcon className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[5vw] h-[5vw] invisible group-hover:visible' />
         </Box>
     )
 }

@@ -15,7 +15,7 @@ export default function AudioList({ audio, langDictionary } : Props) {
         <Box className="py-1">
             <AudioInfo audio={audio}>
             <Box>
-                <Box>
+                <Box className='w-[15vw] h-auto'>
                     <AudioLogo/>
                 </Box>
                     <Box>

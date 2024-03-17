@@ -20,6 +20,7 @@ import translation from '@/app/locales/translation';
 import { auth } from '@/app/firebase/firebase';
 import { Audio, addToHistory, addView, getOneAudio, getRecommendations } from '@/app/firebase/audio';
 import AudioContainer from '@/app/components/AudioContainer/AudioContainer';
+import AudioRecommendedList from '@/app/components/AudioRecommendedList/AudioRecommendedList';
 
 
 function Audio() {
@@ -99,7 +100,9 @@ function Audio() {
           bgcolor: 'background.default',
           color: 'text.primary',
           flexGrow: 1, p: 3,
-        }}>
+        }}
+        className='overflow-y-auto overflow-x-hidden'
+        >
         
         
         {/* Main Container */}
@@ -108,14 +111,13 @@ function Audio() {
           <Box className='relative w-full h-full max-h-[700px] grid grid-cols-3 gap-2 p-2 sm:w-[107vw] sm:right-[10vw] sm3:w-[108vw] sm3:right-[9vw] lg:right-0 md:right-0 md:w-full sm2:w-full sm2:right-0'>
             
             {/* Video Container */}
-            <Box className='sm:col-span-6 md:col-span-2 rounded-lg overflow-hidden items-center justify-center flex'>
-              {/* <VideoContainer video={video} langDictionary={langDictionary} /> */}
+            <Box className='sm:col-span-6 md:col-span-2 items-center justify-center flex lg:ml-[10vw]'>
               <AudioContainer audio={audio} langDictionary={langDictionary} />
             </Box>
 
             {/* Recommended list */} 
-            <Box className='sm:col-span-6 md:col-span-1 overflow-y-auto
-              scrollbar-thin scrollbar-thumb-gray-800 lg:max-h-[70%] md:max-h-[65%]
+            <Box className='sm:col-span-6 md:col-span-1 overflow-y-auto lg:ml-[-6vw]
+              scrollbar-thin scrollbar-thumb-gray-800 lg:max-h-[89.9%] md:max-h-[84.9%]
              '
               sx={{ 
                 bgcolor: 'background.additional',
@@ -136,7 +138,7 @@ function Audio() {
                     setAudio(audio)
                   }}
                 >
-                  {/* <RecommendedList video={video} langDictionary={langDictionary} /> */}
+                  <AudioRecommendedList audio={audio} langDictionary={langDictionary} />
                 </Link>
               ))}
 

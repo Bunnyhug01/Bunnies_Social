@@ -47,18 +47,18 @@ export default function AudioContainer( { audio = audioDefault, langDictionary }
     <AudioInfo audio={audio}>
       <div className="relative w-full h-full">
         
-        <Box className="ml-[8vw] mr-[8vw]">
+        <Box>
 
-          <Box className="group relative" onClick={handleClick}>
+          <Box className="group relative inline-block text-center" onClick={handleClick}>
             <img
                 src={audio.logoUrl}
                 alt=""
-                className="min-w-[100%] w-[100%] lg:h-[51vh] md2:h-[65%] sm:h-[60%] object-fit rounded-t-md  group-hover:opacity-70"
+                className="object-fill h-[560px] w-[640px] group-hover:opacity-70"
             />
             {
               isPlaying
-              ? <PauseCircleFilledIcon className='absolute w-[12vw] h-[12vh] lg:top-[20vh] lg:left-[18vw] invisible group-hover:visible' />
-              : <PlayCircleFilledWhiteIcon className='absolute w-[12vw] h-[12vh] lg:top-[20vh] lg:left-[18vw] invisible group-hover:visible' />
+              ? <PauseCircleFilledIcon className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[12vw] h-[12vh] invisible group-hover:visible' />
+              : <PlayCircleFilledWhiteIcon className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[12vw] h-[12vh] invisible group-hover:visible' />
             }
             
           </Box>
@@ -67,19 +67,19 @@ export default function AudioContainer( { audio = audioDefault, langDictionary }
             id="audioPlayer"
             src={audio.audioUrl}
             controls
-            className="w-[100%] bg-slate-50 rounded-b-md"
+            className="w-[640px] mt-[-5.7px]"
           />
 
         </Box>
 
-          <Box className="absolute w-full left-28 lg:w-[100%]">
+          <Box className="absolute w-full lg:w-[100%]">
             {audio.audioUrl !== ""
               ? <AudioInformation audio={audio} langDictionary={langDictionary} />
               : null
             }
           </Box>
 
-          <div className="absolute text-sm top-0 left-32 z-10 w-full h-[60px] py-4 px-3">
+          <div className="absolute text-sm top-0 z-10 w-full h-[60px] py-4 px-3">
                 <h2 className="text-textColor font-bold" id='mainVideoName'>
                     <AudioTitle/>
                 </h2>

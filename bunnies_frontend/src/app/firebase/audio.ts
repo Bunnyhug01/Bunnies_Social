@@ -218,11 +218,11 @@ export function addView(id: string): void {
 });
 }
 
-export function addToHistory(videoId: string): void {
+export function addToHistory(audioId: string): void {
 
   get(child(ref(database), `users/${auth.currentUser?.uid}/history/`)).then((snapshot) => {
     const history:History[] = snapshot.val() ? snapshot.val() : []
-    history.push({video: videoId})
+    history.push({audio: audioId})
     update(ref(database, `users/${auth.currentUser?.uid}/`), {history: history})
   })
 

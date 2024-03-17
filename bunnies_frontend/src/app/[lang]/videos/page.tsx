@@ -98,14 +98,17 @@ export function Videos() {
         <Box
           className="grid grid-cols-3 gap-4 ml-2 mr-2 pb-4"
         >
-          {data.map((video) => (
-            <Link 
-              key={video.id}
-              href={`${lang}/video/${video.id}`}
-            >
-              <VideoList video={video} langDictionary={langDictionary} />
-            </Link>
-          ))}
+          {data.length !== 0
+            ? data.map((video) => (
+              <Link 
+                key={video.id}
+                href={`/${lang}/video/${video.id}`}
+              >
+                <VideoList video={video} langDictionary={langDictionary} />
+              </Link>
+            ))
+            : <Typography className="my-2 px-2">{langDictionary['no_videos']}</Typography>
+          }
         </Box>
 
       </Box>

@@ -13,7 +13,9 @@ const translation:any = {
         "english": "English",
         "russian": "Russian",
         "favorites_list": "You haven't liked any of the videos",
-        "history_list": "You haven't watched any of the videos",
+        "historyVideo_list": "You haven't watched any of the videos",
+        "historyImage_list": "You haven't watched any of the images",
+        "historyAudio_list": "You haven't listened any of the audios",
         "next_button": "Next",
         "video_upload": "Video Upload",
         "video_uploading_progress": "Video uploading progress",
@@ -56,6 +58,9 @@ const translation:any = {
         "last_videos": "Last Videos",
         "last_images": "Last Images",
         "last_audio": "Last Audios",
+        "no_videos": "There're no videos yet",
+        "no_images": "There're no images yet",
+        "no_audios": "There're no audios yet",
     },
 
     "ru": {
@@ -71,7 +76,9 @@ const translation:any = {
         "english": "Английский",
         "russian": "Русский",
         "favorites_list": "Вы не отметили лайком ни одно видео",
-        "history_list": "Вы ещё не посмотрели ни одно видео",
+        "historyVideo_list": "Вы ещё не посмотрели ни одно видео",
+        "historyImage_list": "Вы ещё не просмотрели ни одно изображение",
+        "historyAudio_list": "Вы ещё не слушали музыку",
         "next_button": "Дальше",
         "video_upload": "Загрузка видео",
         "video_uploading_progress": "Прогресс загрузки видео",
@@ -114,6 +121,9 @@ const translation:any = {
         "last_videos": "Последние видео",
         "last_images": "Последние изображения",
         "last_audio": "Последняя музыка",
+        "no_videos": "Ещё никто не добавил никаких видео",
+        "no_images": "Ещё никто не добавил никаких изображений",
+        "no_audios": "Ещё никто не добавил никакой музыки",
     }
 }
 

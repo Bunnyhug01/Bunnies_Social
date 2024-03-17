@@ -22,7 +22,7 @@ import { VideoUpdateRequest, VideoCreateRequest, getAllVideos, createVideo, addV
 import { auth } from '../firebase/firebase';
 import { search } from '../firebase/search';
 import { Audio, AudioCreateRequest, createAudio, getAllAudios } from '../firebase/audio';
-import { Image } from '../firebase/image';
+import { Image, ImageCreateRequest, createImage } from '../firebase/image';
 import AudioList from '../components/AudioList/AudioList';
 
 
@@ -110,6 +110,14 @@ export function Home() {
       isPrivate: false,
     }
 
+    const image: ImageCreateRequest = {
+      title: 'Zone-Tan',
+      details: 'Zone-Tan holding a mug',
+      imageUrl: 'https://firebasestorage.googleapis.com/v0/b/bunnies-social.appspot.com/o/images%2Flinker_zone-tan-holding-a-mug.jpg?alt=media&token=13ba22a0-f8a9-4b35-bbec-30cbe35dd864',
+      isPrivate: false,
+    }
+
+    // createImage(image)
     // getAllAudios().then((result:any) => {console.log(Object.values(result))})
     // createAudio(audio)
     // getAllVideos().then((result:any) => {console.log(Object.values(result))})
@@ -141,7 +149,7 @@ export function Home() {
       />
       
 
-      <Box sx={{ height: '100%', width: '100vw', marginTop: 5 }}>
+      <Box className="h-full" sx={{ height: '100%', width: '100vw', marginTop: 5 }}>
         
         <Box className="flex items-center">
           <Typography className='text-[18px] font-bold my-2 px-2'>

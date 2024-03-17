@@ -27,7 +27,9 @@ export interface User {
 }
 
 export interface History {
-    video: string,
+    video?: string,
+    image?: string,
+    audio?: string
 }
 
 export async function createUser({ id, username, email, password }: UserAuthRequest) {
