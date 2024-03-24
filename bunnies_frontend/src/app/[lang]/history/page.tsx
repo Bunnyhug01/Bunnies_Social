@@ -14,7 +14,7 @@ import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import Header from "../../components/Header/Header";
 import BottomNav from "../../components/BottomNav/BottomNav";
 import { ColorModeContext, getDesignTokens } from "../../styles/designTokens";
-import RecommendedList from "../../components/RecommendedList/RecommendedList";
+import RecommendedList from "../../components/video/RecommendedList/RecommendedList";
 
 
 import translation from '@/app/locales/translation';
@@ -22,7 +22,8 @@ import { Video, getOneVideo } from '@/app/firebase/video';
 import { getMe } from '@/app/firebase/user';
 import { Image, getOneImage } from '@/app/firebase/image';
 import { Audio, getOneAudio } from '@/app/firebase/audio';
-import AudioRecommendedList from '@/app/components/AudioRecommendedList/AudioRecommendedList';
+import AudioRecommendedList from '@/app/components/audio/AudioRecommendedList/AudioRecommendedList';
+import ImageRecommendedList from '@/app/components/image/ImageRecommendedList/ImageRecommendedList';
 
 export function History() {
 
@@ -133,7 +134,7 @@ export function History() {
             </Box>
 
             <Box
-              className="grid grid-cols-3 gap-4 ml-2 mr-2 pb-4"
+              className="grid lg:grid-cols-3 sm:grid-cols-1 gap-4 ml-2 mr-2 pb-4"
             >
               {videos.length !== 0
                 ? videos.map((video) => (
@@ -156,7 +157,7 @@ export function History() {
             </Box>
 
             <Box
-              className="grid grid-cols-3 gap-4 ml-2 mr-2 pb-4"
+              className="grid lg:grid-cols-3 sm:grid-cols-1 gap-4 ml-2 mr-2 pb-4"
             >
               {images.length !== 0  
                 ? images.map((image) => (
@@ -164,8 +165,7 @@ export function History() {
                     key={image.id}
                     href={`/${lang}/image/${image.id}`}
                   >
-                    Image
-                    {/* <VideoList video={video} langDictionary={langDictionary} /> */}
+                    <ImageRecommendedList image={image} langDictionary={langDictionary} />
                   </Link>
                 ))
                 : <Typography className="my-2 px-2">{langDictionary['historyImage_list']}</Typography>
@@ -182,7 +182,7 @@ export function History() {
             </Box>
 
             <Box
-              className="grid grid-cols-3 gap-4 ml-2 mr-2 pb-4"
+              className="grid lg:grid-cols-3 sm:grid-cols-1 gap-4 ml-2 mr-2 pb-4"
             >
               {audios.length !== 0    
                 ? audios.map((audio) => (

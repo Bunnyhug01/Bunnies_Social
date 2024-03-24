@@ -2,46 +2,46 @@ import Image from 'next/image';
 
 import { Box, Typography } from '@mui/material';
 import { useState } from 'react';
-import { UserIdInfo, UserName } from '../user/user';
-import { Audio } from '@/app/firebase/audio';
-import { AudioInfo, AudioLength, AudioLogo, AudioTitle, AudioViews } from '../audio/audio';
+import { UserIdInfo, UserName } from '../../user/user';
+import { VideoInfo, VideoLength, VideoLogoPlayer, VideoTitle, VideoViews } from '../video';
+import { Video } from '@/app/firebase/video';
 
 interface Props {
-    audio: Audio
+    video: Video
     langDictionary: any
 }
 
 
-export default function AudioRecommendedList({ audio, langDictionary } : Props) {
+export default function RecommendedList({ video, langDictionary } : Props) {
     return (
-        <AudioInfo audio={audio}>
+        <VideoInfo video={video}>
             <Box 
                 className="flex items-center mb-2 cursor-pointer px-3 py-2 duration-200 ease-in-out overflow-hidden"
                 sx={{'&:hover': {
                     backgroundColor: 'background.hoverColor',
                 }}}
             >
-                <Box className='relative w-[10vw] h-auto'>
-                    <AudioLogo/>
+                <Box className='sm:w-[60px] sm:h-[60px] lg:w-[140px] lg:h-[80px] relative'>
+                    <VideoLogoPlayer/>
                 </Box>
 
                 <Box className='ml-2 flex-1'>
                     <Box>
                         <Typography sx={{color: 'text.primary'}} variant='inherit' className='lg:text-[16px] sm:text-[12px]'>
-                            <AudioTitle/> 
+                            <VideoTitle/> 
                         </Typography>
-                        <UserIdInfo id={audio.owner}>
+                        <UserIdInfo id={video.owner}>
                             <Typography sx={{color: 'text.primary', fontSize: 12}} className='block'>
                                 <UserName/>
                             </Typography>
                         </UserIdInfo>
                     </Box>
                     <Box sx={{color: 'text.secondary', fontSize: 14}} className='flex items-center mt-2'>
-                        <Typography variant='inherit' className='font-bold'><AudioLength/></Typography>
-                        <Typography variant='inherit' className='font-bold ml-6'><AudioViews/> {langDictionary['views']}</Typography>
+                        <Typography variant='inherit' className='font-bold'><VideoLength/></Typography>
+                        <Typography variant='inherit' className='font-bold ml-6'><VideoViews/> {langDictionary['views']}</Typography>
                     </Box>
                 </Box>
             </Box>
-        </AudioInfo>
+        </VideoInfo>
     )
 }

@@ -11,9 +11,9 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 
 import Header from '../../../components/Header/Header';
-import Comments from '../../../components/Comments/Comments';
-import RecommendedList from '../../../components/RecommendedList/RecommendedList';
-import VideoContainer from '../../../components/VideoContainer/VideoContainer';
+import Comments from '../../../components/comment/Comments/Comments';
+import RecommendedList from '../../../components/video/RecommendedList/RecommendedList';
+import VideoContainer from '../../../components/video/VideoContainer/VideoContainer';
 import BottomNav from '../../../components/BottomNav/BottomNav';
 
 import { ColorModeContext, getDesignTokens } from '../../../styles/designTokens';

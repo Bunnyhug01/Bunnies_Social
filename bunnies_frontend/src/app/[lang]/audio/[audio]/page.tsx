@@ -11,7 +11,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 
 import Header from '../../../components/Header/Header';
-import RecommendedList from '../../../components/RecommendedList/RecommendedList';
+import RecommendedList from '../../../components/video/RecommendedList/RecommendedList';
 import BottomNav from '../../../components/BottomNav/BottomNav';
 
 import { ColorModeContext, getDesignTokens } from '../../../styles/designTokens';
@@ -19,8 +19,8 @@ import { ColorModeContext, getDesignTokens } from '../../../styles/designTokens'
 import translation from '@/app/locales/translation';
 import { auth } from '@/app/firebase/firebase';
 import { Audio, addToHistory, addView, getOneAudio, getRecommendations } from '@/app/firebase/audio';
-import AudioContainer from '@/app/components/AudioContainer/AudioContainer';
-import AudioRecommendedList from '@/app/components/AudioRecommendedList/AudioRecommendedList';
+import AudioContainer from '@/app/components/audio/AudioContainer/AudioContainer';
+import AudioRecommendedList from '@/app/components/audio/AudioRecommendedList/AudioRecommendedList';
 
 
 function Audio() {

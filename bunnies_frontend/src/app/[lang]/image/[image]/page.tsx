@@ -11,17 +11,15 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 
 import Header from '../../../components/Header/Header';
-import Comments from '../../../components/Comments/Comments';
-import RecommendedList from '../../../components/RecommendedList/RecommendedList';
-import VideoContainer from '../../../components/VideoContainer/VideoContainer';
 import BottomNav from '../../../components/BottomNav/BottomNav';
 
 import { ColorModeContext, getDesignTokens } from '../../../styles/designTokens';
 
 import translation from '@/app/locales/translation';
-import { addToHistory, addView, getOneVideo, getRecommendations, Video } from '@/app/firebase/video';
 import { auth } from '@/app/firebase/firebase';
-import { Image } from '@/app/firebase/image';
+import { Image, addToHistory, addView, getOneImage, getRecommendations } from '@/app/firebase/image';
+import ImageContainer from '@/app/components/image/ImageContainer/ImageContainer';
+import ImageRecommendedList from '@/app/components/image/ImageRecommendedList/ImageRecommendedList';
 
 
 function Image() {
@@ -35,7 +33,7 @@ function Image() {
 
   const [ifNotFound, setIfNotFound] = useState<boolean>(false)
 
-  const [recommendation, setRecommendation] = useState<Video[]>([])
+  const [recommendation, setRecommendation] = useState<Image[]>([])
 
   const [image, setImage] = useState<Image>()
 
@@ -48,14 +46,14 @@ function Image() {
     
     auth.onAuthStateChanged((user) => {
       if (user) {
-        // getOneVideo(videoId).then((video) => {
-        //   setVideo(video)
-        //   addView(video.id!)
-        //   addToHistory(video.id!)
-        // }).catch(response => {
-        //   if(response.status == 404)
-        //     setIfNotFound(true)
-        // })
+        getOneImage(imageId).then((image) => {
+          setImage(image)
+          addView(image.id!)
+          addToHistory(image.id!)
+        }).catch(response => {
+          if(response.status == 404)
+            setIfNotFound(true)
+        })
       } else {
         window.location.replace(`/${lang}/sign-in`);
       }
@@ -65,9 +63,9 @@ function Image() {
   
   useEffect(() => {
     if (searchText === undefined || searchText === '') {
-    //   getRecommendations(videoId).then((videoArray) => {
-    //     setRecommendation(Object.values(videoArray))
-    //   })
+      getRecommendations(imageId).then((imageArray) => {
+        setRecommendation(Object.values(imageArray))
+      })
     } else {
       // search(searchText).then((videoArray) => {
       //   setRecommendation(videoArray)
@@ -107,16 +105,16 @@ function Image() {
         {/* Main Container */}
         <Box className='md:w-full h-full'>
           {/* Top Section */}
-          <Box className='relative w-full h-full max-h-[700px] grid grid-cols-3 gap-2 p-2 sm:w-[107vw] sm:right-[10vw] sm3:w-[108vw] sm3:right-[9vw] lg:right-0 md:right-0 md:w-full sm2:w-full sm2:right-0'>
+          <Box className='relative w-full h-full max-h-[100%] grid grid-cols-3 gap-2 p-2 sm:w-[107vw] sm:right-[10vw] sm3:w-[108vw] sm3:right-[9vw] lg:right-0 md:right-0 md:w-full sm2:w-full sm2:right-0'>
             
             {/* Video Container */}
-            <Box className='sm:col-span-6 md:col-span-2 rounded-lg overflow-hidden items-center justify-center flex'>
-              {/* <VideoContainer video={video} langDictionary={langDictionary} /> */}
+            <Box className='sm:col-span-6 md:col-span-2 overflow-hidden items-center justify-center flex'>
+              <ImageContainer image={image} langDictionary={langDictionary} />
             </Box>
 
             {/* Recommended list */} 
             <Box className='sm:col-span-6 md:col-span-1 overflow-y-auto
-              scrollbar-thin scrollbar-thumb-gray-800 lg:max-h-[70%] md:max-h-[65%]
+              scrollbar-thin scrollbar-thumb-gray-800 lg:max-h-[80%] md:max-h-[75%]
              '
               sx={{ 
                 bgcolor: 'background.additional',
@@ -129,17 +127,17 @@ function Image() {
                 {langDictionary['recommendation']}
               </Typography>
 
-              {/* {recommendation.map((video) => (
+              {recommendation.map((image) => (
                 <Link 
-                  key={video.id}
-                  href={`/${lang}/video/${video.id}`}
+                  key={image.id}
+                  href={`/${lang}/image/${image.id}`}
                   onClick={() => {
-                    setVideo(video)
+                    setImage(image)
                   }}
                 >
-                  <RecommendedList video={video} langDictionary={langDictionary} />
+                  <ImageRecommendedList image={image} langDictionary={langDictionary} />
                 </Link>
-              ))} */}
+              ))}
 
             </Box>
 

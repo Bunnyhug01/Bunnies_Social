@@ -11,7 +11,7 @@ import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
 import Header from "../../components/Header/Header";
 import BottomNav from "../../components/BottomNav/BottomNav";
 import { ColorModeContext, getDesignTokens } from "../../styles/designTokens";
-import RecommendedList from "../../components/RecommendedList/RecommendedList";
+import RecommendedList from "../../components/video/RecommendedList/RecommendedList";
 
 import translation from '@/app/locales/translation';
 import { getMe } from '@/app/firebase/user';

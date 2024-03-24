@@ -13,17 +13,18 @@ import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import Header from "../components/Header/Header";
 import BottomNav from "../components/BottomNav/BottomNav";
 import { ColorModeContext, getDesignTokens } from "../styles/designTokens";
-import VideoList from '../components/VideoList/VideoList';
+import VideoList from '../components/video/VideoList/VideoList';
 
 import translation from '../locales/translation';
 import getUsersLanguage from '../locales/getUsersLanguage';
-import { UserAuthRequest } from '../firebase/user';
+import { UserAuthRequest, hasLike } from '../firebase/user';
 import { VideoUpdateRequest, VideoCreateRequest, getAllVideos, createVideo, addView, Video } from '../firebase/video';
 import { auth } from '../firebase/firebase';
 import { search } from '../firebase/search';
 import { Audio, AudioCreateRequest, createAudio, getAllAudios } from '../firebase/audio';
-import { Image, ImageCreateRequest, createImage } from '../firebase/image';
-import AudioList from '../components/AudioList/AudioList';
+import { Image, ImageCreateRequest, createImage, getAllImages } from '../firebase/image';
+import AudioList from '../components/audio/AudioList/AudioList';
+import ImageList from '../components/image/ImageList/ImageList';
 
 
 export function Home() {
@@ -54,6 +55,10 @@ export function Home() {
 
           getAllAudios().then((audioArray:any) => {
             setAudios(Object.values(audioArray))
+          })
+
+          getAllImages().then((imageArray:any) => {
+            setImages(Object.values(imageArray))
           })
 
         } else {
@@ -114,6 +119,8 @@ export function Home() {
       title: 'Zone-Tan',
       details: 'Zone-Tan holding a mug',
       imageUrl: 'https://firebasestorage.googleapis.com/v0/b/bunnies-social.appspot.com/o/images%2Flinker_zone-tan-holding-a-mug.jpg?alt=media&token=13ba22a0-f8a9-4b35-bbec-30cbe35dd864',
+      // imageUrl: 'https://firebasestorage.googleapis.com/v0/b/bunnies-social.appspot.com/o/images%2Flinkerluis_uno.jpg?alt=media&token=a766bca3-f409-4265-ad58-5588c3cd45aa',
+      // imageUrl: 'https://firebasestorage.googleapis.com/v0/b/bunnies-social.appspot.com/o/images%2Flinker_zone-tan-animator.gif?alt=media&token=f6b9075c-86e9-4ea7-bcd9-88d486d8dddc',
       isPrivate: false,
     }
 
@@ -130,7 +137,8 @@ export function Home() {
     // signUp(authUser)
     // signIn(authUser)
     // signUserOut()
-
+    // hasLike('-Nrq86OD9cNtMx-MWBKi')
+    
   }, [])
 
   return(
@@ -149,7 +157,7 @@ export function Home() {
       />
       
 
-      <Box className="h-full" sx={{ height: '100%', width: '100vw', marginTop: 5 }}>
+      <Box className='h-[100%]' sx={{ height: '100vh', width: '100vw', marginTop: 5 }}>
         
         <Box className="flex items-center">
           <Typography className='text-[18px] font-bold my-2 px-2'>
@@ -181,14 +189,14 @@ export function Home() {
         </Box>
 
         <Box
-          className="grid grid-cols-3 gap-4 ml-2 mr-2 pb-4"
+          className="grid grid-cols-4 gap-4 ml-2 mr-2 pb-4"
         >
-          {videos.map((video) => (
+          {images.map((image) => (
             <Link 
-              key={video.id}
-              href={`${lang}/video/${video.id}`}
+              key={image.id}
+              href={`${lang}/image/${image.id}`}
             >
-              <VideoList video={video} langDictionary={langDictionary} />
+              <ImageList image={image} langDictionary={langDictionary} />
             </Link>
           ))}
         </Box>
@@ -203,12 +211,13 @@ export function Home() {
         </Box>
 
         <Box
-          className="grid grid-cols-3 gap-4 ml-2 mr-2 pb-4"
+          className="grid grid-cols-4 gap-4 ml-2 mr-2 pb-4"
         >
           {audios.map((audio) => (
             <Link 
               key={audio.id}
               href={`${lang}/audio/${audio.id}`}
+              className='max-w-[15vw]'
             >
               <AudioList audio={audio} langDictionary={langDictionary} />
             </Link>

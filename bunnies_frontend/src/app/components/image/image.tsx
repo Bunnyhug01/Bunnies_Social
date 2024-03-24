@@ -1,4 +1,5 @@
 import { Image } from "@/app/firebase/image";
+import { Box } from "@mui/material";
 import React, { useContext } from "react";
 
 export const ImageContext = React.createContext<Image | undefined>(undefined)
@@ -14,6 +15,11 @@ export function ImageInfo({ image, children }: { image: Image, children: React.R
 export function ImageTitle({}) {
     const image = useContext(ImageContext)!!
     return (<>{image.title}</>)
+}
+
+export function ImageDetails({}) {
+    const image = useContext(ImageContext)!!
+    return (<>{image.details}</>)
 }
 
 export function ImageLikes({}) {
@@ -34,4 +40,17 @@ export function ImageViews({}) {
 export function ImageUploadDate({}) {
     const image = useContext(ImageContext)!!
     return (<>{image.uploadDate}</>)
+}
+
+export function ImageLogo({}) {
+    const image = useContext(ImageContext)!!
+    return (
+        <Box className='gallery-item'>
+            <img
+                src={image.imageUrl}
+                alt=""
+            />
+            <Box className="overlay"></Box>
+        </Box>
+    )
 }

@@ -1,9 +1,9 @@
 import { ThumbUp, ThumbDown } from "@mui/icons-material";
 import { Box, Button, IconButton, Typography } from "@mui/material";
 
-import UserIcon from "../UserIcon/UserIcon";
-import MobileVideoDescription from "../MobileVideoDescription/MobileVideoDescription";
-import Description from "../Description/Description";
+import UserIcon from "../../user/UserIcon/UserIcon";
+import MobileVideoDescription from "../../MobileVideoDescription/MobileVideoDescription";
+import Description from "../../Description/Description";
 import { useEffect, useState } from "react";
 import { addSubscribe, hasDisLike, hasLike, hasSubscribe, removeSubscribe } from "@/app/firebase/user";
 import { auth } from "@/app/firebase/firebase";

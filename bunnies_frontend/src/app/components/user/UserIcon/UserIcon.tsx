@@ -2,7 +2,7 @@ import { Box, Typography } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import { deepPurple } from '@mui/material/colors';
 import { useState, useEffect } from 'react';
-import { UserIdInfo, UserInfo, UserLogo, UserName, UserSubscribers } from '../user/user';
+import { UserIdInfo, UserInfo, UserLogo, UserName, UserSubscribers } from '../user';
 
 
 interface Props {

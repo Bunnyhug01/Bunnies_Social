@@ -21,6 +21,7 @@ const config: Config = {
         buttonSubmit: '#1565c0',
         collectionBg: 'rgba(0,0,0,0.6)',
         darkThemeIconColor: 'rgb(93,95,239)',
+        fullScreenImg: 'rgba(0, 0, 0, .9)'
       },
       screens: {
         'sm': '320px',

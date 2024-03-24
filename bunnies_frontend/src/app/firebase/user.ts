@@ -19,14 +19,26 @@ export interface User {
     subscribers: string[],
     subscriptions: string[],
     history: History[],
-    likes: string[],
-    dislikes: string[],
+    likes: Likes[],
+    dislikes: Dislikes[],
     videos?: string[],
     images?: string[],
     audios?: string[]
 }
 
 export interface History {
+    video?: string,
+    image?: string,
+    audio?: string
+}
+
+export interface Likes {
+    video?: string,
+    image?: string,
+    audio?: string
+}
+
+export interface Dislikes {
     video?: string,
     image?: string,
     audio?: string
@@ -120,17 +132,47 @@ export async function hasLike(id: string):Promise<boolean> {
     return get(child(ref(database), `users/${auth.currentUser?.uid}/likes/`)).then((snapshot) => {
         if (snapshot.exists()) {
 
-            if ((snapshot.val()).includes(id)) {
-                return true
-            }
-            else {
-                return false
-            }
+            return snapshot.forEach((childSnapshot) => {
+
+                const likeData = childSnapshot.val();
+                
+                if ('video' in likeData) {
+                    if (likeData.video === id) {
+                        return true
+                    }
+                    else {
+                        return false
+                    }
+                }
+        
+                else if ('image' in likeData) {
+                    if (likeData.image === id) {
+                        return true
+                    }
+                    else {
+                        return false
+                    }
+                }
+
+                else if ('audio' in likeData) {
+                    if (likeData.audio === id) {
+                        return true
+                    }
+                    else {
+                        return false
+                    }
+                }
+                
+                else {
+                    return false
+                }
+
+            })
 
         } else {
             return false
         }
-    })
+    });
 
 }
 
@@ -139,17 +181,47 @@ export async function hasDisLike(id: string):Promise<boolean> {
     return get(child(ref(database), `users/${auth.currentUser?.uid}/dislikes/`)).then((snapshot) => {
         if (snapshot.exists()) {
 
-            if ((snapshot.val()).includes(id)) {
-                return true
-            }
-            else {
-                return false
-            }
+            return snapshot.forEach((childSnapshot) => {
+
+                const dislikeData = childSnapshot.val();
+                
+                if ('video' in dislikeData) {
+                    if (dislikeData.video === id) {
+                        return true
+                    }
+                    else {
+                        return false
+                    }
+                }
+        
+                else if ('image' in dislikeData) {
+                    if (dislikeData.image === id) {
+                        return true
+                    }
+                    else {
+                        return false
+                    }
+                }
+
+                else if ('audio' in dislikeData) {
+                    if (dislikeData.audio === id) {
+                        return true
+                    }
+                    else {
+                        return false
+                    }
+                }
+                
+                else {
+                    return false
+                }
+
+            })
 
         } else {
             return false
         }
-    })
+    });
 }
 
 

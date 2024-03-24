@@ -1,6 +1,6 @@
 import { TimelineLite } from 'gsap';
 import { useState, useEffect, useRef } from 'react';
-import { VideoInfo, VideoTitle } from '../video/video';
+import { VideoInfo, VideoTitle } from '../video';
 import VideoInformation from '../VideoInformation/VideoInformation';
 import { Box } from '@mui/material';
 import { Video } from '@/app/firebase/video';
@@ -13,9 +13,9 @@ interface Props {
 
 
 const default_logo_urls: string[] = [
-  "https://firebasestorage.googleapis.com/v0/b/bunnies-social.appspot.com/o/gifs%2Fpls-stand-by.gif?alt=media&token=806aa7de-98a6-4189-890e-3c1cb442b00a",
-  "https://firebasestorage.googleapis.com/v0/b/bunnies-social.appspot.com/o/gifs%2Fpl_stand_by_second.gif?alt=media&token=b40b4800-90aa-4499-b5cc-5ab73b1d6bdb",
-  "https://firebasestorage.googleapis.com/v0/b/bunnies-social.appspot.com/o/gifs%2Ffallout-please-stand-by.gif?alt=media&token=e696cca5-6c9c-4700-bf9e-a3cef20165e5",
+  "https://firebasestorage.googleapis.com/v0/b/bunnies-social.appspot.com/o/default%2Fpls-stand-by.gif?alt=media&token=d6686df9-374c-4691-9e3b-a98a82cb7dce",
+  "https://firebasestorage.googleapis.com/v0/b/bunnies-social.appspot.com/o/default%2Fpl_stand_by_second.gif?alt=media&token=a5702950-dc3a-4a5c-b1ab-feb4daa9c5bf",
+  "https://firebasestorage.googleapis.com/v0/b/bunnies-social.appspot.com/o/default%2Ffallout-please-stand-by.gif?alt=media&token=e51e5b61-c714-4bf7-93dc-716130749e66",
 ]
 
 

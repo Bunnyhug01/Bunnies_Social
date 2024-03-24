@@ -18,7 +18,7 @@ import { UserAuthRequest } from '../../firebase/user';
 import { auth } from '../../firebase/firebase';
 import { search } from '../../firebase/search';
 import { Audio, getAllAudios } from '@/app/firebase/audio';
-import AudioList from '@/app/components/AudioList/AudioList';
+import AudioList from '@/app/components/audio/AudioList/AudioList';
 
 
 export function Audios() {

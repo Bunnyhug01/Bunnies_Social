@@ -6,30 +6,30 @@ import { notFound, useParams, useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from "react";
 
 import { Box, ThemeProvider, Typography, createTheme } from "@mui/material";
-import OndemandVideoIcon from '@mui/icons-material/OndemandVideo';
+import MusicNoteIcon from '@mui/icons-material/MusicNote';
 
 import Header from "../../components/Header/Header";
 import BottomNav from "../../components/BottomNav/BottomNav";
 import { ColorModeContext, getDesignTokens } from "../../styles/designTokens";
-import VideoList from '../../components/video/VideoList/VideoList';
 
 import translation from '../../locales/translation';
 import getUsersLanguage from '../../locales/getUsersLanguage';
 import { UserAuthRequest } from '../../firebase/user';
-import { getAllVideos, Video } from '../../firebase/video';
 import { auth } from '../../firebase/firebase';
 import { search } from '../../firebase/search';
+import { Image, getAllImages } from '@/app/firebase/image';
+import ImageList from '@/app/components/image/ImageList/ImageList';
 
 
-export function Videos() {
+export function Images() {
   const params  = useParams();
   const lang: string = (params.lang).toString()
-
+  
   const langDictionary = translation[lang]
   if (langDictionary === undefined)
     notFound()
 
-  const [data, setData] = useState<Video[]>([])
+  const [data, setData] = useState<Image[]>([])
 
   const [searchText, setSearchText] = useState<string|undefined>(undefined);
   const searchHandler = useCallback((e: React.FormEvent<HTMLInputElement>) => {
@@ -41,11 +41,11 @@ export function Videos() {
     auth.onAuthStateChanged((user) => {
       if (user) {
         if (searchText === undefined || searchText === '') {
-          getAllVideos().then((videoArray:any) => {
-            setData(Object.values(videoArray))
-          })
+            getAllImages().then((audioArray:any) => {
+                setData(Object.values(audioArray))
+            })
         } else {
-          search(searchText).then((videoArray) => {
+          search(searchText).then((audioArray) => {
 
           })
         }
@@ -90,24 +90,24 @@ export function Videos() {
 
         <Box className="flex items-center">
           <Typography className='text-[18px] font-bold my-2 px-2'>
-            {langDictionary['videos']}
+            {langDictionary['images']}
           </Typography>
-          <OndemandVideoIcon />
+          <MusicNoteIcon />
         </Box>
 
         <Box
           className="grid grid-cols-3 gap-4 ml-2 mr-2 pb-4"
         >
           {data.length !== 0
-            ? data.map((video) => (
+            ? data.map((image) => (
               <Link 
-                key={video.id}
-                href={`/${lang}/video/${video.id}`}
+                key={image.id}
+                href={`/${lang}/image/${image.id}`}
               >
-                <VideoList video={video} langDictionary={langDictionary} />
+                <ImageList image={image} langDictionary={langDictionary} />
               </Link>
             ))
-            : <Typography className="my-2 px-2">{langDictionary['no_videos']}</Typography>
+            : <Typography className="my-2 px-2">{langDictionary['no_images']}</Typography>
           }
         </Box>
 
@@ -141,7 +141,7 @@ export default function ToggleColorMode() {
   return (
     <ColorModeContext.Provider value={colorMode}>
     <ThemeProvider theme={theme}>
-      <Videos />
+      <Images />
     </ThemeProvider>
   </ColorModeContext.Provider>
   );

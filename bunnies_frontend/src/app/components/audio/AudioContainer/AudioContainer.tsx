@@ -6,7 +6,7 @@ import PlayCircleFilledWhiteIcon from '@mui/icons-material/PlayCircleFilledWhite
 import PauseCircleFilledIcon from '@mui/icons-material/PauseCircleFilled';
 
 import { Audio } from '@/app/firebase/audio';
-import { AudioInfo, AudioTitle } from '../audio/audio';
+import { AudioInfo, AudioTitle } from '../audio';
 import AudioInformation from "../AudioInformation/AudioInformation";
 
 

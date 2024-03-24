@@ -1,39 +1,40 @@
 import { Box, Typography } from '@mui/material';
-import { UserIdInfo, UserInfo, UserName } from '../user/user';
-import { Audio } from '@/app/firebase/audio';
-import { AudioInfo, AudioLength, AudioLogo, AudioTitle, AudioViews } from '../audio/audio';
+import { UserIdInfo, UserInfo, UserName } from '../../user/user';
+import { VideoInfo, VideoLength, VideoLogo, VideoLogoPlayer, VideoTitle, VideoViews } from '../video';
+import UserIcon from '../../user/UserIcon/UserIcon';
+import { Video } from '@/app/firebase/video';
 
 
 interface Props {
-    audio: Audio,
+    video: Video,
     langDictionary: any
 }
 
 
-export default function AudioList({ audio, langDictionary } : Props) {
+export default function VideoList({ video, langDictionary } : Props) {
     return (
         <Box className="py-1">
-            <AudioInfo audio={audio}>
+            <VideoInfo video={video}>
             <Box>
-                <Box className='w-[15vw] h-auto'>
-                    <AudioLogo/>
+                <Box>
+                    <VideoLogoPlayer/>
                 </Box>
                     <Box>
                         <Typography sx={{color: 'text.primary'}} variant='inherit' className='lg:text-[16px] sm:text-[12px]'>
-                            <AudioTitle/> 
+                            <VideoTitle/> 
                         </Typography>
-                        <UserIdInfo id={audio.owner}>
+                        <UserIdInfo id={video.owner}>
                             <Typography sx={{color: 'text.primary', fontSize: 12}} className='block'>
                                 <UserName/>
                             </Typography>
                         </UserIdInfo>
                     </Box>
                     <Box sx={{color: 'text.secondary'}} className='flex items-center mt-2 lg:text-[14px] md:text-[14px] sm:text-[8px]'>
-                        <Typography sx={{fontWeight: 'bold'}} variant='inherit'><AudioLength/></Typography>
-                        <Typography sx={{fontWeight: 'bold', ml: 1}} variant='inherit'><AudioViews/> {langDictionary['views']}</Typography>
+                        <Typography sx={{fontWeight: 'bold'}} variant='inherit'><VideoLength/></Typography>
+                        <Typography sx={{fontWeight: 'bold', ml: 1}} variant='inherit'><VideoViews/> {langDictionary['views']}</Typography>
                     </Box>
             </Box>
-            </AudioInfo>
+            </VideoInfo>
         </Box>
     )
 }

@@ -1,7 +1,7 @@
 import { auth, database } from "./firebase";
 import { ref, push, get, child, remove, update } from "firebase/database";
 import getDate from "../utils/getDate";
-import { History } from "./user";
+import { Dislikes, History, Likes } from "./user";
 
 
 export interface ImageCreateRequest {
@@ -126,8 +126,8 @@ export function addLike(id: string): void {
   });
 
   get(child(ref(database), `users/${auth.currentUser?.uid}/likes/`)).then((snapshot) => {
-    const likes:string[] = snapshot.val() ? snapshot.val() : []
-    likes.push(id)
+    const likes:Likes[] = snapshot.val() ? snapshot.val() : []
+    likes.push({image: id})
     update(ref(database, `users/${auth.currentUser?.uid}/`), {likes: likes})
   })
 }
@@ -145,15 +145,15 @@ export function removeLike(id: string): void {
   });
 
   get(child(ref(database), `users/${auth.currentUser?.uid}/likes/`)).then((snapshot) => {
-    const likes:string[] = snapshot.val()
+    snapshot.forEach((childSnapshot) => {
+        const likeData = childSnapshot.val();
 
-    const index = likes.indexOf(id);
-    if (index !== -1) {
-      likes.splice(index, 1);
-    }
-
-    update(ref(database, `users/${auth.currentUser?.uid}/`), {likes: likes})
-  })
+        if ('image' in likeData && likeData.image === id) {
+          remove(child(ref(database), `users/${auth.currentUser?.uid}/likes/${childSnapshot.key}`))
+        }
+          
+      });
+  });
 }
 
 export function addDisLike(id: string): void {
@@ -169,8 +169,8 @@ export function addDisLike(id: string): void {
   });
 
   get(child(ref(database), `users/${auth.currentUser?.uid}/dislikes/`)).then((snapshot) => {
-    const dislikes:string[] = snapshot.val() ? snapshot.val() : []
-    dislikes.push(id)
+    const dislikes:Dislikes[] = snapshot.val() ? snapshot.val() : []
+    dislikes.push({image: id})
     update(ref(database, `users/${auth.currentUser?.uid}/`), {dislikes: dislikes})
   })
 }
@@ -188,15 +188,15 @@ export function removeDisLike(id: string): void {
   });
 
   get(child(ref(database), `users/${auth.currentUser?.uid}/dislikes/`)).then((snapshot) => {
-    const dislikes:string[] = snapshot.val()
+    snapshot.forEach((childSnapshot) => {
+        const dislikeData = childSnapshot.val();
 
-    const index = dislikes.indexOf(id);
-    if (index !== -1) {
-      dislikes.splice(index, 1);
-    }
-
-    update(ref(database, `users/${auth.currentUser?.uid}/`), {dislikes: dislikes})
-  })
+        if ('image' in dislikeData && dislikeData.image === id) {
+          remove(child(ref(database), `users/${auth.currentUser?.uid}/dislikes/${childSnapshot.key}`))
+        }
+          
+      });
+  });
 }
 
 export function addView(id: string): void {
