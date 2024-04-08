@@ -2,12 +2,13 @@ import { ThumbUp, ThumbDown } from "@mui/icons-material";
 import { Box, Button, IconButton, Typography } from "@mui/material";
 
 import UserIcon from "../../user/UserIcon/UserIcon";
-import MobileVideoDescription from "../../MobileVideoDescription/MobileVideoDescription";
+import MobileDescription from "../../MobileDescription/MobileDescription";
 import Description from "../../Description/Description";
 import { useEffect, useState } from "react";
 import { Video, addDisLike, addLike, removeDisLike, removeLike } from "@/app/firebase/video";
 import { addSubscribe, hasDisLike, hasLike, hasSubscribe, removeSubscribe } from "@/app/firebase/user";
 import { auth } from "@/app/firebase/firebase";
+import { useParams } from "next/navigation";
 
 
 interface Props {
@@ -17,6 +18,9 @@ interface Props {
 
 
 export default function VideoInformation({ video, langDictionary } : Props) {
+  const params  = useParams();
+  const user = localStorage.getItem('user')
+  const lang: string = (params.lang).toString()
 
   const [likeView, setViewLike] = useState(video?.likes)
   const [dislikeView, setViewDislike] = useState(video?.dislikes)
@@ -24,55 +28,76 @@ export default function VideoInformation({ video, langDictionary } : Props) {
 
   async function handleLike() {
 
-    if (await hasDisLike(video.id!)) {
-      await removeDisLike(video.id!)
-      setViewDislike(dislikeView - 1)
-    }
+    if (user) {
 
-    if (await hasLike(video.id!))
-    {
-      removeLike(video.id!)
-      setViewLike(likeView - 1)
+      if (await hasDisLike(video.id!)) {
+        await removeDisLike(video.id!)
+        setViewDislike(dislikeView - 1)
+      }
+  
+      if (await hasLike(video.id!))
+      {
+        removeLike(video.id!)
+        setViewLike(likeView - 1)
+      }
+      else
+      {
+        addLike(video.id!)
+        setViewLike(likeView + 1)
+      }
+
     }
-    else
-    {
-      addLike(video.id!)
-      setViewLike(likeView + 1)
+    else {
+      window.location.replace(`/${lang}/sign-in`)
     }
 
   }
 
   async function handleDislike() {
 
-    if (await hasLike(video.id!))
-    {
-      await removeLike(video.id!)
-      setViewLike(likeView - 1)
-    }
+    if (user) {
 
-    if (await hasDisLike(video.id!))
-    {
-      removeDisLike(video.id!)
-      setViewDislike(dislikeView - 1)
+      if (await hasLike(video.id!))
+      {
+        await removeLike(video.id!)
+        setViewLike(likeView - 1)
+      }
+    
+      if (await hasDisLike(video.id!))
+      {
+        removeDisLike(video.id!)
+        setViewDislike(dislikeView - 1)
+      }
+      else
+      {
+        addDisLike(video.id!)
+        setViewDislike(dislikeView + 1)
+      }
+
     }
-    else
-    {
-      addDisLike(video.id!)
-      setViewDislike(dislikeView + 1)
+    else {
+      window.location.replace(`/${lang}/sign-in`)
     }
 
   }
 
   async function handleSubscribe() {
     
-    if (await hasSubscribe(video.owner)) {
-      await removeSubscribe(video.owner)
-      setSubscribeView(false)
+    if (user) {
+
+      if (await hasSubscribe(video.owner)) {
+        await removeSubscribe(video.owner)
+        setSubscribeView(false)
+      }
+      else
+      {
+        await addSubscribe(video.owner)
+        setSubscribeView(true)
+      }
+      
     }
-    else
-    {
-      await addSubscribe(video.owner)
-      setSubscribeView(true)
+    else {
+      window.location.replace(`/${lang}/sign-in`)
     }
 
   }
@@ -115,7 +140,7 @@ export default function VideoInformation({ video, langDictionary } : Props) {
               className="lg:ml-2"
               onClick={handleLike}
             >
-                <ThumbUp sx={{color: 'text.primary'}} className="lg:w-[25px] lg:h-[25px] md:w-[25px] md:h-[25px] sm:w-[20px] sm:h-[20px]" />
+              <ThumbUp sx={{color: 'text.primary'}} className="lg:w-[25px] lg:h-[25px] md:w-[25px] md:h-[25px] sm:w-[20px] sm:h-[20px]" />
             </IconButton>
             <Typography sx={{color: 'text.secondary', fontSize: 14, fontWeight: 'bold', ml: 1}} className='inline-block'>{likeView}</Typography>
 
@@ -123,7 +148,7 @@ export default function VideoInformation({ video, langDictionary } : Props) {
               sx={{ml: 1}}
               onClick={handleDislike}
             >
-                <ThumbDown sx={{color: 'text.primary'}} className="lg:w-[25px] lg:h-[25px] md:w-[25px] md:h-[25px] sm:w-[20px] sm:h-[20px]" />
+              <ThumbDown sx={{color: 'text.primary'}} className="lg:w-[25px] lg:h-[25px] md:w-[25px] md:h-[25px] sm:w-[20px] sm:h-[20px]" />
             </IconButton>
             <Typography sx={{color: 'text.secondary', fontSize: 14, fontWeight: 'bold', ml: 1}} className='inline-block'>{dislikeView}</Typography>
           </Box>
@@ -132,7 +157,7 @@ export default function VideoInformation({ video, langDictionary } : Props) {
       
       <Box className='md:w-[100%] sm:w-[100%] lg:w-[100%]'>
         <Description video={video} langDictionary={langDictionary} />
-        <MobileVideoDescription video={video} langDictionary={langDictionary} />
+        <MobileDescription video={video} langDictionary={langDictionary} />
       </Box>
 
     </Box>

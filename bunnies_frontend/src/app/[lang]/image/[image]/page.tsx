@@ -22,10 +22,11 @@ import ImageContainer from '@/app/components/image/ImageContainer/ImageContainer
 import ImageRecommendedList from '@/app/components/image/ImageRecommendedList/ImageRecommendedList';
 
 
-function Image() {
+function ImagePage() {
   const params  = useParams();
   const imageId = (params.image).toString()
   const lang: string = (params.lang).toString()
+  const user = localStorage.getItem('user')
 
   const langDictionary = translation[lang]
   if (langDictionary === undefined)
@@ -44,19 +45,17 @@ function Image() {
 
   useEffect(() => {
     
-    auth.onAuthStateChanged((user) => {
+    getOneImage(imageId).then((image) => {
+      setImage(image)
+      addView(image.id!)
+
       if (user) {
-        getOneImage(imageId).then((image) => {
-          setImage(image)
-          addView(image.id!)
-          addToHistory(image.id!)
-        }).catch(response => {
-          if(response.status == 404)
-            setIfNotFound(true)
-        })
-      } else {
-        window.location.replace(`/${lang}/sign-in`);
+        addToHistory(image.id!)
       }
+
+    }).catch(response => {
+      if(response.status == 404)
+        setIfNotFound(true)
     })
 
   },[])
@@ -75,8 +74,8 @@ function Image() {
   }, [searchText])
   
   useEffect(() => {
-    // if (ifNotFound)
-    //   notFound()
+    if (ifNotFound)
+      notFound()
   }, [ifNotFound])
 
   return (
@@ -114,7 +113,7 @@ function Image() {
 
             {/* Recommended list */} 
             <Box className='sm:col-span-6 md:col-span-1 overflow-y-auto
-              scrollbar-thin scrollbar-thumb-gray-800 lg:max-h-[80%] md:max-h-[75%]
+              scrollbar-thin scrollbar-thumb-gray-800 max-h-[82%]
              '
               sx={{ 
                 bgcolor: 'background.additional',
@@ -173,7 +172,7 @@ export default function ToggleColorMode() {
   return (
     <ColorModeContext.Provider value={colorMode}>
     <ThemeProvider theme={theme}>
-      <Image />
+      <ImagePage />
     </ThemeProvider>
   </ColorModeContext.Provider>
   );

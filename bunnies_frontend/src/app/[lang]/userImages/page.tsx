@@ -6,18 +6,18 @@ import { useParams, notFound } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from "react";
 
 import { Box, ThemeProvider, Typography, createTheme } from "@mui/material";
-import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
+import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
 
 import Header from "../../components/Header/Header";
 import BottomNav from "../../components/BottomNav/BottomNav";
 import { ColorModeContext, getDesignTokens } from "../../styles/designTokens";
-import RecommendedList from "../../components/video/RecommendedList/RecommendedList";
 
 import translation from '@/app/locales/translation';
 import { getMe } from '@/app/firebase/user';
-import { Video, getOneVideo } from '@/app/firebase/video';
+import { Image, getOneImage } from '@/app/firebase/image';
+import ImageRecommendedList from '@/app/components/image/ImageRecommendedList/ImageRecommendedList';
 
-export function UserVideos() {
+export function UserImages() {
 
   const params  = useParams();
   const lang: string = (params.lang).toString()
@@ -26,7 +26,7 @@ export function UserVideos() {
   if (langDictionary === undefined)
     notFound()
 
-  const [data, setData] = useState<Video[]>([])
+  const [data, setData] = useState<Image[]>([])
 
 
   const [searchText, setSearchText] = useState<string|undefined>(undefined);
@@ -38,16 +38,16 @@ export function UserVideos() {
     if (searchText === undefined || searchText === '') {
         
       getMe().then((user) => 
-        user.videos!.map((videoId) =>
-          {
-            if (videoId) {
-              getOneVideo(videoId)
-                .then((video) => {
-                  setData((prev)=>[...prev, video])
-                }
-              )
+        user.images!.map((imageId) => 
+            {
+              if (imageId) {
+                  getOneImage(imageId)
+                  .then((image) => {
+                    setData((prev)=>[...prev, image])
+                  }
+                )
+              }
             }
-          }
         )
       )
   
@@ -87,21 +87,21 @@ export function UserVideos() {
 
             <Box className="flex items-center">
                 <Typography className='text-[18px] font-bold my-2 px-2'>
-                  {langDictionary['user_videos']}
+                  {langDictionary['user_images']}
                 </Typography>
-                <VideoLibraryIcon />
+                <PhotoLibraryIcon />
             </Box>
 
             {data.length !== 0
-              ? data.map((video) => (
+              ? data.map((image) => (
                 <Link 
-                  key={video.id}
-                  href={`/${lang}/userVideos/${video.id}`}
+                  key={image.id}
+                  href={`/${lang}/userImages/${image.id}`}
                 >
-                  <RecommendedList video={video} langDictionary={langDictionary} />
+                  <ImageRecommendedList image={image} langDictionary={langDictionary} />
                 </Link>
               ))
-              : <Typography className="my-2 px-2">{langDictionary['user_videos_list']}</Typography>
+              : <Typography className="my-2 px-2">{langDictionary['user_images_list']}</Typography>
             }
         </Box>
 
@@ -133,7 +133,7 @@ export default function ToggleColorMode() {
     return (
       <ColorModeContext.Provider value={colorMode}>
       <ThemeProvider theme={theme}>
-        <UserVideos />
+        <UserImages />
       </ThemeProvider>
     </ColorModeContext.Provider>
     );

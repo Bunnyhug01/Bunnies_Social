@@ -23,10 +23,11 @@ import AudioContainer from '@/app/components/audio/AudioContainer/AudioContainer
 import AudioRecommendedList from '@/app/components/audio/AudioRecommendedList/AudioRecommendedList';
 
 
-function Audio() {
+function AudioPage() {
   const params  = useParams();
   const audioId = (params.audio).toString()
   const lang: string = (params.lang).toString()
+  const user = localStorage.getItem('user')
 
   const langDictionary = translation[lang]
   if (langDictionary === undefined)
@@ -50,7 +51,11 @@ function Audio() {
         getOneAudio(audioId).then((audio) => {
           setAudio(audio)
           addView(audio.id!)
-          addToHistory(audio.id!)
+
+          if (user) {
+            addToHistory(audio.id!)
+          }
+
         }).catch(response => {
           if(response.status == 404)
             setIfNotFound(true)
@@ -117,7 +122,7 @@ function Audio() {
 
             {/* Recommended list */} 
             <Box className='sm:col-span-6 md:col-span-1 overflow-y-auto lg:ml-[-6vw]
-              scrollbar-thin scrollbar-thumb-gray-800 lg:max-h-[89.9%] md:max-h-[84.9%]
+              scrollbar-thin scrollbar-thumb-gray-800 max-h-[73.6vh]
              '
               sx={{ 
                 bgcolor: 'background.additional',
@@ -176,7 +181,7 @@ export default function ToggleColorMode() {
   return (
     <ColorModeContext.Provider value={colorMode}>
     <ThemeProvider theme={theme}>
-      <Audio />
+      <AudioPage />
     </ThemeProvider>
   </ColorModeContext.Provider>
   );

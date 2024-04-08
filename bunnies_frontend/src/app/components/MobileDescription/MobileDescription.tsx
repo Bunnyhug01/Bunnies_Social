@@ -12,6 +12,10 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Divider } from '@mui/material';
 import { VideoUploadDate } from '../video/video';
 import { Video } from '@/app/firebase/video';
+import { Audio } from '@/app/firebase/audio';
+import { Image } from '@/app/firebase/image';
+import { AudioUploadDate } from '../audio/audio';
+import { ImageUploadDate } from '../image/image';
 
 const drawerBleeding = 56;
 
@@ -21,7 +25,9 @@ interface Props {
    * You won't need it on your project.
    */
   window?: () => Window;
-  video: Video;
+  video?: Video;
+  audio?: Audio;
+  image?: Image;
   langDictionary: any;
 }
 
@@ -45,8 +51,8 @@ const Puller = styled(Box)(({ theme }) => ({
   left: 'calc(50% - 15px)',
 }));
 
-export default function MobileVideoDescription(props: Props) {
-  const { window, video, langDictionary } = props;
+export default function MobileDescription(props: Props) {
+  const { window, video, image, audio, langDictionary } = props;
   const [open, setOpen] = React.useState(false);
   const [hidden, setHidden] = React.useState(true);
 
@@ -86,12 +92,14 @@ export default function MobileVideoDescription(props: Props) {
           }}
         >
           <Box className="mx-4">
-            <Typography sx={{fontWeight: 'bold', fontSize: 14}}>{video?.views} {langDictionary['views']}</Typography>
+          <Typography sx={{fontWeight: 'bold', fontSize: 14}}>{(video) ? (video.views) : ((audio) ? (audio.views) : (image?.views))} {langDictionary['views']}</Typography>
           </Box>
 
           <Box className="mx-4">
             <Typography sx={{fontWeight: 'bold', fontSize: 14}}>
-              <VideoUploadDate />
+              {
+                (video) ? <VideoUploadDate /> : ((audio) ? <AudioUploadDate /> : <ImageUploadDate />)
+              }
             </Typography>
           </Box>
           <ExpandMoreIcon
@@ -139,7 +147,9 @@ export default function MobileVideoDescription(props: Props) {
             overflow: 'auto',
           }}
         >
-          <Typography>{video.details}</Typography>
+          {
+            (video) ? (video.details) : ((audio) ? (audio.details) : (image?.details))
+          }
         </StyledBox>
       </SwipeableDrawer>
     </Root>

@@ -38,21 +38,16 @@ export function Audios() {
   
   useEffect(() => {
 
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        if (searchText === undefined || searchText === '') {
-            getAllAudios().then((audioArray:any) => {
-                setData(Object.values(audioArray))
-            })
-        } else {
-          search(searchText).then((audioArray) => {
+    if (searchText === undefined || searchText === '') {
+        getAllAudios().then((audioArray:any) => {
+            setData(Object.values(audioArray))
+        })
+    } else {
+      search(searchText).then((audioArray) => {
 
-          })
-        }
-      } else {
-        window.location.replace(`/${lang}/sign-in`);
-      }
-    })
+      })
+    }
+
 
   }, [searchText])
 

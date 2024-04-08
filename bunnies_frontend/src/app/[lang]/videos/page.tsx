@@ -38,21 +38,15 @@ export function Videos() {
   
   useEffect(() => {
 
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        if (searchText === undefined || searchText === '') {
-          getAllVideos().then((videoArray:any) => {
-            setData(Object.values(videoArray))
-          })
-        } else {
-          search(searchText).then((videoArray) => {
+    if (searchText === undefined || searchText === '') {
+      getAllVideos().then((videoArray:any) => {
+        setData(Object.values(videoArray))
+      })
+    } else {
+      search(searchText).then((videoArray) => {
 
-          })
-        }
-      } else {
-        window.location.replace(`/${lang}/sign-in`);
-      }
-    })
+      })
+    }
 
   }, [searchText])
 

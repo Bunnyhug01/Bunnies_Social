@@ -48,9 +48,20 @@ export function ImageLogo({}) {
         <Box className='gallery-item'>
             <img
                 src={image.imageUrl}
-                alt=""
+                alt={image.title}
             />
             <Box className="overlay"></Box>
         </Box>
+    )
+}
+
+export function UserImageLogo({}) {
+    const image = useContext(ImageContext)!!
+    return (
+        <img
+            src={image.imageUrl}
+            alt={image.title}
+            className="rounded-lg object-cover"
+        />
     )
 }

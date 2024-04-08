@@ -1,4 +1,4 @@
-import { createUserWithEmailAndPassword, signOut } from "firebase/auth";
+import { createUserWithEmailAndPassword, sendEmailVerification, signOut } from "firebase/auth";
 import { auth, database } from "./firebase";
 import { signInWithEmailAndPassword } from "firebase/auth/cordova";
 import { ref, push, child, get, set, update } from "firebase/database";
@@ -91,10 +91,19 @@ export async function getUser(id:string): Promise<User> {
 export async function signUp({ username, email, password }: UserAuthRequest) {
     createUserWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
-        // Signed up 
-        const id = userCredential.user.uid;
+        // Signed up
+        const user = userCredential.user
+        const id = user.uid;
         createUser({id, username, email, password})
-        // ...
+        
+        sendEmailVerification(user)
+        .then(() => {
+
+        })
+        .catch((error) => {
+
+        });
+
     })
     .catch((error) => {
         const errorCode = error.code;
@@ -109,7 +118,7 @@ export async function signIn({ email, password }: UserAuthRequest) {
     .then((userCredential) => {
         // Signed in 
         const user = userCredential.user;
-        console.log('Signed!', user, user.uid)
+        localStorage.setItem('user', JSON.stringify(user))
         // ...
     })
     .catch((error) => {
@@ -122,6 +131,7 @@ export async function signUserOut() {
     signOut(auth).then(() => {
         // Sign-out successful.
         console.log('SIGN OUT!')
+        localStorage.removeItem("user")
     }).catch((error) => {
         // An error happened.
     });

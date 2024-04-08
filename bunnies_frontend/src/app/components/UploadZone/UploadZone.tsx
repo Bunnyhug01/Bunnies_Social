@@ -13,7 +13,11 @@ import { UploadTask } from 'firebase/storage';
 
 interface Props {
   setFile: (file : File | null) => void,
-  fileType: string,
+  acceptedfileType?: string,
+  type: {
+    fileType: string,
+    setFileType: Dispatch<SetStateAction<string>>
+  },
   reference?: {
     fileRef: string,
     setFileRef: Dispatch<SetStateAction<string>>
@@ -28,13 +32,22 @@ interface Props {
 }
 
 
-export default function UploadZone({ setFile, fileType, reference, setProgress, cancel, langDictionary }: Props) {
+export default function UploadZone({ setFile, acceptedfileType, type, reference, setProgress, cancel, langDictionary }: Props) {
 
-  const accept = fileType === 'video' ? ['video/mp4'] : ['image/png' , 'image/jpeg']
-
- 
+  const accept =
+  acceptedfileType === 'video'
+    ? ['video/mp4']
+    : (acceptedfileType === 'audio'
+      ? ['audio/*']
+      : (acceptedfileType === 'image'
+        ? ['image/png' , 'image/jpeg']
+        : ['video/mp4', 'audio/*', 'image/png' , 'image/jpeg']))
+  
   const onDrop = useCallback((acceptedFiles: Array<File>) => {
     const file = new FileReader;
+
+    if (!acceptedfileType)
+      type.setFileType((acceptedFiles[0].type).slice(0, acceptedFiles[0].type.indexOf('/')))
 
     file.onload = function() {
       setPreview(file.result);
@@ -54,12 +67,12 @@ export default function UploadZone({ setFile, fileType, reference, setProgress, 
       const fileObj = {
         file: acceptedFiles[0],
         setFileRef: reference.setFileRef,
-        directory: fileType + 's',
+        directory: type.fileType + 's',
         setProgress: setProgress,
         uploadRef: cancel.uploadRef
       }
       
-      uploadFile(fileObj)
+      // uploadFile(fileObj)
 
     }
 
@@ -113,9 +126,12 @@ export default function UploadZone({ setFile, fileType, reference, setProgress, 
       {preview && (
         <Box sx={{width: 'auto', height: 350, marginTop: 2}}>
           <div className='relative'>
-            {fileType === 'video'
-              ?  <video src={preview as string} autoPlay loop controls muted className="w-full h-full" /> 
-              :  <img src={preview as string} alt="" className="w-full h-full max-h-[350px]" />
+            {type.fileType === 'video'
+              ? <video src={preview as string} autoPlay loop controls muted className="w-full h-full" /> 
+              : (type.fileType === 'image'
+                  ? <img src={preview as string} alt="" className="w-full h-full max-h-[350px]" />
+                  : <audio src={preview as string} controls className='absolute top-40 w-full' />
+                )
             }
             <IconButton
               className='absolute top-0 right-0 bg-red-700 text-white p-2 rounded hover:bg-red-800 m-2'

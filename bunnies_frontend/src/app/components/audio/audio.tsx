@@ -52,6 +52,24 @@ export function AudioLogo({}) {
     )
 }
 
+export function UserAudioLogo({}) {
+    const audio = useContext(AudioContext)!!
+    return (
+        <Box className="relative">
+            <img
+                src={audio.logoUrl}
+                alt={audio.title}
+                className="rounded-lg object-cover"
+            />
+            <audio
+                src={audio.audioUrl}
+                controls
+                className="absolute rounded-b-lg bottom-0 w-full max-w-full opacity-70"
+            />
+        </Box>
+    )
+}
+
 export function AudioLength({}) {
     const [time, setTime] = useState("");
 

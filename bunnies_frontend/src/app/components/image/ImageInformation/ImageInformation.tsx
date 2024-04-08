@@ -2,12 +2,13 @@ import { ThumbUp, ThumbDown } from "@mui/icons-material";
 import { Box, Button, IconButton, Typography } from "@mui/material";
 
 import UserIcon from "../../user/UserIcon/UserIcon";
-import MobileVideoDescription from "../../MobileVideoDescription/MobileVideoDescription";
+import MobileDescription from "../../MobileDescription/MobileDescription";
 import Description from "../../Description/Description";
 import { useEffect, useState } from "react";
 import { addSubscribe, hasDisLike, hasLike, hasSubscribe, removeSubscribe } from "@/app/firebase/user";
 import { auth } from "@/app/firebase/firebase";
 import { Image, addDisLike, addLike, removeDisLike, removeLike } from "@/app/firebase/image";
+import { useParams } from "next/navigation";
 
 
 interface Props {
@@ -17,6 +18,9 @@ interface Props {
 
 
 export default function ImageInformation({ image, langDictionary } : Props) {
+  const params  = useParams();
+  const user = localStorage.getItem('user')
+  const lang: string = (params.lang).toString()
 
   const [likeView, setViewLike] = useState(image?.likes)
   const [dislikeView, setViewDislike] = useState(image?.dislikes)
@@ -24,57 +28,78 @@ export default function ImageInformation({ image, langDictionary } : Props) {
 
   async function handleLike() {
 
-    if (await hasDisLike(image.id!)) {
-      await removeDisLike(image.id!)
-      setViewDislike(dislikeView - 1)
-    }
+    if (user) {
 
-    if (await hasLike(image.id!))
-    {
-      removeLike(image.id!)
-      setViewLike(likeView - 1)
+      if (await hasDisLike(image.id!)) {
+        await removeDisLike(image.id!)
+        setViewDislike(dislikeView - 1)
+      }
+  
+      if (await hasLike(image.id!))
+      {
+        removeLike(image.id!)
+        setViewLike(likeView - 1)
+      }
+      else
+      {
+        addLike(image.id!)
+        setViewLike(likeView + 1)
+      }
+
     }
-    else
-    {
-      addLike(image.id!)
-      setViewLike(likeView + 1)
+    else {
+      window.location.replace(`/${lang}/sign-in`)
     }
 
   }
 
   async function handleDislike() {
 
-    if (await hasLike(image.id!))
-    {
-      await removeLike(image.id!)
-      setViewLike(likeView - 1)
-    }
+    if (user) {
 
-    if (await hasDisLike(image.id!))
-    {
-      removeDisLike(image.id!)
-      setViewDislike(dislikeView - 1)
+      if (await hasLike(image.id!))
+      {
+        await removeLike(image.id!)
+        setViewLike(likeView - 1)
+      }
+    
+      if (await hasDisLike(image.id!))
+      {
+        removeDisLike(image.id!)
+        setViewDislike(dislikeView - 1)
+      }
+      else
+      {
+        addDisLike(image.id!)
+        setViewDislike(dislikeView + 1)
+      }
+
     }
-    else
-    {
-      addDisLike(image.id!)
-      setViewDislike(dislikeView + 1)
+    else {
+      window.location.replace(`/${lang}/sign-in`)
     }
 
   }
 
   async function handleSubscribe() {
-    
-    if (await hasSubscribe(image.owner)) {
-      await removeSubscribe(image.owner)
-      setSubscribeView(false)
-    }
-    else
-    {
-      await addSubscribe(image.owner)
-      setSubscribeView(true)
-    }
 
+    if (user) {
+
+      if (await hasSubscribe(image.owner)) {
+        await removeSubscribe(image.owner)
+        setSubscribeView(false)
+      }
+      else
+      {
+        await addSubscribe(image.owner)
+        setSubscribeView(true)
+      }
+      
+    }
+    else {
+      window.location.replace(`/${lang}/sign-in`)
+    }
+    
   }
 
   useEffect(() => {
@@ -130,9 +155,9 @@ export default function ImageInformation({ image, langDictionary } : Props) {
         </Box>
       </Box>
       
-      <Box className='md:w-[76%] sm:w-[76%] lg:w-[76%]'>
+      <Box className='w-[100%]'>
         <Description image={image} langDictionary={langDictionary} />
-        {/* <MobileVideoDescription video={image} langDictionary={langDictionary} /> */}
+        <MobileDescription image={image} langDictionary={langDictionary} />
       </Box>
 
     </Box>

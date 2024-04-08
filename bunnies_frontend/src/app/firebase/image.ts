@@ -19,16 +19,16 @@ export interface ImageUpdateRequest {
 }
 
 export interface Image {
-    id?: string,
-    title: string,
-    details: string,
-    imageUrl: string,
-    uploadDate: string,
-    likes: number,
-    dislikes: number,
-    views: number,
-    owner: string,
-    isPrivate: boolean,
+  id?: string,
+  title: string,
+  details: string,
+  imageUrl: string,
+  uploadDate: string,
+  likes: number,
+  dislikes: number,
+  views: number,
+  owner: string,
+  isPrivate: boolean,
 }
 
 export async function getAllImages(): Promise<Image[]> {
@@ -105,11 +105,19 @@ export function updateImage(id: string, {title, details, imageUrl, isPrivate}: I
 }
 
 export function deleteImage(id: string): void {
-  remove(ref(database, `images/${id}`)).then((snapshot) => {
-        
-  }).catch((error) => {
-    console.error(error);
+  remove(ref(database, `images/${id}`))
+
+  get(child(ref(database), `users/${auth.currentUser?.uid}/images/`)).then((snapshot) => {
+    const images:string[] = snapshot.val()
+
+    const index = images.indexOf(id);
+    if (index !== -1) {
+      images.splice(index, 1);
+    }
+
+    update(ref(database, `users/${auth.currentUser?.uid}/`), {images: images})
   })
+
 }
 
 export function addLike(id: string): void {

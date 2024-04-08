@@ -107,11 +107,10 @@ export function VideoLogo({}) {
 export function UserVideoLogo({}) {
     const video = useContext(VideoContext)!!
     return (
-        <Image
-            src={video.logoUrl}
-            width={300}
-            height={167}
-            alt=""
+        <video
+            src={video.videoUrl}
+            poster={video.logoUrl}
+            controls
             className="rounded-lg object-cover"
         />
     )

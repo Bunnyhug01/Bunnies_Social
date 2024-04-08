@@ -38,21 +38,16 @@ export function Images() {
   
   useEffect(() => {
 
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        if (searchText === undefined || searchText === '') {
-            getAllImages().then((audioArray:any) => {
-                setData(Object.values(audioArray))
-            })
-        } else {
-          search(searchText).then((audioArray) => {
 
-          })
-        }
-      } else {
-        window.location.replace(`/${lang}/sign-in`);
-      }
-    })
+    if (searchText === undefined || searchText === '') {
+        getAllImages().then((audioArray:any) => {
+            setData(Object.values(audioArray))
+        })
+    } else {
+      search(searchText).then((audioArray) => {
+
+      })
+    }
 
   }, [searchText])
 

@@ -44,23 +44,19 @@ export default function ImageContainer( { image = imageDefault, langDictionary }
                 
                 <img
                     src={image.imageUrl}
-                    alt='image'
+                    alt={image.title}
                     onClick={openFullscreen}
-                    className='rounded-md max-w-[100%] max-h-[80%] object-contain hover:cursor-zoom-in'
+                    className='rounded-md max-w-[100%] max-h-[80%] object-contain sm:mr-1 hover:cursor-zoom-in'
                 />
+
+                <Box className='absolute top-0 left-0 p-4 text-textColor font-bold'><ImageTitle/></Box>
 
                 <Box className="w-full lg:w-[100%]">
                     {image.imageUrl !== ""
-                    ? <ImageInformation image={image} langDictionary={langDictionary} />
-                    : null
+                        ? <ImageInformation image={image} langDictionary={langDictionary} />
+                        : null
                     }
                 </Box>
-
-                {/* <div className="absolute text-sm top-0 z-10 w-full h-[60px] py-4 px-3">
-                    <h2 className="text-textColor font-bold" id='mainVideoName'>
-                        <ImageTitle/>
-                    </h2>
-                </div> */}
                 
             </Box>
         </ImageInfo>

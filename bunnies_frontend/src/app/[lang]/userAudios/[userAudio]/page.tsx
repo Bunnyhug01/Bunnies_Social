@@ -1,6 +1,5 @@
 'use client'
 
-import Link from 'next/link'
 import { useParams, notFound, redirect } from 'next/navigation';
 
 import React, { useCallback, useEffect, useState } from "react";
@@ -12,13 +11,15 @@ import BottomNav from "../../../components/BottomNav/BottomNav";
 import { ColorModeContext, getDesignTokens } from "../../../styles/designTokens";
 
 import translation from '@/app/locales/translation';
-import { UserVideoLogo, VideoInfo, VideoLogo } from '@/app/components/video/video';
-import deleteFile from '@/app/firebase/deleteFile';
-import { Video, VideoUpdateRequest, deleteVideo, getOneVideo, updateVideo } from '@/app/firebase/video';
 
-export function UserVideo() {
+import deleteFile from '@/app/firebase/deleteFile';
+import { Audio, AudioUpdateRequest, deleteAudio, getOneAudio, updateAudio } from '@/app/firebase/audio';
+import { AudioInfo, UserAudioLogo } from '@/app/components/audio/audio';
+
+
+export function UserAudio() {
   const params  = useParams();
-  const videoId = (params.userVideo).toString()
+  const audioId = (params.userAudio).toString()
   const lang: string = (params.lang).toString()
   const user = localStorage.getItem('user')
 
@@ -39,7 +40,7 @@ export function UserVideo() {
     setOpenDelete(false);
   };
 
-  const [video, setVideo] = useState<Video>()
+  const [audio, setAudio] = useState<Audio>()
 
   const [ifNotFound, setIfNotFound] = useState<boolean>(false)
   const [ifDeleted, setIfDeleted] = useState<boolean>(false)
@@ -69,25 +70,23 @@ export function UserVideo() {
 
     const isPrivate = privacy === 'private' ? false : true
 
-    const replaceVideo: VideoUpdateRequest = {
+    const replaceAudio: AudioUpdateRequest = {
       title: formElements.title.value,
       details: formElements.description.value,
       isPrivate: isPrivate,
     }
 
-    updateVideo(videoId, replaceVideo)
+    updateAudio(audioId, replaceAudio)
   }
   
   const handleDelete = async (event: any) => {
     setOpenDelete(true);
     
-    if (video !== undefined) {
+    if (audio !== undefined) {
 
-      deleteFile(video.logoUrl)
-      deleteFile(video.videoUrl)
+      deleteFile(audio.audioUrl)
 
-      deleteVideo(video.id!)
-
+      deleteAudio(audio.id!)
     }
 
     setIfDeleted(true)
@@ -97,8 +96,8 @@ export function UserVideo() {
   useEffect(() => {
 
     if (user) {
-      getOneVideo(videoId).then((video) => {
-        setVideo(video)
+      getOneAudio(audioId).then((audio) => {
+        setAudio(audio)
       }).catch(response => {
         if(response.status == 404)
           setIfNotFound(true)
@@ -116,7 +115,7 @@ export function UserVideo() {
 
   useEffect(() => {
     if (ifDeleted){
-      redirect(`/${lang}/userVideos`)
+      redirect(`/${lang}/userAudios`)
     }
 
   }, [ifDeleted])
@@ -126,7 +125,9 @@ export function UserVideo() {
       sx={{
         bgcolor: 'background.default',
         color: 'text.primary',
+        overflowY: 'auto'
       }}
+      className="h-[100vh] md2:h-[140vh] sm3:h-[110vh] sm:h-[130vh]"
     >
       
       <Header
@@ -138,8 +139,7 @@ export function UserVideo() {
       
 
       <Box
-       sx={{ marginTop: 5 }}
-       className="h-[100vh]"
+        sx={{ marginTop: 5 }}
       >
       
         <Box
@@ -148,14 +148,14 @@ export function UserVideo() {
               marginLeft: 2,
           }}
           className="grid lg:grid-cols-2 md:grid-cols-2 gap-2 sm:mr-4 sm:grid-cols-1"
-        >  
+        >   
             <Box
-              className="lg:max-w-[48vw] lg:max-h-[60vh] overflow-hidden"
-            >{video
+              className="overflow-hidden"
+            >{audio
               ?
-                <VideoInfo video={video!}>
-                    <UserVideoLogo />
-                </VideoInfo>
+                <AudioInfo audio={audio!}>
+                    <UserAudioLogo />
+                </AudioInfo>
               : null
               }
             </Box>
@@ -175,7 +175,7 @@ export function UserVideo() {
                 fullWidth
                 autoComplete="off"
                 variant="outlined" 
-                defaultValue={video?.title}
+                defaultValue={audio?.title}
               />
 
               <TextField
@@ -189,7 +189,7 @@ export function UserVideo() {
                   multiline
                   fullWidth
                   rows={4}
-                  defaultValue={video?.details}
+                  defaultValue={audio?.details}
               />
 
               <FormControl
@@ -203,7 +203,7 @@ export function UserVideo() {
                   <Select
                       id="privacy"
                       defaultValue={
-                        video?.isPrivate
+                        audio?.isPrivate
                         ? 'public'
                         : 'private'
                       }
@@ -228,7 +228,7 @@ export function UserVideo() {
               <Button
                 autoFocus
                 sx = {{
-                  marginTop: 2,
+                  marginTop: 2
                 }}
                 onClick={(event) => handleDelete(event)}
               >
@@ -279,7 +279,7 @@ export default function ToggleColorMode() {
     return (
       <ColorModeContext.Provider value={colorMode}>
       <ThemeProvider theme={theme}>
-        <UserVideo />
+        <UserAudio />
       </ThemeProvider>
     </ColorModeContext.Provider>
     );

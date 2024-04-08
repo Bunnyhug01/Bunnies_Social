@@ -12,13 +12,15 @@ import BottomNav from "../../../components/BottomNav/BottomNav";
 import { ColorModeContext, getDesignTokens } from "../../../styles/designTokens";
 
 import translation from '@/app/locales/translation';
-import { UserVideoLogo, VideoInfo, VideoLogo } from '@/app/components/video/video';
-import deleteFile from '@/app/firebase/deleteFile';
-import { Video, VideoUpdateRequest, deleteVideo, getOneVideo, updateVideo } from '@/app/firebase/video';
 
-export function UserVideo() {
+import deleteFile from '@/app/firebase/deleteFile';
+
+import { Image, ImageUpdateRequest, deleteImage, getOneImage, updateImage } from '@/app/firebase/image';
+import { ImageInfo, UserImageLogo } from '@/app/components/image/image';
+
+export function UserImage() {
   const params  = useParams();
-  const videoId = (params.userVideo).toString()
+  const imageId = (params.userImage).toString()
   const lang: string = (params.lang).toString()
   const user = localStorage.getItem('user')
 
@@ -39,7 +41,7 @@ export function UserVideo() {
     setOpenDelete(false);
   };
 
-  const [video, setVideo] = useState<Video>()
+  const [image, setImage] = useState<Image>()
 
   const [ifNotFound, setIfNotFound] = useState<boolean>(false)
   const [ifDeleted, setIfDeleted] = useState<boolean>(false)
@@ -69,25 +71,23 @@ export function UserVideo() {
 
     const isPrivate = privacy === 'private' ? false : true
 
-    const replaceVideo: VideoUpdateRequest = {
+    const replaceImage: ImageUpdateRequest = {
       title: formElements.title.value,
       details: formElements.description.value,
       isPrivate: isPrivate,
     }
 
-    updateVideo(videoId, replaceVideo)
+    updateImage(imageId, replaceImage)
   }
   
   const handleDelete = async (event: any) => {
     setOpenDelete(true);
     
-    if (video !== undefined) {
+    if (image !== undefined) {
 
-      deleteFile(video.logoUrl)
-      deleteFile(video.videoUrl)
+      deleteFile(image.imageUrl)
 
-      deleteVideo(video.id!)
-
+      deleteImage(image.id!)
     }
 
     setIfDeleted(true)
@@ -97,8 +97,8 @@ export function UserVideo() {
   useEffect(() => {
 
     if (user) {
-      getOneVideo(videoId).then((video) => {
-        setVideo(video)
+      getOneImage(imageId).then((image) => {
+        setImage(image)
       }).catch(response => {
         if(response.status == 404)
           setIfNotFound(true)
@@ -116,7 +116,7 @@ export function UserVideo() {
 
   useEffect(() => {
     if (ifDeleted){
-      redirect(`/${lang}/userVideos`)
+      redirect(`/${lang}/userImages`)
     }
 
   }, [ifDeleted])
@@ -126,7 +126,9 @@ export function UserVideo() {
       sx={{
         bgcolor: 'background.default',
         color: 'text.primary',
+        overflowY: 'auto'
       }}
+      className="h-[100vh] md2:h-[180vh] sm3:h-[110vh] sm:h-[150vh]"
     >
       
       <Header
@@ -138,8 +140,7 @@ export function UserVideo() {
       
 
       <Box
-       sx={{ marginTop: 5 }}
-       className="h-[100vh]"
+        sx={{ marginTop: 5 }}
       >
       
         <Box
@@ -148,14 +149,13 @@ export function UserVideo() {
               marginLeft: 2,
           }}
           className="grid lg:grid-cols-2 md:grid-cols-2 gap-2 sm:mr-4 sm:grid-cols-1"
-        >  
+        >   
             <Box
-              className="lg:max-w-[48vw] lg:max-h-[60vh] overflow-hidden"
-            >{video
+            >{image
               ?
-                <VideoInfo video={video!}>
-                    <UserVideoLogo />
-                </VideoInfo>
+                <ImageInfo image={image!}>
+                    <UserImageLogo />
+                </ImageInfo>
               : null
               }
             </Box>
@@ -175,7 +175,7 @@ export function UserVideo() {
                 fullWidth
                 autoComplete="off"
                 variant="outlined" 
-                defaultValue={video?.title}
+                defaultValue={image?.title}
               />
 
               <TextField
@@ -189,7 +189,7 @@ export function UserVideo() {
                   multiline
                   fullWidth
                   rows={4}
-                  defaultValue={video?.details}
+                  defaultValue={image?.details}
               />
 
               <FormControl
@@ -203,7 +203,7 @@ export function UserVideo() {
                   <Select
                       id="privacy"
                       defaultValue={
-                        video?.isPrivate
+                        image?.isPrivate
                         ? 'public'
                         : 'private'
                       }
@@ -228,7 +228,7 @@ export function UserVideo() {
               <Button
                 autoFocus
                 sx = {{
-                  marginTop: 2,
+                  marginTop: 2
                 }}
                 onClick={(event) => handleDelete(event)}
               >
@@ -279,7 +279,7 @@ export default function ToggleColorMode() {
     return (
       <ColorModeContext.Provider value={colorMode}>
       <ThemeProvider theme={theme}>
-        <UserVideo />
+        <UserImage />
       </ThemeProvider>
     </ColorModeContext.Provider>
     );

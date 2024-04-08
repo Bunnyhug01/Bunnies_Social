@@ -53,7 +53,7 @@ export default function AudioContainer( { audio = audioDefault, langDictionary }
             <img
                 src={audio.logoUrl}
                 alt=""
-                className="object-fill h-[560px] w-[640px] group-hover:opacity-70"
+                className="object-fill lg:h-[67vh] lg:w-[43vw] group-hover:opacity-70"
             />
             {
               isPlaying
@@ -67,12 +67,12 @@ export default function AudioContainer( { audio = audioDefault, langDictionary }
             id="audioPlayer"
             src={audio.audioUrl}
             controls
-            className="w-[640px] mt-[-5.7px]"
+            className="lg:w-[43vw] sm:w-full mt-[-5.8px]"
           />
 
         </Box>
 
-          <Box className="absolute w-full lg:w-[100%]">
+          <Box className="w-full lg:w-[100%]">
             {audio.audioUrl !== ""
               ? <AudioInformation audio={audio} langDictionary={langDictionary} />
               : null
@@ -80,7 +80,7 @@ export default function AudioContainer( { audio = audioDefault, langDictionary }
           </Box>
 
           <div className="absolute text-sm top-0 z-10 w-full h-[60px] py-4 px-3">
-                <h2 className="text-textColor font-bold" id='mainVideoName'>
+                <h2 className="text-textColor font-bold">
                     <AudioTitle/>
                 </h2>
           </div>

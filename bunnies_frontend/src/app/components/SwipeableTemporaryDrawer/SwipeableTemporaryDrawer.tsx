@@ -160,8 +160,8 @@ export default function SwipeableTemporaryDrawer({ language }: Props) {
           </ListItem>
         </Link>
 
-        <Link href={`/${language.lang}/userMusic`}>
-          <ListItem key={'User music'} disablePadding>
+        <Link href={`/${language.lang}/userAudios`}>
+          <ListItem key={'User audios'} disablePadding>
             <ListItemButton>
               <ListItemIcon>
                 <LibraryMusicIcon />

@@ -35,7 +35,7 @@ export interface Audio {
 }
 
 export async function getAllAudios(): Promise<Audio[]> {
-    return get(child(ref(database), 'audio/')).then((snapshot) => {
+    return get(child(ref(database), 'audios/')).then((snapshot) => {
         if (snapshot.exists()) {
           return snapshot.val()
         } else {
@@ -47,7 +47,7 @@ export async function getAllAudios(): Promise<Audio[]> {
 }
 
 export async function getOneAudio(id: string): Promise<Audio> {
-    return get(child(ref(database), `audio/${id}`)).then((snapshot) => {
+    return get(child(ref(database), `audios/${id}`)).then((snapshot) => {
         if (snapshot.exists()) {
           return snapshot.val()
         } else {
@@ -73,13 +73,13 @@ export function createAudio({title, details, audioUrl, logoUrl, isPrivate}: Audi
     isPrivate: isPrivate,
   }
 
-  const audioId = push(ref(database, 'audio/'), audio).key;
-  update(ref(database, `audio/${audioId}/`), {id: audioId})
+  const audioId = push(ref(database, 'audios/'), audio).key;
+  update(ref(database, `audios/${audioId}/`), {id: audioId})
 
-  get(child(ref(database), `users/${auth.currentUser?.uid}/audio/`)).then((snapshot) => {
+  get(child(ref(database), `users/${auth.currentUser?.uid}/audios/`)).then((snapshot) => {
     const audio:string[] = snapshot.val() ? snapshot.val() : []
     audio.push(audioId!)
-    update(ref(database, `users/${auth.currentUser?.uid}/`), {audio: audio})
+    update(ref(database, `users/${auth.currentUser?.uid}/`), {audios: audio})
   })
 }
 
@@ -102,7 +102,7 @@ export function updateAudio(id: string, {title, details, audioUrl, logoUrl, isPr
     updates['isPrivate'] = isPrivate 
 
 
-  update(ref(database, `audio/${id}`), updates).then((snapshot) => {
+  update(ref(database, `audios/${id}`), updates).then((snapshot) => {
 
   }).catch((error) => {
     console.error(error);
@@ -111,19 +111,27 @@ export function updateAudio(id: string, {title, details, audioUrl, logoUrl, isPr
 }
 
 export function deleteAudio(id: string): void {
-  remove(ref(database, `audio/${id}`)).then((snapshot) => {
-        
-  }).catch((error) => {
-    console.error(error);
+  remove(ref(database, `audios/${id}`))
+
+  get(child(ref(database), `users/${auth.currentUser?.uid}/audios/`)).then((snapshot) => {
+    const audios:string[] = snapshot.val()
+
+    const index = audios.indexOf(id);
+    if (index !== -1) {
+      audios.splice(index, 1);
+    }
+
+    update(ref(database, `users/${auth.currentUser?.uid}/`), {audios: audios})
   })
+
 }
 
 export function addLike(id: string): void {
 
-  get(child(ref(database), `audio/${id}/likes/`)).then((snapshot) => {
+  get(child(ref(database), `audios/${id}/likes/`)).then((snapshot) => {
     if (snapshot.exists()) {
       const like: number = snapshot.val() + 1
-      update(ref(database, `audio/${id}/`), {likes: like})
+      update(ref(database, `audios/${id}/`), {likes: like})
     } else {
       console.log('NONE')
     }
@@ -139,10 +147,10 @@ export function addLike(id: string): void {
 }
 
 export function removeLike(id: string): void {
-  get(child(ref(database), `audio/${id}/likes/`)).then((snapshot) => {
+  get(child(ref(database), `audios/${id}/likes/`)).then((snapshot) => {
     if (snapshot.exists()) {
       const like: number = snapshot.val() - 1
-      update(ref(database, `audio/${id}/`), {likes: like})
+      update(ref(database, `audios/${id}/`), {likes: like})
     } else {
       console.log('NONE')
     }
@@ -163,10 +171,10 @@ export function removeLike(id: string): void {
 }
 
 export function addDisLike(id: string): void {
-  get(child(ref(database), `audio/${id}/dislikes/`)).then((snapshot) => {
+  get(child(ref(database), `audios/${id}/dislikes/`)).then((snapshot) => {
     if (snapshot.exists()) {
       const dislike: number = snapshot.val() + 1
-      update(ref(database, `audio/${id}/`), {dislikes: dislike})
+      update(ref(database, `audios/${id}/`), {dislikes: dislike})
     } else {
       console.log('NONE')
     }
@@ -182,10 +190,10 @@ export function addDisLike(id: string): void {
 }
 
 export function removeDisLike(id: string): void {
-  get(child(ref(database), `audio/${id}/dislikes/`)).then((snapshot) => {
+  get(child(ref(database), `audios/${id}/dislikes/`)).then((snapshot) => {
     if (snapshot.exists()) {
       const dislike: number = snapshot.val() - 1
-      update(ref(database, `audio/${id}/`), {dislikes: dislike})
+      update(ref(database, `audios/${id}/`), {dislikes: dislike})
     } else {
       console.log('NONE')
     }
@@ -206,10 +214,10 @@ export function removeDisLike(id: string): void {
 }
 
 export function addView(id: string): void {
-  get(child(ref(database), `audio/${id}/views/`)).then((snapshot) => {
+  get(child(ref(database), `audios/${id}/views/`)).then((snapshot) => {
     if (snapshot.exists()) {
       const view: number = snapshot.val() + 1
-      update(ref(database, `audio/${id}/`), {views: view})
+      update(ref(database, `audios/${id}/`), {views: view})
     } else {
       console.log('NONE')
     }
@@ -229,7 +237,7 @@ export function addToHistory(audioId: string): void {
 }
 
 export function getRecommendations(currentVideoId: string): Promise<Audio[]> {
-  return get(child(ref(database), 'audio/')).then((snapshot) => {
+  return get(child(ref(database), 'audios/')).then((snapshot) => {
     if (snapshot.exists()) {
       const audio = snapshot.val()
       delete audio[currentVideoId]

@@ -19,7 +19,7 @@ const uploadFile = ({file, setFileRef, directory, setProgress, uploadRef}: Props
     const storageRef = ref(storage, `${directory}/${file.name}`);
     const uploadTask = uploadBytesResumable(storageRef, file);
     uploadRef.current = uploadTask
-    console.log('BUDESH?')
+    
     uploadTask.on('state_changed',
         (snapshot) => {
             const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;

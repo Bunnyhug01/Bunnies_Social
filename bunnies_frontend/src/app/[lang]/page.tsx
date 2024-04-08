@@ -46,30 +46,24 @@ export function Home() {
   
   useEffect(() => {
 
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        if (searchText === undefined || searchText === '') {
-          getAllVideos().then((videoArray:any) => {
-            setVideos(Object.values(videoArray))
-          })
+    if (searchText === undefined || searchText === '') {
+      getAllVideos().then((videoArray:any) => {
+        setVideos(Object.values(videoArray))
+      })
 
-          getAllAudios().then((audioArray:any) => {
-            setAudios(Object.values(audioArray))
-          })
+      getAllAudios().then((audioArray:any) => {
+        setAudios(Object.values(audioArray))
+      })
 
-          getAllImages().then((imageArray:any) => {
-            setImages(Object.values(imageArray))
-          })
+      getAllImages().then((imageArray:any) => {
+        setImages(Object.values(imageArray))
+      })
 
-        } else {
-          search(searchText).then((videoArray) => {
+    } else {
+      search(searchText).then((videoArray) => {
 
-          })
-        }
-      } else {
-        window.location.replace(`/${lang}/sign-in`);
-      }
-    })
+      })
+    }
 
   }, [searchText])
 
@@ -146,7 +140,9 @@ export function Home() {
       sx={{
         bgcolor: 'background.default',
         color: 'text.primary',
+        msOverflowY: 'auto'
       }}
+      className="h-[160vh]"
     >
       
       <Header
@@ -157,7 +153,7 @@ export function Home() {
       />
       
 
-      <Box className='h-[100%]' sx={{ height: '100vh', width: '100vw', marginTop: 5 }}>
+      <Box sx={{ marginTop: 5 }}>
         
         <Box className="flex items-center">
           <Typography className='text-[18px] font-bold my-2 px-2'>

@@ -112,11 +112,19 @@ export function updateVideo(id: string, {title, details, videoUrl, logoUrl, isPr
 }
 
 export function deleteVideo(id: string): void {
-  remove(ref(database, `videos/${id}`)).then((snapshot) => {
-        
-  }).catch((error) => {
-    console.error(error);
+  remove(ref(database, `videos/${id}`))
+
+  get(child(ref(database), `users/${auth.currentUser?.uid}/videos/`)).then((snapshot) => {
+    const videos:string[] = snapshot.val()
+
+    const index = videos.indexOf(id);
+    if (index !== -1) {
+      videos.splice(index, 1);
+    }
+
+    update(ref(database, `users/${auth.currentUser?.uid}/`), {videos: videos})
   })
+
 }
 
 export function addLike(id: string): void {

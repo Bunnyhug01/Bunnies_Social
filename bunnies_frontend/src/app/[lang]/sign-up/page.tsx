@@ -73,7 +73,6 @@ export default function SignUp() {
         .then((response) => {
           auth.onAuthStateChanged((user) => {
             if (user) {
-              console.log('SHEHS', user)
               setIfRedirect(true)
             }
           })

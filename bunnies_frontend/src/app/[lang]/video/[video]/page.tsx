@@ -23,10 +23,11 @@ import { addToHistory, addView, getOneVideo, getRecommendations, Video } from '@
 import { auth } from '@/app/firebase/firebase';
 
 
-function Video() {
+function VideoPage() {
   const params  = useParams();
   const videoId = (params.video).toString()
   const lang: string = (params.lang).toString()
+  const user = localStorage.getItem('user')
 
   const langDictionary = translation[lang]
   if (langDictionary === undefined)
@@ -45,19 +46,17 @@ function Video() {
 
   useEffect(() => {
     
-    auth.onAuthStateChanged((user) => {
+    getOneVideo(videoId).then((video) => {
+      setVideo(video)
+      addView(video.id!)
+
       if (user) {
-        getOneVideo(videoId).then((video) => {
-          setVideo(video)
-          addView(video.id!)
-          addToHistory(video.id!)
-        }).catch(response => {
-          if(response.status == 404)
-            setIfNotFound(true)
-        })
-      } else {
-        window.location.replace(`/${lang}/sign-in`);
+        addToHistory(video.id!)
       }
+      
+    }).catch(response => {
+      if(response.status == 404)
+        setIfNotFound(true)
     })
 
   },[])
@@ -174,7 +173,7 @@ export default function ToggleColorMode() {
   return (
     <ColorModeContext.Provider value={colorMode}>
     <ThemeProvider theme={theme}>
-      <Video />
+      <VideoPage />
     </ThemeProvider>
   </ColorModeContext.Provider>
   );

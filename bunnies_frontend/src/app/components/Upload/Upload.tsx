@@ -27,6 +27,8 @@ export default function Upload({ type, langDictionary } : Props) {
 
   const [videoLoadProgress, setVideoLoadProgress] = useState<number>(0);
   const [imageLoadProgress, setImageLoadProgress] = useState<number>(0);
+
+  const [fileType, setFileType] = useState<string>("")
   
   const uploadRef = useRef<UploadTask>()
   const [uploadingCancellation, setUploadingCancellation] = useState<boolean>(false)
@@ -164,7 +166,7 @@ export default function Upload({ type, langDictionary } : Props) {
                     fullWidth
                 >
                     <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-                        {langDictionary['video_upload']}
+                        {langDictionary['file_upload']}
                     </DialogTitle>
                     <IconButton
                         aria-label="close"
@@ -186,7 +188,7 @@ export default function Upload({ type, langDictionary } : Props) {
                         <Box>
                             <UploadZone
                                 setFile={setVideoUpload}
-                                fileType={'video'}
+                                type={{fileType: fileType, setFileType: setFileType}}
                                 reference={{fileRef: videoRef, setFileRef: setVideoRef}}
                                 setProgress={setVideoLoadProgress}
                                 cancel={{uploadRef: uploadRef, setUploadingCancellation: setUploadingCancellation, setIsFileUpload: setIsVideoUpload}}
@@ -228,7 +230,7 @@ export default function Upload({ type, langDictionary } : Props) {
                     fullWidth
                 >
                     <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-                        {langDictionary['video_upload']}
+                        {langDictionary['file_upload']}
                     </DialogTitle>
                     <IconButton
                         aria-label="close"
@@ -254,7 +256,7 @@ export default function Upload({ type, langDictionary } : Props) {
                     >
                         <DialogContent dividers>
 
-                        <Typography variant="h5">{langDictionary['video_uploading_progress']}</Typography>
+                        <Typography variant="h5">{langDictionary['file_uploading_progress']}</Typography>
 
                         <ProgressBar value={videoLoadProgress} />
 
@@ -324,7 +326,8 @@ export default function Upload({ type, langDictionary } : Props) {
      
                                 <UploadZone
                                     setFile={setImageUpload}
-                                    fileType="image"
+                                    acceptedfileType="image"
+                                    type={{fileType: fileType, setFileType: setFileType}}
                                     reference={{fileRef: imageRef, setFileRef: setImageRef}}
                                     setProgress={setImageLoadProgress}
                                     cancel={{uploadRef: uploadRef, setUploadingCancellation: setUploadingCancellation, setIsFileUpload: setIsThumbnailUpload}}
