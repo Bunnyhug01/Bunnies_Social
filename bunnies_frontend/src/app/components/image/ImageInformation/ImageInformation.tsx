@@ -28,7 +28,7 @@ export default function ImageInformation({ image, langDictionary } : Props) {
 
   async function handleLike() {
 
-    if (user) {
+    if (user && auth.currentUser?.emailVerified) {
 
       if (await hasDisLike(image.id!)) {
         await removeDisLike(image.id!)
@@ -55,7 +55,7 @@ export default function ImageInformation({ image, langDictionary } : Props) {
 
   async function handleDislike() {
 
-    if (user) {
+    if (user && auth.currentUser?.emailVerified) {
 
       if (await hasLike(image.id!))
       {
@@ -83,7 +83,7 @@ export default function ImageInformation({ image, langDictionary } : Props) {
 
   async function handleSubscribe() {
 
-    if (user) {
+    if (user && auth.currentUser?.emailVerified) {
 
       if (await hasSubscribe(image.owner)) {
         await removeSubscribe(image.owner)

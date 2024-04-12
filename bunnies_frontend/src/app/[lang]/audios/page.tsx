@@ -16,7 +16,7 @@ import translation from '../../locales/translation';
 import getUsersLanguage from '../../locales/getUsersLanguage';
 import { UserAuthRequest } from '../../firebase/user';
 import { auth } from '../../firebase/firebase';
-import { search } from '../../firebase/search';
+import { searchAudio } from '../../firebase/search';
 import { Audio, getAllAudios } from '@/app/firebase/audio';
 import AudioList from '@/app/components/audio/AudioList/AudioList';
 
@@ -43,8 +43,8 @@ export function Audios() {
             setData(Object.values(audioArray))
         })
     } else {
-      search(searchText).then((audioArray) => {
-
+      searchAudio(searchText).then((audioArray: Audio[]) => {
+        setData(audioArray)
       })
     }
 

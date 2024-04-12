@@ -89,42 +89,36 @@ export async function getUser(id:string): Promise<User> {
 }
 
 export async function signUp({ username, email, password }: UserAuthRequest) {
-    createUserWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
+    
+    try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+
         // Signed up
         const user = userCredential.user
         const id = user.uid;
         createUser({id, username, email, password})
         
         sendEmailVerification(user)
-        .then(() => {
 
-        })
-        .catch((error) => {
-
-        });
-
-    })
-    .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(errorCode)
-        console.log(errorMessage)
-  });
+        return user
+    } catch(error: any) {
+        throw error.code
+    }
 }
 
 export async function signIn({ email, password }: UserAuthRequest) {
-    signInWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-        // Signed in 
+
+    try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password)
+
+        // Signed up
         const user = userCredential.user;
         localStorage.setItem('user', JSON.stringify(user))
-        // ...
-    })
-    .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-    });
+
+        return user
+    } catch(error: any) {
+        throw error.code
+    }
 }
 
 export async function signUserOut() {

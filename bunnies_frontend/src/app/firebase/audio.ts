@@ -61,7 +61,7 @@ export async function getOneAudio(id: string): Promise<Audio> {
 export function createAudio({title, details, audioUrl, logoUrl, isPrivate}: AudioCreateRequest): void {
   
   const audio: Audio = {
-    title: title,
+    title: title.toLowerCase(),
     details: details,
     audioUrl: audioUrl,
     logoUrl: logoUrl,
@@ -87,7 +87,7 @@ export function updateAudio(id: string, {title, details, audioUrl, logoUrl, isPr
   const updates:AudioUpdateRequest = {}
 
   if (title !== undefined)
-    updates['title'] = title
+    updates['title'] = title.toLowerCase()
   
   if (details !== undefined)
     updates['details'] = details

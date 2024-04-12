@@ -19,6 +19,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import translation from '@/app/locales/translation';
 import { signIn, signUp } from '@/app/firebase/user';
 import { auth } from '@/app/firebase/firebase';
+import { Snackbar, Alert } from '@mui/material';
 
 
 function Copyright(props: any) {
@@ -49,6 +50,17 @@ export default function SignUp() {
 
   const [ifRedirect, setIfRedirect] = React.useState(false)
   const [passwordError, setPasswordError] = React.useState(false)
+  const [passwordWeak, setPasswordWeak] = React.useState(false)
+
+
+  const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setPasswordWeak(false);
+    setPasswordError(false)
+  };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -66,20 +78,13 @@ export default function SignUp() {
         password: password,
       })
       .then((response) => {
-        signIn({
-          email: email,
-          password: password,
-        })
-        .then((response) => {
-          auth.onAuthStateChanged((user) => {
-            if (user) {
-              setIfRedirect(true)
-            }
-          })
-        })
+        setPasswordWeak(false)
+        setIfRedirect(true)
       })
       .catch((response) => {
-        console.log(response)
+        if (response === 'auth/weak-password') {
+          setPasswordWeak(true)
+        }
       })
 
       setPasswordError(false)
@@ -92,7 +97,7 @@ export default function SignUp() {
 
   React.useEffect(() => {
     if (ifRedirect)
-      redirect(`/${lang}`)
+      redirect(`/${lang}/sign-in`)
   }, [ifRedirect])
 
   return (
@@ -139,6 +144,7 @@ export default function SignUp() {
                 </Grid>
                 <Grid item xs={12}>
                   <TextField
+                    error={passwordWeak}
                     required
                     fullWidth
                     name="password"
@@ -180,6 +186,20 @@ export default function SignUp() {
           </Box>
           <Copyright sx={{ mt: 5 }} />
         </Container>
+
+
+        <Snackbar open={passwordWeak} autoHideDuration={6000} onClose={handleClose}>
+          <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+            {langDictionary['weak_password']}
+          </Alert>
+        </Snackbar>
+
+        <Snackbar open={passwordError} autoHideDuration={6000} onClose={handleClose}>
+          <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+            {langDictionary['error_password']}
+          </Alert>
+        </Snackbar>
+
     </ThemeProvider>
   );
 }

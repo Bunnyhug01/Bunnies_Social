@@ -50,7 +50,7 @@ function VideoPage() {
       setVideo(video)
       addView(video.id!)
 
-      if (user) {
+      if (user && auth.currentUser?.emailVerified) {
         addToHistory(video.id!)
       }
       

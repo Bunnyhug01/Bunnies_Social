@@ -49,7 +49,7 @@ function ImagePage() {
       setImage(image)
       addView(image.id!)
 
-      if (user) {
+      if (user && auth.currentUser?.emailVerified) {
         addToHistory(image.id!)
       }
 

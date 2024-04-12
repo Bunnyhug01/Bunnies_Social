@@ -28,7 +28,7 @@ export default function AudioInformation({ audio, langDictionary } : Props) {
 
   async function handleLike() {
 
-    if (user) {
+    if (user && auth.currentUser?.emailVerified) {
 
       if (await hasDisLike(audio.id!)) {
         await removeDisLike(audio.id!)
@@ -55,7 +55,7 @@ export default function AudioInformation({ audio, langDictionary } : Props) {
 
   async function handleDislike() {
 
-    if (user) {
+    if (user && auth.currentUser?.emailVerified) {
 
       if (await hasLike(audio.id!))
       {
@@ -83,7 +83,7 @@ export default function AudioInformation({ audio, langDictionary } : Props) {
 
   async function handleSubscribe() {
 
-    if (user) {
+    if (user && auth.currentUser?.emailVerified) {
 
       if (await hasSubscribe(audio.owner)) {
         await removeSubscribe(audio.owner)
@@ -155,7 +155,7 @@ export default function AudioInformation({ audio, langDictionary } : Props) {
         </Box>
       </Box>
       
-      <Box className='md:w-[80%] sm:w-[100%] lg:w-[80%]'>
+      <Box className='w-full'>
         <Description audio={audio} langDictionary={langDictionary} />
         <MobileDescription audio={audio} langDictionary={langDictionary} />
       </Box>

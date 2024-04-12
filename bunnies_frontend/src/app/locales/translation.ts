@@ -63,6 +63,10 @@ const translation:any = {
         "no_videos": "There're no videos yet",
         "no_images": "There're no images yet",
         "no_audios": "There're no audios yet",
+        "weak_password": "You have entered too weak password",
+        "error_password": "You have entered different passwords",
+        "email_verified": "You haven't verified your email",
+        "error_signIn": "You have entered the wrong email or password",
     },
 
     "ru": {
@@ -128,6 +132,10 @@ const translation:any = {
         "no_videos": "Ещё никто не добавил никаких видео",
         "no_images": "Ещё никто не добавил никаких изображений",
         "no_audios": "Ещё никто не добавил никакой музыки",
+        "weak_password": "Вы ввели слишком слабый пароль",
+        "error_password": "Вы ввели два разных пароля",
+        "email_verified": "Вы не верифицировали всою почту",
+        "error_signIn": "Вы ввели неверную почту или неверный пароль",
     }
 }
 

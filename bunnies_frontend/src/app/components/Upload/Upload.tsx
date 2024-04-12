@@ -9,6 +9,8 @@ import ProgressBar from "../ProgressBar/ProgressBar";
 import { UploadTask } from "firebase/storage";
 import deleteFile from "../../firebase/deleteFile";
 import { VideoCreateRequest, createVideo } from "@/app/firebase/video";
+import { AudioCreateRequest, createAudio } from "@/app/firebase/audio";
+import { ImageCreateRequest, createImage } from "@/app/firebase/image";
 
 
 interface Props {
@@ -19,14 +21,16 @@ interface Props {
 
 export default function Upload({ type, langDictionary } : Props) {
   
-  const [videoUpload, setVideoUpload] = useState<File|null>(null);
-  const [imageUpload, setImageUpload] = useState<File|null>(null);
+  const [mediaFileUpload, setMediaFileUpload] = useState<File|null>(null);
+  const [thumbnailUpload, setThumbnailUpload] = useState<File|null>(null);
 
-  const [videoRef, setVideoRef] = useState<string>("");
-  const [imageRef, setImageRef] = useState<string>("");
+  const [mediaFileRef, setMediaFileRef] = useState<string>("");
+  const [thumbnailRef, setThumbnailRef] = useState<string>("");
 
-  const [videoLoadProgress, setVideoLoadProgress] = useState<number>(0);
-  const [imageLoadProgress, setImageLoadProgress] = useState<number>(0);
+  const [isThumbnail, setIsThumbnail] = useState<boolean>(false);
+
+  const [mediaFileLoadProgress, setMediaFileLoadProgress] = useState<number>(0);
+  const [thumbnailLoadProgress, setThumbnailLoadProgress] = useState<number>(0);
 
   const [fileType, setFileType] = useState<string>("")
   
@@ -48,8 +52,8 @@ export default function Upload({ type, langDictionary } : Props) {
   const handleClose = () => {
     setOpen(false);
 
-    setVideoUpload(null)
-    setImageUpload(null)
+    setMediaFileUpload(null)
+    setThumbnailUpload(null)
 
     setIsVideoUpload(false)
 
@@ -63,23 +67,23 @@ export default function Upload({ type, langDictionary } : Props) {
   };
 
   const handleUploadClose = () => {
-    setOpenUpload(false);
+    setOpenUpload(false)
     setIsVideoUpload(false)
   };
 
   const handleUploadCancel = () => {
-    if (videoRef !== "") {
-        deleteFile(videoRef)
-        setVideoRef("")
+    if (mediaFileRef !== "") {
+        deleteFile(mediaFileRef)
+        setMediaFileRef("")
     }
         
     uploadRef.current?.cancel()
   }
 
   const handleImageCancel = () => {
-    if (imageRef !== "") {
-        deleteFile(imageRef)
-        setImageRef("")
+    if (thumbnailRef !== "") {
+        deleteFile(thumbnailRef)
+        setThumbnailRef("")
     }
         
     uploadRef.current?.cancel()
@@ -89,20 +93,22 @@ export default function Upload({ type, langDictionary } : Props) {
 
   useEffect(() => {
     setIsThumbnailUpload(!isThumbnailUpload)
-  }, [imageUpload])
+  }, [thumbnailUpload])
 
   const [isVideoUpload, setIsVideoUpload] = useState<boolean>(false)
 
   useEffect(() => {
-    if (videoUpload !== null) {
+    if (mediaFileUpload !== null) {
         setIsVideoUpload(true)
     }
-  }, [videoUpload])
+  }, [mediaFileUpload])
 
 
   const handleSubmit = (event: any) => {
 
     handleClose()
+
+    setIsThumbnail(false)
 
     event.preventDefault();
     const form = event.currentTarget
@@ -112,18 +118,47 @@ export default function Upload({ type, langDictionary } : Props) {
     }
 
     const isPrivate = privacy === 'private'
-    const video: VideoCreateRequest = {
-        logoUrl: imageRef,
-        title: formElements.title.value,
-        details: formElements.description.value,
-        videoUrl: videoRef,
-        isPrivate: isPrivate,
+
+    if (fileType === 'video') {
+        
+        const video: VideoCreateRequest = {
+            logoUrl: thumbnailRef,
+            title: formElements.title.value,
+            details: formElements.description.value,
+            videoUrl: mediaFileRef,
+            isPrivate: isPrivate,
+        }
+
+        createVideo(video)
     }
+    else if (fileType === 'image') {
 
-    createVideo(video)
+        const image: ImageCreateRequest = {
+            title: formElements.title.value,
+            details: formElements.description.value,
+            imageUrl: mediaFileRef,
+            isPrivate: isPrivate,
+        }
+
+        createImage(image)
+
+    }
+    else if (fileType === 'audio') {
+
+        const audio: AudioCreateRequest = {
+            logoUrl: thumbnailRef,
+            title: formElements.title.value,
+            details: formElements.description.value,
+            audioUrl: mediaFileRef,
+            isPrivate: isPrivate,
+        }
+
+        createAudio(audio)
+
+    }
+    
   }
-
- 
+  
   return (
     <Box>
 
@@ -159,7 +194,7 @@ export default function Upload({ type, langDictionary } : Props) {
                     onClose={() => {
                         handleUploadClose()
                         handleUploadCancel()
-                        setVideoUpload(null)
+                        setMediaFileUpload(null)
                     }}
                     aria-labelledby="customized-dialog-title"
                     open={openUpload}
@@ -173,7 +208,7 @@ export default function Upload({ type, langDictionary } : Props) {
                         onClick={() => {
                             handleUploadClose()
                             handleUploadCancel()
-                            setVideoUpload(null)
+                            setMediaFileUpload(null)
                         }}
                         sx={{
                             position: 'absolute',
@@ -187,16 +222,16 @@ export default function Upload({ type, langDictionary } : Props) {
                     <DialogContent dividers>
                         <Box>
                             <UploadZone
-                                setFile={setVideoUpload}
-                                type={{fileType: fileType, setFileType: setFileType}}
-                                reference={{fileRef: videoRef, setFileRef: setVideoRef}}
-                                setProgress={setVideoLoadProgress}
+                                setFile={setMediaFileUpload}
+                                type={{fileType: fileType, setFileType: setFileType, isThumbnail: isThumbnail}}
+                                reference={{fileRef: mediaFileRef, setFileRef: setMediaFileRef}}
+                                setProgress={setMediaFileLoadProgress}
                                 cancel={{uploadRef: uploadRef, setUploadingCancellation: setUploadingCancellation, setIsFileUpload: setIsVideoUpload}}
                                 langDictionary={langDictionary}
                             />
 
-                            {videoUpload && !uploadingCancellation
-                                ? <ProgressBar value={videoLoadProgress} />
+                            {mediaFileUpload && !uploadingCancellation
+                                ? <ProgressBar value={mediaFileLoadProgress} />
                                 : null
                             }
                         </Box>
@@ -209,6 +244,7 @@ export default function Upload({ type, langDictionary } : Props) {
                             onClick={() => {
                                 handleUploadClose()
                                 handleClickOpen()
+                                setIsThumbnail(true)
                             }}
                         >
                             {langDictionary['next_button']}
@@ -258,7 +294,7 @@ export default function Upload({ type, langDictionary } : Props) {
 
                         <Typography variant="h5">{langDictionary['file_uploading_progress']}</Typography>
 
-                        <ProgressBar value={videoLoadProgress} />
+                        <ProgressBar value={mediaFileLoadProgress} />
 
                         <Typography variant="h5">{langDictionary['details']}</Typography>
                         <Box
@@ -308,46 +344,51 @@ export default function Upload({ type, langDictionary } : Props) {
                                 </Select>
                             </FormControl>
                         </Box>
-
-                        <Box 
-                            sx ={{
-                            marginTop: 2,
-                            }}
-                        >
-                            <Typography variant="h5">{langDictionary['thumbnail']}</Typography>
-                            <Typography>{langDictionary['select_thumbnail']}</Typography>
-
-                            <Box
-                                sx={{
+                        
+                        {
+                            fileType != 'image'
+                            ? 
+                            <Box 
+                                sx ={{
                                     marginTop: 2,
                                 }}
-                                className="sm:w-full w-[40%]"
                             >
-     
-                                <UploadZone
-                                    setFile={setImageUpload}
-                                    acceptedfileType="image"
-                                    type={{fileType: fileType, setFileType: setFileType}}
-                                    reference={{fileRef: imageRef, setFileRef: setImageRef}}
-                                    setProgress={setImageLoadProgress}
-                                    cancel={{uploadRef: uploadRef, setUploadingCancellation: setUploadingCancellation, setIsFileUpload: setIsThumbnailUpload}}
-                                    langDictionary={langDictionary}
-                                />
-                                
-                                {imageUpload && !uploadingCancellation
-                                    ? <ProgressBar value={imageLoadProgress} />
-                                    : null
-                                }
+                                <Typography variant="h5">{langDictionary['thumbnail']}</Typography>
+                                <Typography>{langDictionary['select_thumbnail']}</Typography>
 
+                                <Box
+                                    sx={{
+                                        marginTop: 2,
+                                    }}
+                                    className="sm:w-full w-[40%]"
+                                >
+        
+                                    <UploadZone
+                                        setFile={setThumbnailUpload}
+                                        acceptedfileType="image"
+                                        type={{fileType: fileType, setFileType: setFileType, isThumbnail: isThumbnail}}
+                                        reference={{fileRef: thumbnailRef, setFileRef: setThumbnailRef}}
+                                        setProgress={setThumbnailLoadProgress}
+                                        cancel={{uploadRef: uploadRef, setUploadingCancellation: setUploadingCancellation, setIsFileUpload: setIsThumbnailUpload}}
+                                        langDictionary={langDictionary}
+                                    />
+                                    
+                                    {thumbnailUpload && !uploadingCancellation
+                                        ? <ProgressBar value={thumbnailLoadProgress} />
+                                        : null
+                                    }
+
+                                </Box>
+                                
                             </Box>
-                            
-                        </Box>
+                            : null
+                        }
 
                         </DialogContent>
                         <DialogActions>
                             <Button 
                                 type="submit"
-                                disabled={!(imageLoadProgress === 100 && videoLoadProgress === 100)}
+                                disabled={!((thumbnailLoadProgress === 100 || fileType === 'image') && mediaFileLoadProgress === 100)}
                                 autoFocus
                                 onSubmit={(event) => handleSubmit(event)}
                             >

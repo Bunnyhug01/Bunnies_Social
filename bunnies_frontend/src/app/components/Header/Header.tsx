@@ -24,6 +24,7 @@ import LanguageMenu from '../LanguageMenu/LanguageMenu';
 
 import { MyLogo, UserIdInfo, UserMeInfo } from '../user/user';
 import { signUserOut } from '@/app/firebase/user';
+import { auth } from '@/app/firebase/firebase';
 
 
 interface Props {
@@ -95,7 +96,7 @@ export default function Header({searchHandler, ColorModeContext, text, language}
             onClose={handleMenuClose}
         >
             {
-                user
+                user && auth.currentUser?.emailVerified
                 ?   <Link href={`/${language.lang}/sign-in`} style={{ textDecoration: 'none' }}>
                         <MenuItem
                             onClick={() => {
@@ -107,7 +108,7 @@ export default function Header({searchHandler, ColorModeContext, text, language}
                         </MenuItem>
                     </Link>
                 :
-                <>
+                <Box>
                     <Link href={`/${language.lang}/sign-in`} style={{ textDecoration: 'none' }}>
                         <MenuItem
                             onClick={() => {
@@ -127,7 +128,7 @@ export default function Header({searchHandler, ColorModeContext, text, language}
                             {language.langDictionary['sign_up']}
                         </MenuItem>
                     </Link>
-                </>
+                </Box>
             }
         </Menu>
     );
@@ -151,7 +152,7 @@ export default function Header({searchHandler, ColorModeContext, text, language}
         >
 
             {
-                user
+                user && auth.currentUser?.emailVerified
                 ? <Upload type='menu' langDictionary={language.langDictionary} />
                 : null
             }
@@ -181,7 +182,7 @@ export default function Header({searchHandler, ColorModeContext, text, language}
                     style={{ backgroundColor: 'transparent' }}
                 >
                     {
-                        user
+                        user && auth.currentUser?.emailVerified
                         ?   <UserMeInfo>
                                 <MyLogo />
                             </UserMeInfo>
@@ -207,7 +208,7 @@ export default function Header({searchHandler, ColorModeContext, text, language}
                     <Box sx={{ flexGrow: 1 }} />
                     <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
                         {   
-                            user
+                            user && auth.currentUser?.emailVerified
                             ? <Upload type='button' langDictionary={language.langDictionary} />
                             : null
                         }
@@ -235,7 +236,7 @@ export default function Header({searchHandler, ColorModeContext, text, language}
                             color="inherit"
                         >
                             {
-                                user
+                                user && auth.currentUser?.emailVerified
                                 ?   <UserMeInfo>
                                         <MyLogo />
                                     </UserMeInfo>

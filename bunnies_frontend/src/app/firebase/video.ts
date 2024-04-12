@@ -61,7 +61,7 @@ export async function getOneVideo(id: string): Promise<Video> {
 export function createVideo({title, details, videoUrl, logoUrl, isPrivate}: VideoCreateRequest): void {
   
   const video: Video = {
-    title: title,
+    title: title.toLowerCase(),
     details: details,
     videoUrl: videoUrl,
     logoUrl: logoUrl,
@@ -88,7 +88,7 @@ export function updateVideo(id: string, {title, details, videoUrl, logoUrl, isPr
   const updates:VideoUpdateRequest = {}
 
   if (title !== undefined)
-    updates['title'] = title
+    updates['title'] = title.toLowerCase()
   
   if (details !== undefined)
     updates['details'] = details

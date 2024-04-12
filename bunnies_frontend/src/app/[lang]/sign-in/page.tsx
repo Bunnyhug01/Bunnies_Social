@@ -20,6 +20,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import translation from '@/app/locales/translation';
 import { signIn } from '@/app/firebase/user';
 import { auth } from '@/app/firebase/firebase';
+import { Snackbar, Alert } from '@mui/material';
 
 
 function Copyright(props: any) {
@@ -50,6 +51,17 @@ export default function SignIn() {
   const [ifRedirect, setIfRedirect] = React.useState(false)
   const [error, setError] = React.useState(false)
 
+  const [emailVerification, setEmailVerification] = React.useState(false)
+
+  const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setError(false)
+    setEmailVerification(false)
+  };
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -60,9 +72,11 @@ export default function SignIn() {
     })
     .then((response) => {
       auth.onAuthStateChanged((user) => {
-        if (user) {
-          console.log('SHEHS', user)
+        if (user?.emailVerified) {
+          setEmailVerification(false)
           setIfRedirect(true)
+        } else {
+          setEmailVerification(true)
         }
       })
     })
@@ -137,6 +151,19 @@ export default function SignIn() {
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
       </Container>
+
+      <Snackbar open={emailVerification} autoHideDuration={6000} onClose={handleClose}>
+          <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+            {langDictionary['email_verified']}
+          </Alert>
+      </Snackbar>
+
+      <Snackbar open={error} autoHideDuration={6000} onClose={handleClose}>
+          <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+            {langDictionary['error_signIn']}
+          </Alert>
+      </Snackbar>
+
     </ThemeProvider>
   );
 }

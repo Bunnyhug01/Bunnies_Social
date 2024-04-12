@@ -10,11 +10,11 @@ main {
 }
 
 audio::-webkit-media-controls-panel {
-  background-color: #b1b1b1;
+  background-color: #e5e7eb;
 }
 /* #100f14 */
 audio {
-  background-color: #b1b1b1;
+  background-color: #e5e7eb;
 }
 
 .gallery {

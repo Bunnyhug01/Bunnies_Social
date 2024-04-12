@@ -1,7 +1,7 @@
 import { Dispatch, MutableRefObject, SetStateAction } from "react";
 import { storage } from "../firebase/firebase";
 import { ref, getDownloadURL, uploadBytesResumable, deleteObject, UploadTask } from "firebase/storage";
-import deleteFile from "./deleteFile";
+import { v4 as uuidv4 } from 'uuid';
 
 
 interface Props {
@@ -16,7 +16,7 @@ interface Props {
 const uploadFile = ({file, setFileRef, directory, setProgress, uploadRef}: Props) => {
 
     if (file == null) return;
-    const storageRef = ref(storage, `${directory}/${file.name}`);
+    const storageRef = ref(storage, `${directory}/${uuidv4() + file.name}`);
     const uploadTask = uploadBytesResumable(storageRef, file);
     uploadRef.current = uploadTask
     

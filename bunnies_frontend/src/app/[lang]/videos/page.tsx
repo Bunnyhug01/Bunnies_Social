@@ -18,7 +18,7 @@ import getUsersLanguage from '../../locales/getUsersLanguage';
 import { UserAuthRequest } from '../../firebase/user';
 import { getAllVideos, Video } from '../../firebase/video';
 import { auth } from '../../firebase/firebase';
-import { search } from '../../firebase/search';
+import { searchVideo } from '../../firebase/search';
 
 
 export function Videos() {
@@ -43,8 +43,8 @@ export function Videos() {
         setData(Object.values(videoArray))
       })
     } else {
-      search(searchText).then((videoArray) => {
-
+      searchVideo(searchText).then((videoArray: Video[]) => {
+        setData(videoArray)
       })
     }
 

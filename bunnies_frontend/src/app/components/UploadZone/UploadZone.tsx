@@ -1,4 +1,4 @@
-import { Dispatch, MutableRefObject, SetStateAction, useCallback, useState } from 'react';
+import { Dispatch, MutableRefObject, SetStateAction, useCallback, useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 
 import { Box, Button, Grid, IconButton, Input, Typography } from '@mui/material';
@@ -16,7 +16,8 @@ interface Props {
   acceptedfileType?: string,
   type: {
     fileType: string,
-    setFileType: Dispatch<SetStateAction<string>>
+    setFileType: Dispatch<SetStateAction<string>>,
+    isThumbnail: boolean,
   },
   reference?: {
     fileRef: string,
@@ -42,13 +43,17 @@ export default function UploadZone({ setFile, acceptedfileType, type, reference,
       : (acceptedfileType === 'image'
         ? ['image/png' , 'image/jpeg']
         : ['video/mp4', 'audio/*', 'image/png' , 'image/jpeg']))
-  
+ 
   const onDrop = useCallback((acceptedFiles: Array<File>) => {
     const file = new FileReader;
+    let fileType = ''
 
-    if (!acceptedfileType)
-      type.setFileType((acceptedFiles[0].type).slice(0, acceptedFiles[0].type.indexOf('/')))
-
+    if (!acceptedfileType && !type.isThumbnail) {
+      fileType = (acceptedFiles[0].type).slice(0, acceptedFiles[0].type.indexOf('/'))
+      type.setFileType(fileType)
+    }
+      
+    
     file.onload = function() {
       setPreview(file.result);
     }
@@ -67,12 +72,12 @@ export default function UploadZone({ setFile, acceptedfileType, type, reference,
       const fileObj = {
         file: acceptedFiles[0],
         setFileRef: reference.setFileRef,
-        directory: type.fileType + 's',
+        directory: !type.isThumbnail ? fileType + 's': 'images',
         setProgress: setProgress,
         uploadRef: cancel.uploadRef
       }
       
-      // uploadFile(fileObj)
+      uploadFile(fileObj)
 
     }
 
@@ -126,21 +131,22 @@ export default function UploadZone({ setFile, acceptedfileType, type, reference,
       {preview && (
         <Box sx={{width: 'auto', height: 350, marginTop: 2}}>
           <div className='relative'>
-            {type.fileType === 'video'
+            {type.fileType === 'video' && !type.isThumbnail
               ? <video src={preview as string} autoPlay loop controls muted className="w-full h-full" /> 
-              : (type.fileType === 'image'
-                  ? <img src={preview as string} alt="" className="w-full h-full max-h-[350px]" />
-                  : <audio src={preview as string} controls className='absolute top-40 w-full' />
+              : (type.fileType === 'audio' && !type.isThumbnail
+                  ? <audio src={preview as string} controls className='absolute top-40 w-full' />
+                  : <img src={preview as string} alt="" className="w-full h-full max-h-[350px]" /> 
                 )
             }
-            <IconButton
+            <button
               className='absolute top-0 right-0 bg-red-700 text-white p-2 rounded hover:bg-red-800 m-2'
+              
               onClick={() => {
                 handleCancel()
               }}
             >
               <CloseIcon />
-            </IconButton>
+            </button>
           </div>
         </Box>
       )}

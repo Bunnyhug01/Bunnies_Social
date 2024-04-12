@@ -15,6 +15,7 @@ import translation from '@/app/locales/translation';
 import deleteFile from '@/app/firebase/deleteFile';
 import { Audio, AudioUpdateRequest, deleteAudio, getOneAudio, updateAudio } from '@/app/firebase/audio';
 import { AudioInfo, UserAudioLogo } from '@/app/components/audio/audio';
+import { auth } from '@/app/firebase/firebase';
 
 
 export function UserAudio() {
@@ -95,7 +96,7 @@ export function UserAudio() {
 
   useEffect(() => {
 
-    if (user) {
+    if (user && auth.currentUser?.emailVerified) {
       getOneAudio(audioId).then((audio) => {
         setAudio(audio)
       }).catch(response => {

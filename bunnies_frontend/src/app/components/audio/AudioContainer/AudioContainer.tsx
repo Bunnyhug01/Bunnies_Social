@@ -45,7 +45,7 @@ export default function AudioContainer( { audio = audioDefault, langDictionary }
 
   return (
     <AudioInfo audio={audio}>
-      <div className="relative w-full h-full">
+      <div className="relative w-auto h-full">
         
         <Box>
 
@@ -72,7 +72,7 @@ export default function AudioContainer( { audio = audioDefault, langDictionary }
 
         </Box>
 
-          <Box className="w-full lg:w-[100%]">
+          <Box className="w-full">
             {audio.audioUrl !== ""
               ? <AudioInformation audio={audio} langDictionary={langDictionary} />
               : null

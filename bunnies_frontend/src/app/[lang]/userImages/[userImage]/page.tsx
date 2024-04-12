@@ -17,6 +17,7 @@ import deleteFile from '@/app/firebase/deleteFile';
 
 import { Image, ImageUpdateRequest, deleteImage, getOneImage, updateImage } from '@/app/firebase/image';
 import { ImageInfo, UserImageLogo } from '@/app/components/image/image';
+import { auth } from '@/app/firebase/firebase';
 
 export function UserImage() {
   const params  = useParams();
@@ -96,7 +97,7 @@ export function UserImage() {
 
   useEffect(() => {
 
-    if (user) {
+    if (user && auth.currentUser?.emailVerified) {
       getOneImage(imageId).then((image) => {
         setImage(image)
       }).catch(response => {

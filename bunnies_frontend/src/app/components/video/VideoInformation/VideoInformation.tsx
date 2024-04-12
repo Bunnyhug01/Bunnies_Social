@@ -28,7 +28,7 @@ export default function VideoInformation({ video, langDictionary } : Props) {
 
   async function handleLike() {
 
-    if (user) {
+    if (user && auth.currentUser?.emailVerified) {
 
       if (await hasDisLike(video.id!)) {
         await removeDisLike(video.id!)
@@ -55,7 +55,7 @@ export default function VideoInformation({ video, langDictionary } : Props) {
 
   async function handleDislike() {
 
-    if (user) {
+    if (user && auth.currentUser?.emailVerified) {
 
       if (await hasLike(video.id!))
       {
@@ -83,7 +83,7 @@ export default function VideoInformation({ video, langDictionary } : Props) {
 
   async function handleSubscribe() {
     
-    if (user) {
+    if (user && auth.currentUser?.emailVerified) {
 
       if (await hasSubscribe(video.owner)) {
         await removeSubscribe(video.owner)

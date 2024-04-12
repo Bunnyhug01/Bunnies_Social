@@ -46,24 +46,20 @@ function AudioPage() {
 
   useEffect(() => {
     
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        getOneAudio(audioId).then((audio) => {
-          setAudio(audio)
-          addView(audio.id!)
 
-          if (user) {
-            addToHistory(audio.id!)
-          }
+    getOneAudio(audioId).then((audio) => {
+      setAudio(audio)
+      addView(audio.id!)
 
-        }).catch(response => {
-          if(response.status == 404)
-            setIfNotFound(true)
-        })
-      } else {
-        window.location.replace(`/${lang}/sign-in`);
+      if (user && auth.currentUser?.emailVerified) {
+        addToHistory(audio.id!)
       }
+
+    }).catch(response => {
+      if(response.status == 404)
+        setIfNotFound(true)
     })
+
 
   },[])
   
@@ -106,14 +102,14 @@ function AudioPage() {
           color: 'text.primary',
           flexGrow: 1, p: 3,
         }}
-        className='overflow-y-auto overflow-x-hidden'
+        className='overflow-y-auto overflow-x-hidden h-full w-full'
         >
         
         
         {/* Main Container */}
         <Box className='md:w-full h-full'>
           {/* Top Section */}
-          <Box className='relative w-full h-full max-h-[700px] grid grid-cols-3 gap-2 p-2 sm:w-[107vw] sm:right-[10vw] sm3:w-[108vw] sm3:right-[9vw] lg:right-0 md:right-0 md:w-full sm2:w-full sm2:right-0'>
+          <Box className='relative w-full h-full max-h-full grid grid-cols-3 gap-2 p-2 sm:w-[107vw] sm:right-[10vw] sm3:w-[108vw] sm3:right-[9vw] lg:right-0 md:right-0 md:w-full sm2:w-full sm2:right-0'>
             
             {/* Video Container */}
             <Box className='sm:col-span-6 md:col-span-2 items-center justify-center flex lg:ml-[10vw]'>
@@ -121,8 +117,8 @@ function AudioPage() {
             </Box>
 
             {/* Recommended list */} 
-            <Box className='sm:col-span-6 md:col-span-1 overflow-y-auto lg:ml-[-6vw]
-              scrollbar-thin scrollbar-thumb-gray-800 max-h-[73.6vh]
+            <Box className='sm:col-span-6 md:col-span-1 overflow-y-auto
+              scrollbar-thin scrollbar-thumb-gray-800
              '
               sx={{ 
                 bgcolor: 'background.additional',

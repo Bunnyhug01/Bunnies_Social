@@ -58,7 +58,7 @@ export async function getOneImage(id: string): Promise<Image> {
 export function createImage({title, details, imageUrl, isPrivate}: ImageCreateRequest): void {
   
   const video: Image = {
-    title: title,
+    title: title.toLowerCase(),
     details: details,
     imageUrl: imageUrl,
     uploadDate: getDate(),
@@ -84,7 +84,7 @@ export function updateImage(id: string, {title, details, imageUrl, isPrivate}: I
   const updates:ImageUpdateRequest = {}
 
   if (title !== undefined)
-    updates['title'] = title
+    updates['title'] = title.toLowerCase()
   
   if (details !== undefined)
     updates['details'] = details

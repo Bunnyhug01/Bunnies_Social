@@ -15,6 +15,7 @@ import translation from '@/app/locales/translation';
 import { UserVideoLogo, VideoInfo, VideoLogo } from '@/app/components/video/video';
 import deleteFile from '@/app/firebase/deleteFile';
 import { Video, VideoUpdateRequest, deleteVideo, getOneVideo, updateVideo } from '@/app/firebase/video';
+import { auth } from '@/app/firebase/firebase';
 
 export function UserVideo() {
   const params  = useParams();
@@ -96,7 +97,7 @@ export function UserVideo() {
 
   useEffect(() => {
 
-    if (user) {
+    if (user && auth.currentUser?.emailVerified) {
       getOneVideo(videoId).then((video) => {
         setVideo(video)
       }).catch(response => {

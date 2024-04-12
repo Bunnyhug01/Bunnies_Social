@@ -16,7 +16,7 @@ import translation from '../../locales/translation';
 import getUsersLanguage from '../../locales/getUsersLanguage';
 import { UserAuthRequest } from '../../firebase/user';
 import { auth } from '../../firebase/firebase';
-import { search } from '../../firebase/search';
+import { searchImage } from '../../firebase/search';
 import { Image, getAllImages } from '@/app/firebase/image';
 import ImageList from '@/app/components/image/ImageList/ImageList';
 
@@ -44,8 +44,8 @@ export function Images() {
             setData(Object.values(audioArray))
         })
     } else {
-      search(searchText).then((audioArray) => {
-
+      searchImage(searchText).then((imageArray: Image[]) => {
+        setData(imageArray)
       })
     }
 
