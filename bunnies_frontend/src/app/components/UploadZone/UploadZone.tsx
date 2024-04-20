@@ -17,7 +17,7 @@ interface Props {
   type: {
     fileType: string,
     setFileType: Dispatch<SetStateAction<string>>,
-    isThumbnail: boolean,
+    isThumbnail?: boolean,
   },
   reference?: {
     fileRef: string,
@@ -27,7 +27,7 @@ interface Props {
   cancel: {
     uploadRef: MutableRefObject<UploadTask | undefined>,
     setUploadingCancellation: Dispatch<SetStateAction<boolean>>,
-    setIsFileUpload: Dispatch<SetStateAction<boolean>>
+    setIsFileUpload?: Dispatch<SetStateAction<boolean>>
   },
   langDictionary: any
 }
@@ -42,13 +42,16 @@ export default function UploadZone({ setFile, acceptedfileType, type, reference,
       ? ['audio/*']
       : (acceptedfileType === 'image'
         ? ['image/png' , 'image/jpeg']
-        : ['video/mp4', 'audio/*', 'image/png' , 'image/jpeg']))
+        : (acceptedfileType === 'no audio'
+          ? ['video/mp4', 'image/png' , 'image/jpeg']
+          : ['video/mp4', 'audio/*', 'image/png' , 'image/jpeg']
+      )))
  
   const onDrop = useCallback((acceptedFiles: Array<File>) => {
     const file = new FileReader;
     let fileType = ''
 
-    if (!acceptedfileType && !type.isThumbnail) {
+    if ((!acceptedfileType || acceptedfileType === 'no audio' ) && !type.isThumbnail) {
       fileType = (acceptedFiles[0].type).slice(0, acceptedFiles[0].type.indexOf('/'))
       type.setFileType(fileType)
     }
@@ -92,7 +95,7 @@ export default function UploadZone({ setFile, acceptedfileType, type, reference,
 
   function handleCancel() {
     cancel.setUploadingCancellation(true)
-    cancel.setIsFileUpload(false)
+    cancel.setIsFileUpload!(false)
 
     setPreview(null)
 

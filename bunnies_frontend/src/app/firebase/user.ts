@@ -2,6 +2,8 @@ import { createUserWithEmailAndPassword, sendEmailVerification, signOut } from "
 import { auth, database } from "./firebase";
 import { signInWithEmailAndPassword } from "firebase/auth/cordova";
 import { ref, push, child, get, set, update } from "firebase/database";
+import getDate from "../utils/getDate";
+import deleteFile from "./deleteFile";
 
 
 export interface UserAuthRequest {
@@ -11,11 +13,19 @@ export interface UserAuthRequest {
     password: string
 }
 
+export interface UserUpdateRequest {
+    username?: string,
+    logoUrl?: string,
+    bannerUrl?: string,
+    details?: string,
+}
+
 export interface User {
     id: string,
     username: string,
     email: string,
     logoUrl?: string,
+    bannerUrl?: string,
     subscribers: string[],
     subscriptions: string[],
     history: History[],
@@ -23,7 +33,10 @@ export interface User {
     dislikes: Dislikes[],
     videos?: string[],
     images?: string[],
-    audios?: string[]
+    audios?: string[],
+    comments?: string[],
+    date: string,
+    details?: string,
 }
 
 export interface History {
@@ -50,7 +63,6 @@ export async function createUser({ id, username, email, password }: UserAuthRequ
         id: id!,
         username: username!,
         email: email,
-        // logoUrl: '',
         subscribers: [],
         subscriptions: [],
         history: [],
@@ -58,7 +70,8 @@ export async function createUser({ id, username, email, password }: UserAuthRequ
         dislikes: [],
         videos: [],
         images: [],
-        audios: []
+        audios: [],
+        date: getDate(),
     }
     
     update(ref(database, `users/`), {[id!]: user});
@@ -287,4 +300,36 @@ export async function hasSubscribe(id: string) {
             return false
         }
     })
+}
+
+export function updateUser(id: string, {username, details, logoUrl, bannerUrl}: UserUpdateRequest) {
+    const updates:UserUpdateRequest = {}
+  
+    if (username !== undefined)
+      updates['username'] = username
+    
+    if (details !== undefined)
+      updates['details'] = details
+    
+    if (logoUrl !== undefined)
+      updates['logoUrl'] = logoUrl
+  
+    if (bannerUrl !== undefined) 
+      updates['bannerUrl'] = bannerUrl 
+    
+    getUser(id).then((user) => {
+
+        if (user.logoUrl !== undefined && logoUrl !== undefined)
+            deleteFile(user.logoUrl)
+
+        if (user.bannerUrl !== undefined && bannerUrl !== undefined)
+            deleteFile(user.bannerUrl)
+    })
+  
+    update(ref(database, `users/${id}`), updates).then((snapshot) => {
+  
+    }).catch((error) => {
+      console.error(error);
+    })
+  
 }

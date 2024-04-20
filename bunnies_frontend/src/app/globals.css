@@ -6,7 +6,7 @@
 
 
 main {
-  @apply h-screen overflow-hidden flex flex-col;
+  @apply h-screen flex flex-col;
 }
 
 audio::-webkit-media-controls-panel {

@@ -17,7 +17,7 @@ export function UserIdInfo({ id, children }: { id: string, children: React.React
 
     useEffect(() => {
         getUser(id).then((user) => {
-            setUser(user)
+            setUser(user!)
         })
     }, [id])
 
@@ -61,6 +61,26 @@ export function UserName({}) {
     return (<>{user.username}</>)
 }
 
+export function UserDetails({}) {
+    const user = useContext(UserContext)!!
+    return (<>{user.details}</>)
+}
+
+export function UserDate({}) {
+    const user = useContext(UserContext)!!
+    return (<>{user.date}</>)
+}
+
+export function UserNameVar() {
+    const user = useContext(UserContext)!!
+    return user.username
+}
+
+export function UserDetailsVar() {
+    const user = useContext(UserContext)!!
+    return user.details
+}
+
 export function UserSubscribers({}) {
     const user = useContext(UserContext)!!
     return (
@@ -101,7 +121,7 @@ export function MyLogo({}) {
     return (
         <Avatar
             sx={{ bgcolor: deepPurple[500]}}
-            alt="Remy Sharp"
+            alt={user.username[0]}
             src={user.logoUrl}
             className="
                 lg:max-w-[24px] lg:max-h-[24px]
@@ -112,6 +132,25 @@ export function MyLogo({}) {
                 md:min-w-[24px]
                 sm:min-w-[24px]
             "
+        >
+            {user.username[0]}
+        </Avatar>
+    )
+}
+
+export function UserLogoChannel({}) {
+    const user = useContext(UserContext)!!
+    return (
+        <Avatar
+            sx={{
+                bgcolor: deepPurple[500],
+                width: '150px',
+                height: '150px',
+                marginRight: '20px',
+                fontSize: '50px'
+            }}
+            alt={user.username}
+            src={user.logoUrl ? user.logoUrl : ''}
         >
             {user.username[0]}
         </Avatar>

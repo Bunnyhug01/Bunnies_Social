@@ -95,6 +95,7 @@ export function Home() {
       videoUrl: 'https://firebasestorage.googleapis.com/v0/b/bunnies-social.appspot.com/o/videos%2FKen%20Ashcorp%20The%20Bunny%20Song%20VeggieTales%20cover.mp4?alt=media&token=51dbc3c8-27c3-47a9-8762-a5ba46acf210',
       logoUrl: 'https://firebasestorage.googleapis.com/v0/b/bunnies-social.appspot.com/o/images%2FKen%20Ashcorp.png?alt=media&token=88962fca-3b2f-4a8f-b9ce-a1cbdde976bb',
       isPrivate: false,
+      tags: [],
     }
 
     const updVideo: VideoUpdateRequest = {
@@ -114,6 +115,7 @@ export function Home() {
       audioUrl: 'https://firebasestorage.googleapis.com/v0/b/bunnies-social.appspot.com/o/audio%2FKen%20Ashcorp%20-PvP.mp3?alt=media&token=d7c13391-4e4c-40e5-9dfc-6aa5de1917f5',
       logoUrl: 'https://firebasestorage.googleapis.com/v0/b/bunnies-social.appspot.com/o/images%2Fpvp.jpg?alt=media&token=eb5c1bea-8ba5-4f87-9067-3fb86b056bd6',
       isPrivate: false,
+      tags: [],
     }
 
     const image: ImageCreateRequest = {
@@ -123,6 +125,7 @@ export function Home() {
       // imageUrl: 'https://firebasestorage.googleapis.com/v0/b/bunnies-social.appspot.com/o/images%2Flinkerluis_uno.jpg?alt=media&token=a766bca3-f409-4265-ad58-5588c3cd45aa',
       // imageUrl: 'https://firebasestorage.googleapis.com/v0/b/bunnies-social.appspot.com/o/images%2Flinker_zone-tan-animator.gif?alt=media&token=f6b9075c-86e9-4ea7-bcd9-88d486d8dddc',
       isPrivate: false,
+      tags: [],
     }
 
     // createImage(image)

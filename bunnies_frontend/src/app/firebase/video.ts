@@ -6,10 +6,11 @@ import { Dislikes, History, Likes } from "./user";
 
 export interface VideoCreateRequest {
   title: string,
-  details: string,
+  details?: string,
   videoUrl: string,
   logoUrl: string,
   isPrivate: boolean,
+  tags?: string[],
 }
 
 export interface VideoUpdateRequest {
@@ -18,12 +19,13 @@ export interface VideoUpdateRequest {
   logoUrl?: string,
   videoUrl?: string,
   isPrivate?: boolean,
+  tags?: string[],
 }
 
 export interface Video {
   id?: string,
   title: string,
-  details: string,
+  details?: string,
   videoUrl: string,
   logoUrl: string,
   uploadDate: string,
@@ -32,6 +34,7 @@ export interface Video {
   views: number,
   owner: string,
   isPrivate: boolean,
+  tags?: string[],
 }
 
 export async function getAllVideos(): Promise<Video[]> {
@@ -58,10 +61,10 @@ export async function getOneVideo(id: string): Promise<Video> {
     });
 }
 
-export function createVideo({title, details, videoUrl, logoUrl, isPrivate}: VideoCreateRequest): void {
+export function createVideo({title, details, videoUrl, logoUrl, isPrivate, tags}: VideoCreateRequest): void {
   
   const video: Video = {
-    title: title.toLowerCase(),
+    title: title,
     details: details,
     videoUrl: videoUrl,
     logoUrl: logoUrl,
@@ -69,6 +72,7 @@ export function createVideo({title, details, videoUrl, logoUrl, isPrivate}: Vide
     likes: 0,
     dislikes: 0,
     views: 0,
+    tags: tags,
     owner: auth.currentUser!.uid,
     isPrivate: isPrivate,
 
@@ -84,11 +88,11 @@ export function createVideo({title, details, videoUrl, logoUrl, isPrivate}: Vide
   })
 }
 
-export function updateVideo(id: string, {title, details, videoUrl, logoUrl, isPrivate}: VideoUpdateRequest) {
+export function updateVideo(id: string, {title, details, videoUrl, logoUrl, isPrivate, tags}: VideoUpdateRequest) {
   const updates:VideoUpdateRequest = {}
 
   if (title !== undefined)
-    updates['title'] = title.toLowerCase()
+    updates['title'] = title
   
   if (details !== undefined)
     updates['details'] = details
@@ -100,7 +104,10 @@ export function updateVideo(id: string, {title, details, videoUrl, logoUrl, isPr
     updates['logoUrl'] = logoUrl 
   
   if (isPrivate !== undefined) 
-    updates['isPrivate'] = isPrivate 
+    updates['isPrivate'] = isPrivate
+
+  if (tags !== undefined) 
+    updates['tags'] = tags 
 
 
   update(ref(database, `videos/${id}`), updates).then((snapshot) => {

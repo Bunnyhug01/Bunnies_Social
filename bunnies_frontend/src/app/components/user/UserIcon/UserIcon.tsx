@@ -18,10 +18,10 @@ export default function UserIcon({ userId, langDictionary } : Props) {
                 <UserLogo/>
                 
                 <Box sx={{ flexDirection: 'column' }}>
-                    <Typography sx={{color: 'text.primary', fontSize: 16}} className="font-bold ml-2 lg:text-[16px] md:text-[16px] sm:text-[13px]">
+                    <Typography sx={{color: 'text.primary', fontSize: 16, marginLeft: '8px', fontWeight: 'bold'}} className="lg:text-[16px] md:text-[16px] sm:text-[13px]">
                         <UserName/>
                     </Typography>
-                    <Typography sx={{color: 'text.secondary', fontSize: 12}} className="font-bold block ml-2">
+                    <Typography sx={{color: 'text.secondary', fontSize: 12, marginLeft: '8px', fontWeight: 'bold'}} className="block">
                         <UserSubscribers /> {langDictionary['subs']}
                     </Typography>
                 </Box>

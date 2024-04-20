@@ -1,6 +1,6 @@
 import { Box, Button, Dialog, DialogTitle, IconButton, DialogContent, DialogActions, Typography, TextField, FormControl, InputLabel, Select, MenuItem, SelectChangeEvent } from "@mui/material"
 import CloseIcon from '@mui/icons-material/Close';
-import VideoCallIcon from '@mui/icons-material/VideoCall';
+import FileUploadIcon from '@mui/icons-material/FileUpload';
 
 import { useEffect, useRef, useState } from "react";
 
@@ -11,6 +11,7 @@ import deleteFile from "../../firebase/deleteFile";
 import { VideoCreateRequest, createVideo } from "@/app/firebase/video";
 import { AudioCreateRequest, createAudio } from "@/app/firebase/audio";
 import { ImageCreateRequest, createImage } from "@/app/firebase/image";
+import TagsInput from "../TagsInput/TagsInput";
 
 
 interface Props {
@@ -38,6 +39,9 @@ export default function Upload({ type, langDictionary } : Props) {
   const [uploadingCancellation, setUploadingCancellation] = useState<boolean>(false)
 
   const [privacy, setPrivacy] = useState('');
+  const [tags, setTags] = useState<string[]>([]);
+  
+  const [selected, setSelected] = useState<string[]>([]);
 
   const handleChange = (event: SelectChangeEvent) => {
     setPrivacy(event.target.value);
@@ -127,6 +131,7 @@ export default function Upload({ type, langDictionary } : Props) {
             details: formElements.description.value,
             videoUrl: mediaFileRef,
             isPrivate: isPrivate,
+            tags: tags,
         }
 
         createVideo(video)
@@ -138,6 +143,7 @@ export default function Upload({ type, langDictionary } : Props) {
             details: formElements.description.value,
             imageUrl: mediaFileRef,
             isPrivate: isPrivate,
+            tags: tags,
         }
 
         createImage(image)
@@ -151,6 +157,7 @@ export default function Upload({ type, langDictionary } : Props) {
             details: formElements.description.value,
             audioUrl: mediaFileRef,
             isPrivate: isPrivate,
+            tags: tags,
         }
 
         createAudio(audio)
@@ -170,7 +177,7 @@ export default function Upload({ type, langDictionary } : Props) {
                     color="inherit"
                     onClick={handleClickUploadOpen}
                 >
-                    <VideoCallIcon />
+                    <FileUploadIcon />
                 </IconButton>
             :
                 <MenuItem
@@ -181,7 +188,7 @@ export default function Upload({ type, langDictionary } : Props) {
                         color="inherit"
                         style={{ backgroundColor: 'transparent' }}
                     >
-                        <VideoCallIcon />
+                        <FileUploadIcon />
                     </IconButton>
                     <Typography>{langDictionary['upload']}</Typography>
                 </MenuItem>
@@ -317,7 +324,6 @@ export default function Upload({ type, langDictionary } : Props) {
                                 sx={{
                                     marginTop: 4,
                                 }}
-                                placeholder="Tell viewers about your video"
                                 id="description"
                                 label={langDictionary['description']}
                                 multiline
@@ -343,6 +349,9 @@ export default function Upload({ type, langDictionary } : Props) {
                                     <MenuItem value={'public'}>{langDictionary['public']}</MenuItem>
                                 </Select>
                             </FormControl>
+                            
+                            <TagsInput tags={tags} setTags={setTags} langDictionary={langDictionary} />
+
                         </Box>
                         
                         {

@@ -51,20 +51,7 @@ export function Audios() {
 
   }, [searchText])
 
-
-  const router = useRouter();
-
-  useEffect(() => {
-    const isRedirected = localStorage.getItem('redirected');
-    
-    if (!isRedirected) {
-      const usersLang = getUsersLanguage()
-      router.push(`/${usersLang}`);
-      localStorage.setItem('redirected', 'true');
-    }
-  }, []);
-
-
+  
   return(
     <Box
       sx={{

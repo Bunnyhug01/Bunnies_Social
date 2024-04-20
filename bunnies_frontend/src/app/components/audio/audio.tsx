@@ -1,5 +1,5 @@
-import { Audio } from "@/app/firebase/audio";
-import { Box } from "@mui/material";
+import { Audio, getOneAudio } from "@/app/firebase/audio";
+import { Box, Chip, Stack } from "@mui/material";
 import PlayCircleFilledWhiteIcon from '@mui/icons-material/PlayCircleFilledWhite';
 import React, { useContext, useEffect, useState } from "react";
 
@@ -10,6 +10,26 @@ export function AudioInfo({ audio, children }: { audio: Audio, children: React.R
         <AudioContext.Provider value={audio}>
             {children}
         </AudioContext.Provider>
+    )
+}
+
+export function AudioIdInfo({ id, children }: { id: string, children: React.ReactNode }) {
+    const [audio, setAudio] = useState<Audio>()
+
+    useEffect(() => {
+        getOneAudio(id).then((audio) => {
+            setAudio(audio)
+        })
+    }, [id])
+
+    return (
+        <>
+        { audio !== null && audio !== undefined ?
+        <AudioInfo audio={audio}>
+            {children}
+        </AudioInfo> : null
+        }
+        </>
     )
 }
 
@@ -36,6 +56,17 @@ export function AudioViews({}) {
 export function AudioUploadDate({}) {
     const audio = useContext(AudioContext)!!
     return (<>{audio.uploadDate}</>)
+}
+
+export function AudioTags({}) {
+    const audio = useContext(AudioContext)!!
+    return (
+        <Stack direction="row" spacing={1}>
+            {audio.tags?.map((tag) => (
+                <Chip key={tag} label={tag} component="a" clickable />
+            ))}
+        </Stack>
+    )
 }
 
 export function AudioLogo({}) {

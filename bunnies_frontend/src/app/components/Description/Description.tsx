@@ -1,11 +1,11 @@
 import { Accordion, AccordionSummary, Box, Typography, AccordionDetails } from '@mui/material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { VideoUploadDate } from '../video/video';
+import { VideoTags, VideoUploadDate } from '../video/video';
 import { Video } from '@/app/firebase/video';
 import { Audio } from '@/app/firebase/audio';
 import { Image } from '@/app/firebase/image';
-import { AudioUploadDate } from '../audio/audio';
-import { ImageUploadDate } from '../image/image';
+import { AudioTags, AudioUploadDate } from '../audio/audio';
+import { ImageTags, ImageUploadDate } from '../image/image';
 
 
 interface Props {
@@ -47,7 +47,12 @@ export default function Description({ video, audio, image, langDictionary } : Pr
         </Box>
       </AccordionSummary>
       <AccordionDetails>
-        <Typography>
+        <Box>
+          {
+            (video) ? <VideoTags /> : ((audio) ? <AudioTags /> : <ImageTags />)
+          }
+        </Box>
+        <Typography sx={{marginTop: '10px'}}>
           {
             (video) ? (video.details) : ((audio) ? (audio.details) : (image?.details))
           }

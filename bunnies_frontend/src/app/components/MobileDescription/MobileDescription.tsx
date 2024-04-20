@@ -10,12 +10,12 @@ import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import { Divider } from '@mui/material';
-import { VideoUploadDate } from '../video/video';
+import { VideoTags, VideoUploadDate } from '../video/video';
 import { Video } from '@/app/firebase/video';
 import { Audio } from '@/app/firebase/audio';
 import { Image } from '@/app/firebase/image';
-import { AudioUploadDate } from '../audio/audio';
-import { ImageUploadDate } from '../image/image';
+import { AudioTags, AudioUploadDate } from '../audio/audio';
+import { ImageTags, ImageUploadDate } from '../image/image';
 
 const drawerBleeding = 56;
 
@@ -147,9 +147,17 @@ export default function MobileDescription(props: Props) {
             overflow: 'auto',
           }}
         >
-          {
-            (video) ? (video.details) : ((audio) ? (audio.details) : (image?.details))
-          }
+          <Box>
+            {
+              (video) ? <VideoTags /> : ((audio) ? <AudioTags /> : <ImageTags />)
+            }
+          </Box>
+
+          <Typography sx={{marginTop: '10px'}}>
+            {
+              (video) ? (video.details) : ((audio) ? (audio.details) : (image?.details))
+            }
+          </Typography>
         </StyledBox>
       </SwipeableDrawer>
     </Root>

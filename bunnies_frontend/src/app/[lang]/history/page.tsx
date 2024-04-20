@@ -90,9 +90,6 @@ export function History() {
 
   }, [searchText])
 
-  useEffect(() => {
-    console.log(videos)
-  }, [videos])
 
   return(
     <Box

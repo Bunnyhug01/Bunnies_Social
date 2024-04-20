@@ -4,6 +4,7 @@ import { VideoInfo, VideoTitle } from '../video';
 import VideoInformation from '../VideoInformation/VideoInformation';
 import { Box } from '@mui/material';
 import { Video } from '@/app/firebase/video';
+import CommentComponent from '../../comment/CommentComponent/CommentComponent';
 
 
 interface Props {
@@ -67,9 +68,10 @@ export default function VideoContainer( { video = DEFAULT_VIDEO(), langDictionar
               ? <VideoInformation video={video} langDictionary={langDictionary} />
               : null
             }
+            <CommentComponent videoId={video.id!} langDictionary={langDictionary} />
           </Box>
 
-          <div className="absolute text-sm top-0 left-0 z-10 w-full h-[60px] py-4 px-3 bg-gradient-to-b from-black to-transparent">
+          <div className="absolute text-sm top-0 left-0 z-10 w-full h-[60px] py-4 px-3">
               <h2 className="text-textColor" id='mainVideoName'>
                 <VideoTitle/>
               </h2>

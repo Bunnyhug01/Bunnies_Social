@@ -1,6 +1,8 @@
-import { Image } from "@/app/firebase/image";
-import { Box } from "@mui/material";
-import React, { useContext } from "react";
+import { Image, getOneImage } from "@/app/firebase/image";
+import { Box, Chip, Stack } from "@mui/material";
+import React, { useContext, useEffect, useState } from "react";
+import video from "video.js";
+import { VideoInfo } from "../video/video";
 
 export const ImageContext = React.createContext<Image | undefined>(undefined)
 
@@ -9,6 +11,26 @@ export function ImageInfo({ image, children }: { image: Image, children: React.R
         <ImageContext.Provider value={image}>
             {children}
         </ImageContext.Provider>
+    )
+}
+
+export function ImageIdInfo({ id, children }: { id: string, children: React.ReactNode }) {
+    const [image, setImage] = useState<Image>()
+
+    useEffect(() => {
+        getOneImage(id).then((image) => {
+            setImage(image)
+        })
+    }, [id])
+
+    return (
+        <>
+        { image !== null && image !== undefined ?
+        <ImageInfo image={image}>
+            {children}
+        </ImageInfo> : null
+        }
+        </>
     )
 }
 
@@ -40,6 +62,17 @@ export function ImageViews({}) {
 export function ImageUploadDate({}) {
     const image = useContext(ImageContext)!!
     return (<>{image.uploadDate}</>)
+}
+
+export function ImageTags({}) {
+    const image = useContext(ImageContext)!!
+    return (
+        <Stack direction="row" spacing={1}>
+            {image.tags?.map((tag) => (
+                <Chip key={tag} label={tag} component="a" clickable />
+            ))}
+        </Stack>
+    )
 }
 
 export function ImageLogo({}) {

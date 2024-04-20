@@ -11,7 +11,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 
 import Header from '../../../components/Header/Header';
-import Comments from '../../../components/comment/Comments/Comments';
+import Comments from '../../../components/comment/CommentComponent/CommentComponent';
 import RecommendedList from '../../../components/video/RecommendedList/RecommendedList';
 import VideoContainer from '../../../components/video/VideoContainer/VideoContainer';
 import BottomNav from '../../../components/BottomNav/BottomNav';
@@ -21,6 +21,7 @@ import { ColorModeContext, getDesignTokens } from '../../../styles/designTokens'
 import translation from '@/app/locales/translation';
 import { addToHistory, addView, getOneVideo, getRecommendations, Video } from '@/app/firebase/video';
 import { auth } from '@/app/firebase/firebase';
+import CommentComponent from '../../../components/comment/CommentComponent/CommentComponent';
 
 
 function VideoPage() {
@@ -105,10 +106,10 @@ function VideoPage() {
         {/* Main Container */}
         <Box className='md:w-full h-full'>
           {/* Top Section */}
-          <Box className='relative w-full h-full max-h-[700px] grid grid-cols-3 gap-2 p-2 sm:w-[107vw] sm:right-[10vw] sm3:w-[108vw] sm3:right-[9vw] lg:right-0 md:right-0 md:w-full sm2:w-full sm2:right-0'>
+          <Box className='relative w-full h-full max-h-full grid grid-cols-3 gap-2 p-2 sm:w-[107vw] sm:right-[10vw] sm3:w-[108vw] sm3:right-[9vw] lg:right-0 md:right-0 md:w-full sm2:w-full sm2:right-0'>
             
             {/* Video Container */}
-            <Box className='sm:col-span-6 md:col-span-2 rounded-lg overflow-hidden items-center justify-center flex'>
+            <Box className='sm:col-span-6 md:col-span-2 rounded-lg items-center justify-center flex'>
               <VideoContainer video={video} langDictionary={langDictionary} />
             </Box>
 

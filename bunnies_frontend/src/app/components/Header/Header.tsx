@@ -97,16 +97,28 @@ export default function Header({searchHandler, ColorModeContext, text, language}
         >
             {
                 user && auth.currentUser?.emailVerified
-                ?   <Link href={`/${language.lang}/sign-in`} style={{ textDecoration: 'none' }}>
-                        <MenuItem
-                            onClick={() => {
-                                handleMenuClose()
-                                handleSignOut()
-                            }}
-                        >
-                            {language.langDictionary['sign_out']}
-                        </MenuItem>
-                    </Link>
+                ?   
+                    <Box>
+                        <Link href={`/${language.lang}/user/${auth.currentUser.uid}`} style={{ textDecoration: 'none' }}>
+                            <MenuItem
+                                onClick={() => {
+                                    handleMenuClose()
+                                }}
+                            >
+                                {language.langDictionary['channel']}
+                            </MenuItem>
+                        </Link>
+                        <Link href={`/${language.lang}/sign-in`} style={{ textDecoration: 'none' }}>
+                            <MenuItem
+                                onClick={() => {
+                                    handleMenuClose()
+                                    handleSignOut()
+                                }}
+                            >
+                                {language.langDictionary['sign_out']}
+                            </MenuItem>
+                        </Link>
+                    </Box>
                 :
                 <Box>
                     <Link href={`/${language.lang}/sign-in`} style={{ textDecoration: 'none' }}>

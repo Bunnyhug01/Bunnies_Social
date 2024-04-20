@@ -1,7 +1,7 @@
 
 import Image from "next/image";
 
-import { Avatar } from "@mui/material";
+import { Chip, Stack } from "@mui/material";
 import { deepPurple } from "@mui/material/colors";
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import { Video, getOneVideo } from "@/app/firebase/video";
@@ -90,6 +90,17 @@ export function VideoLength({}) {
 export function VideoUploadDate({}) {
     const video = useContext(VideoContext)!!
     return (<>{video.uploadDate}</>)
+}
+
+export function VideoTags({}) {
+    const video = useContext(VideoContext)!!
+    return (
+        <Stack direction="row" spacing={1}>
+            {video.tags?.map((tag) => (
+                <Chip key={tag} label={tag} component="a" clickable />
+            ))}
+        </Stack>
+    )
 }
 
 export function VideoLogo({}) {

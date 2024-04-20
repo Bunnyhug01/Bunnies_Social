@@ -1,8 +1,9 @@
-
-import { getOne, Comment } from "@/app/api/comment";
 import React, { useContext, useEffect, useState } from "react";
 import { UserIdInfo } from "../user/user";
 import { VideoIdInfo } from "../video/video";
+import { Comment, getOneComment, getReplies } from "@/app/firebase/comment";
+import { ImageIdInfo } from "../image/image";
+import { AudioIdInfo } from "../audio/audio";
 
 export const CommentContext = React.createContext<Comment | undefined>(undefined)
 
@@ -13,11 +14,11 @@ export function CommentInfo({ comment, children }: { comment: Comment, children:
         </CommentContext.Provider>
     )
 }
-export function CommentIdInfo({ id, children }: { id: number, children: React.ReactNode }) {
+export function CommentIdInfo({ id, children }: { id: string, children: React.ReactNode }) {
     const [comment, setComment] = useState<Comment>()
 
     useEffect(() => {
-        getOne(id).then((comment) => {
+        getOneComment(id).then((comment) => {
             setComment(comment)
         })
     }, [id])
@@ -40,10 +41,20 @@ export function CommentText({}) {
     return (<>{comment.text}</>)
 }
 
-export function CommentAuthorInfo({children}: {children: React.ReactNode}) {
+export function CommentContent() {
+    const comment = useContext(CommentContext)!!
+    return comment.text
+}
+
+export function CommentDate({}) {
+    const comment = useContext(CommentContext)!!
+    return (<>{comment.date}</>)
+}
+
+export function CommentOwnerInfo({children}: {children: React.ReactNode}) {
     const comment = useContext(CommentContext)!!
     return (
-        <UserIdInfo id={comment.author}>
+        <UserIdInfo id={comment.owner}>
             {children}
         </UserIdInfo>
     )
@@ -52,8 +63,26 @@ export function CommentAuthorInfo({children}: {children: React.ReactNode}) {
 export function CommentVideoInfo({children}: {children: React.ReactNode}) {
     const comment = useContext(CommentContext)!!
     return (
-        <VideoIdInfo id={comment.video}>
+        <VideoIdInfo id={comment.video!}>
             {children}
         </VideoIdInfo>
+    )
+}
+
+export function CommentImageInfo({children}: {children: React.ReactNode}) {
+    const comment = useContext(CommentContext)!!
+    return (
+        <ImageIdInfo id={comment.image!}>
+            {children}
+        </ImageIdInfo>
+    )
+}
+
+export function CommentAudioInfo({children}: {children: React.ReactNode}) {
+    const comment = useContext(CommentContext)!!
+    return (
+        <AudioIdInfo id={comment.audio!}>
+            {children}
+        </AudioIdInfo>
     )
 }

@@ -6,10 +6,11 @@ import { Dislikes, History, Likes } from "./user";
 
 export interface AudioCreateRequest {
   title: string,
-  details: string,
+  details?: string,
   audioUrl: string,
   logoUrl: string,
   isPrivate: boolean,
+  tags?: string[],
 }
 
 export interface AudioUpdateRequest {
@@ -18,12 +19,13 @@ export interface AudioUpdateRequest {
   logoUrl?: string,
   audioUrl?: string,
   isPrivate?: boolean,
+  tags?: string[],
 }
 
 export interface Audio {
   id?: string,
   title: string,
-  details: string,
+  details?: string,
   audioUrl: string,
   logoUrl: string,
   uploadDate: string,
@@ -32,6 +34,7 @@ export interface Audio {
   views: number,
   owner: string,
   isPrivate: boolean,
+  tags?: string[],
 }
 
 export async function getAllAudios(): Promise<Audio[]> {
@@ -58,10 +61,10 @@ export async function getOneAudio(id: string): Promise<Audio> {
     });
 }
 
-export function createAudio({title, details, audioUrl, logoUrl, isPrivate}: AudioCreateRequest): void {
+export function createAudio({title, details, audioUrl, logoUrl, isPrivate, tags}: AudioCreateRequest): void {
   
   const audio: Audio = {
-    title: title.toLowerCase(),
+    title: title,
     details: details,
     audioUrl: audioUrl,
     logoUrl: logoUrl,
@@ -71,6 +74,7 @@ export function createAudio({title, details, audioUrl, logoUrl, isPrivate}: Audi
     views: 0,
     owner: auth.currentUser!.uid,
     isPrivate: isPrivate,
+    tags: tags,
   }
 
   const audioId = push(ref(database, 'audios/'), audio).key;
@@ -83,11 +87,11 @@ export function createAudio({title, details, audioUrl, logoUrl, isPrivate}: Audi
   })
 }
 
-export function updateAudio(id: string, {title, details, audioUrl, logoUrl, isPrivate}: AudioUpdateRequest) {
+export function updateAudio(id: string, {title, details, audioUrl, logoUrl, isPrivate, tags}: AudioUpdateRequest) {
   const updates:AudioUpdateRequest = {}
 
   if (title !== undefined)
-    updates['title'] = title.toLowerCase()
+    updates['title'] = title
   
   if (details !== undefined)
     updates['details'] = details
@@ -99,7 +103,10 @@ export function updateAudio(id: string, {title, details, audioUrl, logoUrl, isPr
     updates['logoUrl'] = logoUrl 
   
   if (isPrivate !== undefined) 
-    updates['isPrivate'] = isPrivate 
+    updates['isPrivate'] = isPrivate
+
+  if (tags !== undefined) 
+    updates['tags'] = tags 
 
 
   update(ref(database, `audios/${id}`), updates).then((snapshot) => {
@@ -236,11 +243,11 @@ export function addToHistory(audioId: string): void {
 
 }
 
-export function getRecommendations(currentVideoId: string): Promise<Audio[]> {
+export function getRecommendations(currentAudioId: string): Promise<Audio[]> {
   return get(child(ref(database), 'audios/')).then((snapshot) => {
     if (snapshot.exists()) {
       const audio = snapshot.val()
-      delete audio[currentVideoId]
+      delete audio[currentAudioId]
 
       return audio
     } else {

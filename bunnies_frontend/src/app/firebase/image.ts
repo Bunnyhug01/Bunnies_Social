@@ -6,9 +6,10 @@ import { Dislikes, History, Likes } from "./user";
 
 export interface ImageCreateRequest {
     title: string,
-    details: string,
+    details?: string,
     imageUrl: string,
     isPrivate: boolean,
+    tags?: string[],
 }
 
 export interface ImageUpdateRequest {
@@ -16,12 +17,13 @@ export interface ImageUpdateRequest {
     details?: string,
     imageUrl?: string,
     isPrivate?: boolean,
+    tags?: string[],
 }
 
 export interface Image {
   id?: string,
   title: string,
-  details: string,
+  details?: string,
   imageUrl: string,
   uploadDate: string,
   likes: number,
@@ -29,6 +31,7 @@ export interface Image {
   views: number,
   owner: string,
   isPrivate: boolean,
+  tags?: string[],
 }
 
 export async function getAllImages(): Promise<Image[]> {
@@ -55,10 +58,10 @@ export async function getOneImage(id: string): Promise<Image> {
     });
 }
 
-export function createImage({title, details, imageUrl, isPrivate}: ImageCreateRequest): void {
+export function createImage({title, details, imageUrl, isPrivate, tags}: ImageCreateRequest): void {
   
-  const video: Image = {
-    title: title.toLowerCase(),
+  const image: Image = {
+    title: title,
     details: details,
     imageUrl: imageUrl,
     uploadDate: getDate(),
@@ -67,10 +70,10 @@ export function createImage({title, details, imageUrl, isPrivate}: ImageCreateRe
     views: 0,
     owner: auth.currentUser!.uid,
     isPrivate: isPrivate,
-
+    tags: tags,
   }
 
-  const imageId = push(ref(database, 'images/'), video).key;
+  const imageId = push(ref(database, 'images/'), image).key;
   update(ref(database, `images/${imageId}/`), {id: imageId})
 
   get(child(ref(database), `users/${auth.currentUser?.uid}/images/`)).then((snapshot) => {
@@ -80,11 +83,11 @@ export function createImage({title, details, imageUrl, isPrivate}: ImageCreateRe
   })
 }
 
-export function updateImage(id: string, {title, details, imageUrl, isPrivate}: ImageUpdateRequest) {
+export function updateImage(id: string, {title, details, imageUrl, isPrivate, tags}: ImageUpdateRequest) {
   const updates:ImageUpdateRequest = {}
 
   if (title !== undefined)
-    updates['title'] = title.toLowerCase()
+    updates['title'] = title
   
   if (details !== undefined)
     updates['details'] = details
@@ -95,6 +98,8 @@ export function updateImage(id: string, {title, details, imageUrl, isPrivate}: I
   if (isPrivate !== undefined) 
     updates['isPrivate'] = isPrivate 
 
+  if (tags !== undefined) 
+    updates['tags'] = tags 
 
   update(ref(database, `images/${id}`), updates).then((snapshot) => {
 
@@ -230,11 +235,11 @@ export function addToHistory(imageId: string): void {
   
 }
 
-export function getRecommendations(currentVideoId: string): Promise<Image[]> {
+export function getRecommendations(currentImageId: string): Promise<Image[]> {
     return get(child(ref(database), 'images/')).then((snapshot) => {
       if (snapshot.exists()) {
         const images = snapshot.val()
-        delete images[currentVideoId]
+        delete images[currentImageId]
   
         return images
       } else {
