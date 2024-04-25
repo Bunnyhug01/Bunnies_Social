@@ -144,10 +144,22 @@ export function UserLogoChannel({}) {
         <Avatar
             sx={{
                 bgcolor: deepPurple[500],
-                width: '150px',
-                height: '150px',
+                width: {
+                    xs: '100px',
+                    sm: '130px',
+                    md: '150px',
+                  },
+                height: {
+                    xs: '100px',
+                    sm: '130px',
+                    md: '150px',
+                },
+                fontSize: {
+                    xs: '40px',
+                    sm: '45px',
+                    md: '50px',
+                },
                 marginRight: '20px',
-                fontSize: '50px'
             }}
             alt={user.username}
             src={user.logoUrl ? user.logoUrl : ''}

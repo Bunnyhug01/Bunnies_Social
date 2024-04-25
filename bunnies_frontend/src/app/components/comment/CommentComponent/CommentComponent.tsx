@@ -6,7 +6,6 @@ import ReplyIcon from '@mui/icons-material/Reply';
 import { Comment, createComment, deleteComment, getComments, replyComment, updateComment } from '@/app/firebase/comment';
 import { UserIdInfo, UserName } from '../../user/user';
 import { auth } from '@/app/firebase/firebase';
-import { CommentContent, CommentDate, CommentIdInfo, CommentOwnerInfo, CommentText } from '../comment';
 
 interface Props {
   videoId?: string,
@@ -21,6 +20,7 @@ const CommentComponent = ({ videoId, imageId, audioId, langDictionary }: Props) 
   const [comments, setComments] = useState<Comment[]>([]);
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [replyingToCommentId, setReplyingToCommentId] = useState<string | null>(null);
+  const [replyingToReplyId, setReplyingToReplyId] = useState<string | null>(null);
   const [replyText, setReplyText] = useState<string>('');
   const [showReplies, setShowReplies] = useState<{ [key: string]: boolean }>({});
   
@@ -75,26 +75,48 @@ const CommentComponent = ({ videoId, imageId, audioId, langDictionary }: Props) 
     setReplyingToCommentId(id);
   };
 
+  const handleReplyReply = (id: string) => {
+    setReplyingToReplyId(id);
+  };
+
   const handleReplyKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
 
       if (videoId !== undefined) {
         createComment({text: replyText.trim(), videoId: videoId}).then((newComment) => {
-          replyComment(replyingToCommentId!, {id: newComment.id!})
+          
+          if (replyingToReplyId) {
+            replyComment(replyingToCommentId!, newComment, replyingToReplyId)
+          } else {
+            replyComment(replyingToCommentId!, newComment)
+          }
+          
           setComments([...comments, newComment]);
         })
       }
         
       if (imageId !== undefined) {
         createComment({text: replyText.trim(), imageId: imageId}).then((newComment) => {
-          replyComment(replyingToCommentId!, {id: newComment.id!})
+          
+          if (replyingToReplyId) {
+            replyComment(replyingToCommentId!, newComment, replyingToReplyId)
+          } else {
+            replyComment(replyingToCommentId!, newComment)
+          }
+
           setComments([...comments, newComment]);
         })
       }
 
       if (audioId !== undefined) {
         createComment({text: replyText.trim(), audioId: audioId}).then((newComment) => {
-          replyComment(replyingToCommentId!, {id: newComment.id!})
+          
+          if (replyingToReplyId) {
+            replyComment(replyingToCommentId!, newComment, replyingToReplyId)
+          } else {
+            replyComment(replyingToCommentId!, newComment)
+          }
+
           setComments([...comments, newComment]);
         })
       }
@@ -104,10 +126,11 @@ const CommentComponent = ({ videoId, imageId, audioId, langDictionary }: Props) 
     }
   };
 
-  const handleDeleteComment = (id: string) => {
+  const handleDeleteComment = (id: string, {replyId, parentReplyId, replies}: {replyId?: string , parentReplyId?: string, replies?: Comment[]}) => {
     const updatedComments = comments.filter((comment) => comment.id !== id);
     setComments(updatedComments);
-    deleteComment(id)
+
+    deleteComment(id, replyId, parentReplyId, replies)
   };
 
   const handleToggleReplies = (commentId: string) => {
@@ -117,6 +140,9 @@ const CommentComponent = ({ videoId, imageId, audioId, langDictionary }: Props) 
     });
   };
   
+  useEffect(() => {
+    console.log(comments)
+  }, [comments])
 
   return (
     <Box>
@@ -139,73 +165,162 @@ const CommentComponent = ({ videoId, imageId, audioId, langDictionary }: Props) 
       <List>
         {comments.map((comment) => (
           <div key={comment.id} style={{ marginBottom: '16px', paddingBottom: '16px' }}>
-            { !comment.rootComment
-              ?
-                <ListItem alignItems="flex-start">
-                  <UserIdInfo id={comment.owner}>
-                    <Avatar alt="Avatar" />
-                    <Box ml={2} flex={1}>
-                      <Box display="flex" alignItems="center">
-                        <Typography variant="subtitle1" fontWeight="bold">
-                          <UserName />
-                        </Typography>
-                        <Typography sx={{marginLeft: 1}} variant="caption" color="text.secondary">
-                          {comment.date}
-                        </Typography>
-                      </Box>
-                      
-                      { editText
-                        ? <TextField
-                            placeholder="Редактирование"
-                            variant="outlined"
-                            value={editText}
-                            onChange={(e) => setEditText(e.target.value)}
-                            onKeyPress={(e) => {
-                              if (e.key === 'Enter') {
-                                handleEditComment(editingCommentId!);
-                              }
+
+            <ListItem alignItems="flex-start">
+              <UserIdInfo id={comment.owner}>
+                <Avatar alt="Avatar" />
+                <Box ml={2} flex={1}>
+                  <Box display="flex" alignItems="center">
+                    <Typography variant="subtitle1" fontWeight="bold">
+                      <UserName />
+                    </Typography>
+                    <Typography sx={{marginLeft: 1}} variant="caption" color="text.secondary">
+                      {comment.date}
+                    </Typography>
+                  </Box>
+                  
+                  { editText
+                    ? <TextField
+                        placeholder="Редактирование"
+                        variant="outlined"
+                        value={editText}
+                        onChange={(e) => setEditText(e.target.value)}
+                        onKeyPress={(e) => {
+                          if (e.key === 'Enter') {
+                            handleEditComment(editingCommentId!);
+                          }
+                        }}
+                        fullWidth
+                        margin="normal"
+                      />
+                    : <ListItemText primary={comment.text} />
+                  }
+                  {
+                    comment.replies
+                    ? <>
+                        <Button onClick={() => handleToggleReplies(comment.id!)}>
+                          {showReplies[comment.id!] ? 'Скрыть ответы' : 'Показать ответы'}
+                        </Button>
+                      </>
+                    : null
+                  }
+                </Box>
+              </UserIdInfo>
+              <Box ml="auto" display="flex" alignItems="center">
+                
+                {comment.owner === auth.currentUser?.uid
+                  ? <>
+                      <IconButton onClick={() => {
+                        setEditingCommentId(comment.id!);
+                        !editText
+                          ? setEditText(comment.text)
+                          : setEditText('') 
+                      }}>
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton onClick={() => handleDeleteComment(comment.id!, {replies: comment.replies!})}>
+                        <DeleteIcon />
+                      </IconButton>
+                    </>
+                  : null
+                }
+                <IconButton onClick={() => handleReplyComment(comment.id!)}>
+                  <ReplyIcon />
+                </IconButton>
+              </Box>
+            </ListItem>
+
+
+            {showReplies[comment.id!] && comment.replies.length > 0 && (
+              <List sx={{ ml: 4 }}>
+                {comment.replies.map((replyComment) => (
+                  <div key={replyComment.id!} style={{ marginTop: '12px', borderLeft: '2px solid #ccc', paddingLeft: '12px' }}>
+
+                      <ListItem alignItems="flex-start">
+                        <UserIdInfo id={replyComment.owner}>
+                          <Avatar alt="Avatar" />
+                          <Box ml={2} flex={1}>
+                            <Box display="flex" alignItems="center">
+                              <Typography variant="subtitle1" fontWeight="bold">
+                                <UserName />
+                              </Typography>
+                              <Typography sx={{marginLeft: 1}} variant="caption" color="text.secondary">
+                                {replyComment.date}
+                              </Typography>
+                            </Box>
+                            { editText
+                              ? <TextField
+                                  placeholder="Редактирование"
+                                  variant="outlined"
+                                  value={editText}
+                                  onChange={(e) => setEditText(e.target.value)}
+                                  onKeyPress={(e) => {
+                                    if (e.key === 'Enter') {
+                                      handleEditComment(editingCommentId!);
+                                    }
+                                  }}
+                                  fullWidth
+                                  margin="normal"
+                                />
+                              : <ListItemText primary={replyComment.text} />
+                            }
+                            {
+                              replyComment.replies
+                              ? <>
+                                  <Button onClick={() => handleToggleReplies(replyComment.id!)}>
+                                    {showReplies[replyComment.id!] ? 'Скрыть ответы' : 'Показать ответы'}
+                                  </Button>
+                                </>
+                              : null
+                            }
+                          </Box>
+                        </UserIdInfo>
+                        <Box ml="auto" display="flex" alignItems="center">
+                          
+                          {replyComment.owner === auth.currentUser?.uid
+                            ? <>
+                                <IconButton onClick={() => {
+                                  setEditingCommentId(replyComment.id!);
+                                  setCommentText(replyComment.text);
+                                }}>
+                                  <EditIcon />
+                                </IconButton>
+                                <IconButton onClick={() => handleDeleteComment(comment.id!, {replyId: replyComment.id!})}>
+                                  <DeleteIcon />
+                                </IconButton>
+                              </>
+                            : null
+                          }
+                          <IconButton
+                            onClick={() => {
+                              handleReplyComment(comment.id!)
+                              handleReplyReply(replyComment.id!)
                             }}
+                          >
+                            <ReplyIcon />
+                          </IconButton>
+                        </Box>
+                      </ListItem>
+                      
+                      {replyingToCommentId === replyComment.id && (
+                        <ListItem>
+                          <TextField
+                            placeholder="Ответ на комментарий"
+                            variant="outlined"
+                            value={replyText}
+                            onChange={(e) => setReplyText(e.target.value)}
+                            onKeyPress={handleReplyKeyPress}
                             fullWidth
                             margin="normal"
                           />
-                        : <ListItemText primary={comment.text} />
-                      }
-                      {
-                        comment.replies
-                        ? <>
-                            <Button onClick={() => handleToggleReplies(comment.id!)}>
-                              {showReplies[comment.id!] ? 'Скрыть ответы' : 'Показать ответы'}
-                            </Button>
-                          </>
-                        : null
-                      }
-                    </Box>
-                  </UserIdInfo>
-                  <Box ml="auto" display="flex" alignItems="center">
-                    
-                    {comment.owner === auth.currentUser?.uid
-                      ? <>
-                          <IconButton onClick={() => {
-                            setEditingCommentId(comment.id!);
-                            !editText
-                              ? setEditText(comment.text)
-                              : setEditText('') 
-                          }}>
-                            <EditIcon />
-                          </IconButton>
-                          <IconButton onClick={() => handleDeleteComment(comment.id!)}>
-                            <DeleteIcon />
-                          </IconButton>
-                        </>
-                      : null
-                    }
-                    <IconButton onClick={() => handleReplyComment(comment.id!)}>
-                      <ReplyIcon />
-                    </IconButton>
-                  </Box>
-                </ListItem>
-              : null
-            }
+                        </ListItem>
+                      )}
+
+                  </div>
+                  
+                ))}
+              </List>
+            )}
 
             {replyingToCommentId === comment.id && (
               <ListItem>
@@ -221,62 +336,6 @@ const CommentComponent = ({ videoId, imageId, audioId, langDictionary }: Props) 
               </ListItem>
             )}
 
-            {showReplies[comment.id!] && comment.replies.length > 0 && (
-              <List sx={{ ml: 4 }}>
-                {comment.replies.map((replyId) => (
-                  <div key={replyId} style={{ marginTop: '12px', borderLeft: '2px solid #ccc', paddingLeft: '12px' }}>
-                    <CommentIdInfo id={replyId}>
-                      <ListItem alignItems="flex-start">
-                        <CommentOwnerInfo>
-                          <Avatar alt="Avatar" />
-                          <Box ml={2} flex={1}>
-                            <Box display="flex" alignItems="center">
-                              <Typography variant="subtitle1" fontWeight="bold">
-                                <UserName />
-                              </Typography>
-                              <Typography sx={{marginLeft: 1}} variant="caption" color="text.secondary">
-                                <CommentDate />
-                              </Typography>
-                            </Box>
-                            <ListItemText primary={<CommentText />} />
-                            {
-                              comment.replies
-                              ? <>
-                                  <Button onClick={() => handleToggleReplies(replyId)}>
-                                    {showReplies[replyId] ? 'Скрыть ответы' : 'Показать ответы'}
-                                  </Button>
-                                </>
-                              : null
-                            }
-                          </Box>
-                        </CommentOwnerInfo>
-                        <Box ml="auto" display="flex" alignItems="center">
-                          
-                          {comment.owner === auth.currentUser?.uid
-                            ? <>
-                                <IconButton onClick={() => {
-                                  setEditingCommentId(replyId);
-                                  setCommentText(CommentContent());
-                                }}>
-                                  <EditIcon />
-                                </IconButton>
-                                <IconButton onClick={() => handleDeleteComment(replyId)}>
-                                  <DeleteIcon />
-                                </IconButton>
-                              </>
-                            : null
-                          }
-                          <IconButton onClick={() => handleReplyComment(replyId)}>
-                            <ReplyIcon />
-                          </IconButton>
-                        </Box>
-                      </ListItem>
-                    </CommentIdInfo>
-                  </div>
-                ))}
-              </List>
-            )}
-
           </div>
         ))}
       </List>
@@ -286,19 +345,3 @@ const CommentComponent = ({ videoId, imageId, audioId, langDictionary }: Props) 
 };
 
 export default CommentComponent;
-
-
-// {comment.replies.length > 0 && (
-//   <List>
-//     {comment.replies.map((nestedReply) => (
-//       <ListItem key={nestedReply.id}>
-//         <Avatar src={nestedReply.userAvatar} alt={nestedReply.userName} /> {/* Avatar */}
-//         <Box sx={{ marginLeft: 2 }}>
-//           <Typography variant="subtitle1" fontWeight="bold">{nestedReply.userName}</Typography> {/* Username */}
-//           <Typography variant="caption">{nestedReply.date}</Typography> {/* Nested reply date */}
-//         </Box>
-//         <ListItemText primary={nestedReply.text} /> {/* Nested reply text */}
-//       </ListItem>
-//     ))}
-//   </List>
-// )}

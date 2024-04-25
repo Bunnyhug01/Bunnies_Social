@@ -1,6 +1,6 @@
 import { error } from "console";
 import { auth, database } from "./firebase";
-import { ref, push, get, child, remove, update } from "firebase/database";
+import { ref, push, get, child, remove, update, limitToLast, query, orderByChild, equalTo } from "firebase/database";
 import getDate from "../utils/getDate";
 import { Dislikes, History, Likes } from "./user";
 
@@ -59,6 +59,16 @@ export async function getOneVideo(id: string): Promise<Video> {
       }).catch((error) => {
         console.error(error);
     });
+}
+
+export async function getUserLastVideos(userId: string, count: number): Promise<Video[]> {
+  return get(query(ref(database, 'videos'), orderByChild('owner'), equalTo(userId), limitToLast(count))).then((snapshot) => {
+    const videos: Video[] = []
+    snapshot.forEach((childSnapshot) => {
+      videos.push(childSnapshot.val())
+    })
+    return videos
+  })
 }
 
 export function createVideo({title, details, videoUrl, logoUrl, isPrivate, tags}: VideoCreateRequest): void {

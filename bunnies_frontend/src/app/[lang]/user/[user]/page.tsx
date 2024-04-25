@@ -9,6 +9,8 @@ import { Box, Tab, Tabs, ThemeProvider, Typography, createTheme } from "@mui/mat
 import OndemandVideoIcon from '@mui/icons-material/OndemandVideo';
 import ImageIcon from '@mui/icons-material/Image';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
+import SubscriptionsIcon from '@mui/icons-material/Subscriptions';
+import ContactsIcon from '@mui/icons-material/Contacts';
 
 import Header from "../../../components/Header/Header";
 import BottomNav from "../../../components/BottomNav/BottomNav";
@@ -17,11 +19,11 @@ import RecommendedList from "../../../components/video/RecommendedList/Recommend
 
 import translation from '@/app/locales/translation';
 import { User, getMe, getUser } from '@/app/firebase/user';
-import { Video, getOneVideo } from '@/app/firebase/video';
+import { Video, getOneVideo, getUserLastVideos } from '@/app/firebase/video';
 import UserBanner from '@/app/components/user/UserBanner/UserBanner';
 import UserInfoBlock from '@/app/components/user/UserInfoBlock/UserInfoBlock';
-import { Image, getOneImage } from '@/app/firebase/image';
-import { Audio, getOneAudio } from '@/app/firebase/audio';
+import { Image, getOneImage, getUserLastImages } from '@/app/firebase/image';
+import { Audio, getOneAudio, getUserLastAudios } from '@/app/firebase/audio';
 import AudioList from '@/app/components/audio/AudioList/AudioList';
 import VideoList from '@/app/components/video/VideoList/VideoList';
 import ImageList from '@/app/components/image/ImageList/ImageList';
@@ -66,6 +68,10 @@ export function UserPage() {
   const params  = useParams();
   const userId = (params.user).toString()
   const lang: string = (params.lang).toString()
+  
+  const videosCount:number = 6
+  const imagesCount:number = 6
+  const audiosCount:number = 6
 
   const langDictionary = translation[lang]
   if (langDictionary === undefined)
@@ -74,6 +80,11 @@ export function UserPage() {
   const [videos, setVideos] = useState<Video[]>([])
   const [images, setImages] = useState<Image[]>([])
   const [audios, setAudios] = useState<Audio[]>([])
+
+  const [lastVideos, setLastVideos] = useState<Video[]>([])
+  const [lastImages, setLastImages] = useState<Image[]>([])
+  const [lastAudios, setLastAudios] = useState<Audio[]>([])
+
   const [subscribers, setSubscribers] = useState<User[]>([])
   const [subscriptions, setSubscriptions] = useState<User[]>([])
 
@@ -90,7 +101,19 @@ export function UserPage() {
     
   useEffect(() => {
     if (searchText === undefined || searchText === '') {
-        
+      
+      getUserLastVideos(userId, videosCount).then((lastVideosArray) => {
+        setLastVideos(lastVideosArray)
+      })
+
+      getUserLastImages(userId, imagesCount).then((lastImagesArray) => {
+        setLastImages(lastImagesArray)
+      })
+
+      getUserLastAudios(userId, audiosCount).then((lastAudiosArray) => {
+        setLastAudios(lastAudiosArray)
+      })
+
       getUser(userId).then((user) => {
         user.videos?.map((videoId) => {
           getOneVideo(videoId).then((video) => {
@@ -162,24 +185,104 @@ export function UserPage() {
           color: 'text.primary',
           flexGrow: 1, p: 3,
         }}
-        className='overflow-scroll scrollbar-thin scrollbar-thumb-gray-800'  
+        className='overflow-scroll scrollbar-none'  
       >
 
         <UserBanner />
         <UserInfoBlock id={userId} langDictionary={langDictionary} />
         
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+          <Tabs
+            value={value}
+            onChange={handleChange}
+            variant="scrollable"
+            scrollButtons="auto"
+            aria-label="basic tabs"
+          >
             <Tab label={langDictionary['user_mainPage']} {...a11yProps(0)} />
             <Tab label={langDictionary['videos']} {...a11yProps(1)} />
             <Tab label={langDictionary['images']} {...a11yProps(2)} />
             <Tab label={langDictionary['audios']} {...a11yProps(3)} />
-            <Tab label="SUBS" {...a11yProps(4)} />
+            <Tab label={langDictionary['subscriptions']} {...a11yProps(4)} />
+            <Tab label={langDictionary['subscribersSecond']} {...a11yProps(5)} />
           </Tabs>
         </Box>
 
         <CustomTabPanel value={value} index={0}>
-          Item One
+
+          <Box className="flex items-center">
+              <Typography className='text-[18px] font-bold my-2 px-2'>
+                {langDictionary['last_videos']}
+              </Typography>
+              <OndemandVideoIcon />
+            </Box>
+
+            { lastVideos.length !== 0
+              ?
+                <Box
+                  className="grid grid-cols-3 gap-4 ml-2 mr-2 pb-4"
+                >
+                  {lastVideos.map((video) => (
+                    <Link 
+                      key={video.id}
+                      href={`${lang}/video/${video.id}`}
+                    >
+                      <VideoList video={video} langDictionary={langDictionary} />
+                    </Link>
+                  ))}
+                </Box>
+              : <Typography className="my-2 px-2">{langDictionary['no_videos']}</Typography>
+            }
+
+          <Box className="flex items-center mt-6">
+            <Typography className='text-[18px] font-bold my-2 px-2'>
+              {langDictionary['last_images']}
+            </Typography>
+            <ImageIcon />
+          </Box>
+
+          {lastImages.length !== 0
+            ?
+            <Box
+              className="grid grid-cols-4 gap-4 ml-2 mr-2 pb-4"
+            >
+              {lastImages.map((image) => (
+                <Link 
+                  key={image.id}
+                  href={`${lang}/image/${image.id}`}
+                >
+                  <ImageList image={image} langDictionary={langDictionary} />
+                </Link>
+              ))}
+            </Box>
+            : <Typography className="my-2 px-2">{langDictionary['no_images']}</Typography>
+          }
+
+          <Box className="flex items-center mt-6">
+            <Typography className='text-[18px] font-bold my-2 px-2'>
+              {langDictionary['last_audio']}
+            </Typography>
+            <MusicNoteIcon />
+          </Box>
+
+          {lastAudios.length !== 0
+            ?
+            <Box
+              className="grid grid-cols-4 gap-4 ml-2 mr-2 pb-4"
+            >
+              {lastAudios.map((audio) => (
+                <Link 
+                  key={audio.id}
+                  href={`${lang}/audio/${audio.id}`}
+                  className='max-w-[15vw]'
+                >
+                  <AudioList audio={audio} langDictionary={langDictionary} />
+                </Link>
+              ))}
+            </Box>
+            : <Typography className="my-2 px-2">{langDictionary['no_audios']}</Typography>
+          }
+
         </CustomTabPanel>
         
         <CustomTabPanel value={value} index={1}>
@@ -264,32 +367,49 @@ export function UserPage() {
             </Box>
             : <Typography className="my-2 px-2">{langDictionary['no_audios']}</Typography>
           }
+
         </CustomTabPanel>
 
         <CustomTabPanel value={value} index={4}>
+
+          <Box className="flex items-center mb-3">
+            <Typography className='text-[18px] font-bold my-2 px-2'>
+              {langDictionary['subscriptions']}
+            </Typography>
+            <SubscriptionsIcon />
+          </Box>
+
           {subscriptions.length !== 0
               ?
-              <Box
-              >
+              <Box>
                 {subscriptions.map((subscription) => (
-                  <UserList id={subscription.id} langDictionary={langDictionary} />
+                  <UserList key={subscription.id} id={subscription.id} langDictionary={langDictionary} />
                 ))}
               </Box>
-              : <Typography className="my-2 px-2">SHEESH</Typography>
+              : <Typography className="my-2 px-2">{langDictionary['user_subscriptions']}</Typography>
           }
         </CustomTabPanel>
 
-        {/* {data.length !== 0
-          ? data.map((video) => (
-            <Link 
-              key={video.id}
-              href={`/${lang}/userVideos/${video.id}`}
-            >
-              <RecommendedList video={video} langDictionary={langDictionary} />
-            </Link>
-          ))
-          : <Typography className="my-2 px-2">{langDictionary['user_videos_list']}</Typography>
-        } */}
+        <CustomTabPanel value={value} index={5}>
+
+          <Box className="flex items-center mb-3">
+            <Typography className='text-[18px] font-bold my-2 px-2'>
+              {langDictionary['subscribersSecond']}
+            </Typography>
+            <ContactsIcon />
+          </Box>
+
+          {subscribers.length !== 0
+              ?
+              <Box>
+                {subscribers.map((subscriber) => (
+                  <UserList key={subscriber.id} id={subscriber.id} langDictionary={langDictionary} />
+                ))}
+              </Box>
+              : <Typography className="my-2 px-2">{langDictionary['user_subscribers']}</Typography>
+          }
+        </CustomTabPanel>
+
       </Box>
 
       <BottomNav language={{langDictionary: langDictionary, lang: lang}} />

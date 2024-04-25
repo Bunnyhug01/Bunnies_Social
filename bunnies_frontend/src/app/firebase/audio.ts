@@ -1,6 +1,6 @@
 import { error } from "console";
 import { auth, database } from "./firebase";
-import { ref, push, get, child, remove, update } from "firebase/database";
+import { ref, push, get, child, remove, update, equalTo, limitToLast, orderByChild, query } from "firebase/database";
 import getDate from "../utils/getDate";
 import { Dislikes, History, Likes } from "./user";
 
@@ -59,6 +59,16 @@ export async function getOneAudio(id: string): Promise<Audio> {
       }).catch((error) => {
         console.error(error);
     });
+}
+
+export async function getUserLastAudios(userId: string, count: number): Promise<Audio[]> {
+  return get(query(ref(database, 'audios'), orderByChild('owner'), equalTo(userId), limitToLast(count))).then((snapshot) => {
+    const audios: Audio[] = []
+    snapshot.forEach((childSnapshot) => {
+      audios.push(childSnapshot.val())
+    })
+    return audios
+  })
 }
 
 export function createAudio({title, details, audioUrl, logoUrl, isPrivate, tags}: AudioCreateRequest): void {

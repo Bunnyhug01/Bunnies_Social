@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { UserIdInfo } from "../user/user";
 import { VideoIdInfo } from "../video/video";
-import { Comment, getOneComment, getReplies } from "@/app/firebase/comment";
+import { Comment, getOneComment, getOneReply, getReplies } from "@/app/firebase/comment";
 import { ImageIdInfo } from "../image/image";
 import { AudioIdInfo } from "../audio/audio";
 

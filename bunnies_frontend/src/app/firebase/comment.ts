@@ -1,4 +1,4 @@
-import { ref, push, update, get, child, remove } from "firebase/database";
+import { ref, push, update, get, child, remove, endAt, orderByChild, query, startAt, equalTo } from "firebase/database";
 import { database, auth } from "./firebase";
 import getDate from "../utils/getDate";
 
@@ -13,15 +13,10 @@ export interface CommentUpdateRequest {
     text: string;
 }
 
-export interface CommentReplyRequest {
-    id: string;
-}
-
 export interface Comment {
     id?: string;
     text: string;
-    replies: string[];
-    rootComment?: string;
+    replies: Comment[];
     video?: string;
     image?: string;
     audio?: string;
@@ -81,6 +76,19 @@ export async function getReplies(id: string): Promise<Comment[] | null> {
     })
 }
 
+export async function getOneReply(rootCommentId: string, id: string): Promise<Comment> {
+
+    return get(query(ref(database, `comments/${rootCommentId}/replies/`), orderByChild('id'), equalTo(id))).then((snapshot) => {
+        if (snapshot.exists()) {
+            return snapshot.val()
+        } else {
+            return null
+        }
+    }).catch((error) => {
+        console.error(error);
+    })
+}
+
 export function createComment({text, videoId, imageId, audioId}: CommentCreateRequest): Promise<Comment> {
   
     const comment: Comment = {
@@ -126,52 +134,125 @@ export function updateComment(id: string, {text}: CommentUpdateRequest) {
   
 }
 
-export function replyComment(commentId: string, {id}: CommentReplyRequest) {
-    
-    get(child(ref(database), `comments/${commentId}/replies/`)).then((snapshot) => {
-        const replies:string[] = snapshot.val() ? snapshot.val() : []
-        replies.push(id)
-        update(ref(database, `comments/${commentId}/`), {replies: replies})
-    })
+export async function replyComment(commentId: string, newReply: Comment, replyId?: string) {
+    const commentSnapshot = await get(child(ref(database), `comments/${commentId}`));
+    const comment = commentSnapshot.val();
+  
+    const findAndAddReply = (replies: Comment[], targetReplyId?: string): boolean => {
+      for (const reply of replies) {
 
-    update(ref(database, `comments/${id}/rootComment/`), {rootComment: commentId})
-}
-  
-export function deleteComment(id: string): void {
-    
-    get(child(ref(database), `users/${auth.currentUser?.uid}/comments/`)).then((snapshot) => {
-      const comments:string[] = snapshot.val()
-  
-      const index = comments.indexOf(id);
-      if (index !== -1) {
-        comments.splice(index, 1);
+        if (reply.id === targetReplyId) {
+          if (!reply.replies) {
+            reply.replies = [];
+          }
+
+          reply.replies.push(newReply);
+          return true;
+        } else if (reply.replies) {
+          if (findAndAddReply(reply.replies, targetReplyId)) {
+            return true;
+          }
+        }
       }
+      return false;
+    };
+    
+
+    if (comment) {
+      if (replyId) {
+        if (findAndAddReply(comment.replies || [], replyId)) {
+          await update(ref(database, `comments/${commentId}/`), { replies: comment.replies });
+        } else {
+          console.error('No reply');
+        }
+      } else {
+        if (!comment.replies) {
+          comment.replies = [];
+        }
+        comment.replies.push(newReply);
+        await update(ref(database, `comments/${commentId}/`), { replies: comment.replies });
+      }
+    } else {
+      console.error('No comment');
+    }
+
+    remove(ref(database, `comments/${newReply.id}`)) 
+};
+
+export async function deleteComment(commentId: string, replyId?: string, parentReplyId?: string, replies?: Comment[]) {
+
+    const userCommentsRef = ref(database, `users/${auth.currentUser?.uid}/comments`);
+    const snapshot = await get(userCommentsRef);
+    if (snapshot.exists()) {
+      const comments = snapshot.val();
+
+      const updatedComments = replyId ? Object.values(comments).filter((id) => id !== replyId) : Object.values(comments).filter((id) => id !== commentId);
+      
+      await update(ref(database, `users/${auth.currentUser?.uid}/`), {comments: updatedComments});
+    }
   
-      update(ref(database, `users/${auth.currentUser?.uid}/`), {comments: comments})
-    })
+  // Рекурсивное удаление ответов
+  const deleteReplies = async (replies: Comment[]) => {
+    if (!replies || replies.length === 0) return;
 
-    get(child(ref(database), `comments/${id}/replies/`)).then((snapshot) => {
-        snapshot.forEach((childSnapshot) => {
+    for (const reply of replies) {
+      // Удаление ответа из списка комментариев пользователя
+      const replyRef = ref(database, `users/${auth.currentUser?.uid}/comments`);
+      const replySnapshot = await get(replyRef);
+      if (replySnapshot.exists()) {
+        const replyComments = replySnapshot.val();
+        const updatedReplyComments = Object.values(replyComments).filter((id) => id !== reply.id);
+        await update(ref(database, `users/${auth.currentUser?.uid}/`), {comments: updatedReplyComments});
+      }
 
-            remove(child(ref(database), `comments/${id}/replies/${childSnapshot.key}`))
-              
-        });
-    });
+      // Рекурсивный вызов для ответов на текущий ответ
+      await deleteReplies(reply.replies);
+    }
+  };
 
-    get(child(ref(database), `comments/${id}/`)).then((snapshot) => {
-        const rootCommentId = snapshot.val().rootComment
+    await deleteReplies(replies!);
 
-        get(child(ref(database), `comments/${rootCommentId}/replies`)).then((snapshot) => {
-            snapshot.forEach((childSnapshot) => {
-                const replyComment = childSnapshot.val();
-        
-                if (replyComment === id) {
-                  remove(child(ref(database), `comments/${rootCommentId}/replies/${replyComment}`))
-                }
-                  
-            });
-        })
-    });
-
-    remove(ref(database, `comments/${id}`)) 
-}
+    const commentSnapshot = await get(child(ref(database), `comments/${commentId}`));
+    const comment = commentSnapshot.val();
+  
+    const deleteRecursiveReply = (replies: Comment[], replyId: string, parentReplyId?: string): boolean => {
+      for (let i = 0; i < replies.length; i++) {
+        const reply = replies[i];
+        if (reply.id === replyId) {
+          replies.splice(i, 1);
+          return true;
+        } else if (reply.replies) {
+          if (deleteRecursiveReply(reply.replies, replyId, parentReplyId)) {
+            return true;
+          }
+        }
+      }
+      return false;
+    };
+  
+    if (comment) {
+      if (replyId && parentReplyId) {
+        const parentReply = comment.replies?.find((reply: { id: string; }) => reply.id === parentReplyId);
+        if (parentReply) {
+          if (deleteRecursiveReply(parentReply.replies || [], replyId, parentReplyId)) {
+            await update(ref(database, `comments/${commentId}/`), { replies: comment.replies });
+          } else {
+            console.error('No reply');
+          }
+        } else {
+          console.error('No parent reply');
+        }
+      } else if (replyId) {
+        if (deleteRecursiveReply(comment.replies || [], replyId)) {
+          await update(ref(database, `comments/${commentId}/`), { replies: comment.replies });
+        } else {
+          console.error('No reply');
+        }
+      } else {
+        // Удаление самого комментария
+        await remove(ref(database, `comments/${commentId}`));
+      }
+    } else {
+      console.error('No comment');
+    }
+};

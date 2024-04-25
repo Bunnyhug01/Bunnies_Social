@@ -1,5 +1,5 @@
 import { auth, database } from "./firebase";
-import { ref, push, get, child, remove, update } from "firebase/database";
+import { ref, push, get, child, remove, update, limitToLast, query, equalTo, orderByChild } from "firebase/database";
 import getDate from "../utils/getDate";
 import { Dislikes, History, Likes } from "./user";
 
@@ -56,6 +56,16 @@ export async function getOneImage(id: string): Promise<Image> {
       }).catch((error) => {
         console.error(error);
     });
+}
+
+export async function getUserLastImages(userId:string, count: number): Promise<Image[]> {
+  return get(query(ref(database, 'images'), orderByChild('owner'), equalTo(userId), limitToLast(count))).then((snapshot) => {
+    const images: Image[] = []
+    snapshot.forEach((childSnapshot) => {
+      images.push(childSnapshot.val())
+    })
+    return images
+  })
 }
 
 export function createImage({title, details, imageUrl, isPrivate, tags}: ImageCreateRequest): void {

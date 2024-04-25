@@ -14,6 +14,8 @@ import ImageIcon from '@mui/icons-material/Image';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
 import LibraryMusicIcon from '@mui/icons-material/LibraryMusic';
+import SubscriptionsIcon from '@mui/icons-material/Subscriptions';
+import ContactsIcon from '@mui/icons-material/Contacts';
 
 import Logo from "../Logo/Logo";
 
@@ -167,6 +169,30 @@ export default function SwipeableTemporaryDrawer({ language }: Props) {
                 <LibraryMusicIcon />
               </ListItemIcon>
               <ListItemText primary={language.langDictionary['user_audios']} />
+            </ListItemButton>
+          </ListItem>
+        </Link>
+
+        <Divider />
+
+        <Link href={`/${language.lang}/userSubscriptions`}>
+          <ListItem key={'User Subscriptions'} disablePadding>
+            <ListItemButton>
+              <ListItemIcon>
+                <SubscriptionsIcon />
+              </ListItemIcon>
+              <ListItemText primary={language.langDictionary['subscriptions']} />
+            </ListItemButton>
+          </ListItem>
+        </Link>
+
+        <Link href={`/${language.lang}/userSubscribers`}>
+          <ListItem key={'User subscribers'} disablePadding>
+            <ListItemButton>
+              <ListItemIcon>
+                <ContactsIcon />
+              </ListItemIcon>
+              <ListItemText primary={language.langDictionary['subscribersSecond']} />
             </ListItemButton>
           </ListItem>
         </Link>
