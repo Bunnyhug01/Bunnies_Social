@@ -4,6 +4,8 @@ import { Box } from '@mui/material';
 import { Image } from '@/app/firebase/image';
 import { ImageInfo, ImageTitle } from '../image';
 import ImageInformation from '../ImageInformation/ImageInformation';
+import CommentComponent from '../../comment/CommentComponent/CommentComponent';
+import MobileCommentComponent from '../../comment/MobileCommentComponent/MobileCommentComponent';
 
 
 interface Props {
@@ -56,6 +58,14 @@ export default function ImageContainer( { image = imageDefault, langDictionary }
                         ? <ImageInformation image={image} langDictionary={langDictionary} />
                         : null
                     }
+                    <Box className='md:w-[100%] sm:w-[100%] lg:w-[100%]'>
+                        <Box className="lg:block md:block sm:hidden">
+                            <CommentComponent imageId={image.id!} langDictionary={langDictionary} />
+                        </Box>
+                        <Box className="mt-1">
+                            <MobileCommentComponent imageId={image.id!} langDictionary={langDictionary} />
+                        </Box>
+                    </Box>
                 </Box>
                 
             </Box>

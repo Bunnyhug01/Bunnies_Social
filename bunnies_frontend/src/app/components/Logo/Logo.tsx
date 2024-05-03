@@ -23,7 +23,7 @@ export default function Logo({drawer = false}: Props) : JSX.Element {
                     aria-label="bunnyIcon"
                 >
                     <Image
-                        src='https://firebasestorage.googleapis.com/v0/b/bunnies-social.appspot.com/o/images%2Frabbit.png?alt=media&token=4a2d79b6-933d-43db-8287-d5eed0360d04'
+                        src='https://firebasestorage.googleapis.com/v0/b/bunnies-social.appspot.com/o/default%2Frabbit.png?alt=media&token=85265de4-c5e9-4a15-9c85-805ef41015d7'
                         width={45}
                         height={45}
                         alt="Bunnies logo"

@@ -163,6 +163,24 @@ export default function Upload({ type, langDictionary } : Props) {
         createAudio(audio)
 
     }
+
+    setMediaFileUpload(null)
+    setThumbnailUpload(null)
+  
+    setMediaFileRef("")
+    setThumbnailRef("")
+  
+    setIsThumbnail(false)
+  
+    setMediaFileLoadProgress(0)
+    setThumbnailLoadProgress(0)
+  
+    setFileType("")
+    
+    setUploadingCancellation(false)
+  
+    setPrivacy('')
+    setTags([])
     
   }
   

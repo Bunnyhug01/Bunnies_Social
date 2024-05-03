@@ -22,8 +22,8 @@ import { Link, Typography } from '@mui/material';
 import Dictaphone from '../Dictaphone/Dictaphone';
 import LanguageMenu from '../LanguageMenu/LanguageMenu';
 
-import { MyLogo, UserIdInfo, UserMeInfo } from '../user/user';
-import { signUserOut } from '@/app/firebase/user';
+import { MyLogo, UserHasPreferencesVar, UserIdInfo, UserMeInfo } from '../user/user';
+import { disablePreferences, enablePreferences, hasPreferences, signUserOut } from '@/app/firebase/user';
 import { auth } from '@/app/firebase/firebase';
 
 
@@ -51,6 +51,8 @@ export default function Header({searchHandler, ColorModeContext, text, language}
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
     React.useState<null | HTMLElement>(null);
 
+    const [isPreferences, setIsPreferences] = React.useState<boolean>(false);
+
     const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
@@ -77,6 +79,28 @@ export default function Header({searchHandler, ColorModeContext, text, language}
     const handleSignOut = () => {
         signUserOut()
     }
+
+    const handlePreferences = () => {
+        if (isPreferences) {
+            disablePreferences()
+            setIsPreferences(false)
+        } else {
+            enablePreferences()
+            setIsPreferences(true)
+        }
+    }
+
+    React.useEffect(() => {
+        
+        hasPreferences().then((isPreferences) => {
+            if (isPreferences) {
+                setIsPreferences(true)
+            } else {
+                setIsPreferences(false)
+            }
+        })
+
+    }, [])
 
     const menuId = 'primary-search-account-menu';
     const renderMenu = (
@@ -108,6 +132,18 @@ export default function Header({searchHandler, ColorModeContext, text, language}
                                 {language.langDictionary['channel']}
                             </MenuItem>
                         </Link>
+                        <MenuItem
+                            onClick={() => {
+                                handleMenuClose()
+                                handlePreferences()
+                            }}
+                        >
+                            {
+                                isPreferences
+                                ? language.langDictionary['disable_recommendations']
+                                : language.langDictionary['enable_recommendations']
+                            }
+                        </MenuItem>
                         <Link href={`/${language.lang}/sign-in`} style={{ textDecoration: 'none' }}>
                             <MenuItem
                                 onClick={() => {
@@ -230,10 +266,10 @@ export default function Header({searchHandler, ColorModeContext, text, language}
                             color="inherit"
                             size="large"
                         >
-                                {theme.palette.mode === 'dark'
-                                ? <LightMode className="hover:text-yellow-400"/>
-                                : <DarkMode className="hover:text-darkThemeIconColor"/>
-                                }
+                            {theme.palette.mode === 'dark'
+                            ? <LightMode className="hover:text-yellow-400"/>
+                            : <DarkMode className="hover:text-darkThemeIconColor"/>
+                            }
                         </IconButton>
 
                         <LanguageMenu type='button' language={{langDictionary: language.langDictionary, lang: language.lang}} />

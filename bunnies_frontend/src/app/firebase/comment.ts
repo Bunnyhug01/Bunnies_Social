@@ -121,9 +121,9 @@ export function createComment({text, videoId, imageId, audioId}: CommentCreateRe
     })
 }
   
-export function updateComment(id: string, {text}: CommentUpdateRequest) {
+export async function updateComment(id: string, {text}: CommentUpdateRequest) {
     const updates:CommentUpdateRequest = {
-        text: text
+      text: text
     }
     
     update(ref(database, `comments/${id}`), updates).then((snapshot) => {
@@ -134,7 +134,26 @@ export function updateComment(id: string, {text}: CommentUpdateRequest) {
   
 }
 
-export async function replyComment(commentId: string, newReply: Comment, replyId?: string) {
+export async function updateReply(commentId: string, replyId: string, {text}: CommentUpdateRequest) {
+
+  const commentReplies = (await get(child(ref(database), `comments/${commentId}/replies`))).val();
+  
+  commentReplies.map((reply: Comment) => {
+    if (reply.id === replyId) {
+      reply.text = text
+    }
+  })
+
+
+  update(ref(database, `comments/${commentId}/`), {replies: commentReplies}).then((snapshot) => {
+
+  }).catch((error) => {
+    console.error(error);
+  })
+
+}
+
+export async function replyComment(commentId: string, newReply: Comment, replyId?: string): Promise<Comment> {
     const commentSnapshot = await get(child(ref(database), `comments/${commentId}`));
     const comment = commentSnapshot.val();
   
@@ -177,6 +196,8 @@ export async function replyComment(commentId: string, newReply: Comment, replyId
     }
 
     remove(ref(database, `comments/${newReply.id}`)) 
+
+    return comment
 };
 
 export async function deleteComment(commentId: string, replyId?: string, parentReplyId?: string, replies?: Comment[]) {

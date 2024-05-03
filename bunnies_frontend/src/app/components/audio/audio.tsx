@@ -78,7 +78,7 @@ export function AudioLogo({}) {
                 alt=""
                 className="rounded-md max-w-full h-auto block group-hover:brightness-75"
             />
-            <PlayCircleFilledWhiteIcon className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[5vw] h-[5vw] invisible group-hover:visible' />
+            <PlayCircleFilledWhiteIcon sx={{width: '12vw', height: '12vh'}} className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[5vw] h-[5vw] invisible group-hover:visible' />
         </Box>
     )
 }

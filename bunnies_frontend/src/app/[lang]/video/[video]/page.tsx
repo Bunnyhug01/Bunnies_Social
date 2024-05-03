@@ -22,6 +22,7 @@ import translation from '@/app/locales/translation';
 import { addToHistory, addView, getOneVideo, getRecommendations, Video } from '@/app/firebase/video';
 import { auth } from '@/app/firebase/firebase';
 import CommentComponent from '../../../components/comment/CommentComponent/CommentComponent';
+import { addPreferences, hasPreferences } from '@/app/firebase/user';
 
 
 function VideoPage() {
@@ -53,6 +54,12 @@ function VideoPage() {
 
       if (user && auth.currentUser?.emailVerified) {
         addToHistory(video.id!)
+
+        hasPreferences().then((isPreferences) => {
+          if (isPreferences) {
+            addPreferences(video.tags!)
+          }
+        })
       }
       
     }).catch(response => {
@@ -65,7 +72,7 @@ function VideoPage() {
   useEffect(() => {
     if (searchText === undefined || searchText === '') {
       getRecommendations(videoId).then((videoArray) => {
-        setRecommendation(Object.values(videoArray))
+        setRecommendation(videoArray)
       })
     } else {
       // search(searchText).then((videoArray) => {
@@ -115,7 +122,8 @@ function VideoPage() {
 
             {/* Recommended list */} 
             <Box className='sm:col-span-6 md:col-span-1 overflow-y-auto
-              scrollbar-thin scrollbar-thumb-gray-800 lg:max-h-[70%] md:max-h-[65%]
+              scrollbar-thin scrollbar-thumb-gray-800 lg:max-h-[70%] md:max-h-[65%] sm:mt-10
+              lg:mt-0 md:mt-0
              '
               sx={{ 
                 bgcolor: 'background.additional',

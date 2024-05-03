@@ -5,6 +5,7 @@ import VideoInformation from '../VideoInformation/VideoInformation';
 import { Box } from '@mui/material';
 import { Video } from '@/app/firebase/video';
 import CommentComponent from '../../comment/CommentComponent/CommentComponent';
+import MobileCommentComponent from '../../comment/MobileCommentComponent/MobileCommentComponent';
 
 
 interface Props {
@@ -68,7 +69,14 @@ export default function VideoContainer( { video = DEFAULT_VIDEO(), langDictionar
               ? <VideoInformation video={video} langDictionary={langDictionary} />
               : null
             }
-            <CommentComponent videoId={video.id!} langDictionary={langDictionary} />
+            <Box className='md:w-[100%] sm:w-[100%] lg:w-[100%]'>
+              <Box className="lg:block md:block sm:hidden">
+                <CommentComponent videoId={video.id!} langDictionary={langDictionary} />
+              </Box>
+              <Box className="mt-1">
+                <MobileCommentComponent videoId={video.id!} langDictionary={langDictionary} />
+              </Box>
+            </Box>
           </Box>
 
           <div className="absolute text-sm top-0 left-0 z-10 w-full h-[60px] py-4 px-3">

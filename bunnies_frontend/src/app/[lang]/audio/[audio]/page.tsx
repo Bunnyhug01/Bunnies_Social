@@ -21,6 +21,7 @@ import { auth } from '@/app/firebase/firebase';
 import { Audio, addToHistory, addView, getOneAudio, getRecommendations } from '@/app/firebase/audio';
 import AudioContainer from '@/app/components/audio/AudioContainer/AudioContainer';
 import AudioRecommendedList from '@/app/components/audio/AudioRecommendedList/AudioRecommendedList';
+import { addPreferences, hasPreferences } from '@/app/firebase/user';
 
 
 function AudioPage() {
@@ -53,6 +54,12 @@ function AudioPage() {
 
       if (user && auth.currentUser?.emailVerified) {
         addToHistory(audio.id!)
+
+        hasPreferences().then((isPreferences) => {
+          if (isPreferences) {
+            addPreferences(audio.tags!)
+          }
+        })
       }
 
     }).catch(response => {

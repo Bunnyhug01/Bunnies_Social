@@ -20,6 +20,7 @@ import { auth } from '@/app/firebase/firebase';
 import { Image, addToHistory, addView, getOneImage, getRecommendations } from '@/app/firebase/image';
 import ImageContainer from '@/app/components/image/ImageContainer/ImageContainer';
 import ImageRecommendedList from '@/app/components/image/ImageRecommendedList/ImageRecommendedList';
+import { addPreferences, hasPreferences } from '@/app/firebase/user';
 
 
 function ImagePage() {
@@ -51,6 +52,12 @@ function ImagePage() {
 
       if (user && auth.currentUser?.emailVerified) {
         addToHistory(image.id!)
+
+        hasPreferences().then((isPreferences) => {
+          if (isPreferences) {
+            addPreferences(image.tags!)
+          }
+        })
       }
 
     }).catch(response => {
@@ -107,10 +114,10 @@ function ImagePage() {
           <Box className='relative w-full h-full max-h-[100%] grid grid-cols-3 gap-2 p-2 sm:w-[107vw] sm:right-[10vw] sm3:w-[108vw] sm3:right-[9vw] lg:right-0 md:right-0 md:w-full sm2:w-full sm2:right-0'>
             
             {/* Image Container */}
-            <Box className='sm:col-span-6 md:col-span-2 overflow-hidden items-center justify-center flex'>
+            <Box className='sm:col-span-6 md:col-span-2 overflow-x-hidden scrollbar-none items-center justify-center flex'>
               <ImageContainer image={image} langDictionary={langDictionary} />
             </Box>
-
+            
             {/* Recommended list */} 
             <Box className='sm:col-span-6 md:col-span-1 overflow-y-auto
               scrollbar-thin scrollbar-thumb-gray-800 max-h-[82%]

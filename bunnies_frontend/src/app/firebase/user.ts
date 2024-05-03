@@ -37,6 +37,8 @@ export interface User {
     comments?: string[],
     date: string,
     details?: string,
+    preferences?: Preferences[],
+    isPreferencesEnabled?: boolean
 }
 
 export interface History {
@@ -57,6 +59,11 @@ export interface Dislikes {
     audio?: string
 }
 
+export interface Preferences {
+    tag: string,
+    viewCount: number,
+}
+
 export async function createUser({ id, username, email, password }: UserAuthRequest) {
 
     const user: User = {
@@ -71,7 +78,10 @@ export async function createUser({ id, username, email, password }: UserAuthRequ
         videos: [],
         images: [],
         audios: [],
+        comments: [],
         date: getDate(),
+        details: '',
+        isPreferencesEnabled: false
     }
     
     update(ref(database, `users/`), {[id!]: user});
@@ -124,7 +134,7 @@ export async function signIn({ email, password }: UserAuthRequest) {
     try {
         const userCredential = await signInWithEmailAndPassword(auth, email, password)
 
-        // Signed up
+        // Signed in
         const user = userCredential.user;
         localStorage.setItem('user', JSON.stringify(user))
 
@@ -137,7 +147,6 @@ export async function signIn({ email, password }: UserAuthRequest) {
 export async function signUserOut() {
     signOut(auth).then(() => {
         // Sign-out successful.
-        console.log('SIGN OUT!')
         localStorage.removeItem("user")
     }).catch((error) => {
         // An error happened.
@@ -332,4 +341,59 @@ export function updateUser(id: string, {username, details, logoUrl, bannerUrl}: 
       console.error(error);
     })
   
+}
+
+export async function enablePreferences() {
+    update(ref(database, `users/${auth.currentUser?.uid}/`), {isPreferencesEnabled: true})
+}
+
+export async function disablePreferences() {
+    update(ref(database, `users/${auth.currentUser?.uid}/`), {isPreferencesEnabled: false})
+}
+
+export async function hasPreferences() {
+    return get(child(ref(database), `users/${auth.currentUser?.uid}/isPreferencesEnabled/`)).then((snapshot) => {
+        if (snapshot.exists()) {
+
+            if (snapshot.val()) {
+                return true
+            }
+            else {
+                return false
+            }
+
+        } else {
+            return false
+        }
+    })
+}
+
+export async function addPreferences(tags: string[]) {
+
+    if (tags) {
+        get(child(ref(database), `users/${auth.currentUser?.uid}/preferences/`)).then((snapshot) => {  
+            const preferences:Preferences[] = snapshot.val() ? snapshot.val() : []
+            
+            if (preferences.length !== 0) {
+    
+                tags.forEach((tag: string) => {
+                    const existingPreferenceIndex = preferences.findIndex((pref: Preferences) => pref.tag === tag);
+                    if (existingPreferenceIndex !== -1) {
+                        // Тег уже существует, увеличиваем счетчик
+                        preferences[existingPreferenceIndex].viewCount++;
+                    } else {
+                        // Добавляем новый тег
+                        preferences.push({ tag, viewCount: 1 });
+                    }
+                });
+    
+            } else {
+                tags.map((tag) => {
+                    preferences.push({tag: tag, viewCount: 1})
+                })
+            }
+    
+            update(ref(database, `users/${auth.currentUser?.uid}/`), {preferences: preferences})
+        })
+    }
 }

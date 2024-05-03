@@ -8,6 +8,8 @@ import PauseCircleFilledIcon from '@mui/icons-material/PauseCircleFilled';
 import { Audio } from '@/app/firebase/audio';
 import { AudioInfo, AudioTitle } from '../audio';
 import AudioInformation from "../AudioInformation/AudioInformation";
+import CommentComponent from "../../comment/CommentComponent/CommentComponent";
+import MobileCommentComponent from "../../comment/MobileCommentComponent/MobileCommentComponent";
 
 
 interface Props {
@@ -57,8 +59,8 @@ export default function AudioContainer( { audio = audioDefault, langDictionary }
             />
             {
               isPlaying
-              ? <PauseCircleFilledIcon className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[12vw] h-[12vh] invisible group-hover:visible' />
-              : <PlayCircleFilledWhiteIcon className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[12vw] h-[12vh] invisible group-hover:visible' />
+              ? <PauseCircleFilledIcon sx={{width: '12vw', height: '12vh'}} className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[12vw] h-[12vh] invisible group-hover:visible' />
+              : <PlayCircleFilledWhiteIcon sx={{width: '12vw', height: '12vh'}} className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[12vw] h-[12vh] invisible group-hover:visible' />
             }
             
           </Box>
@@ -77,6 +79,14 @@ export default function AudioContainer( { audio = audioDefault, langDictionary }
               ? <AudioInformation audio={audio} langDictionary={langDictionary} />
               : null
             }
+            <Box className='md:w-[100%] sm:w-[100%] lg:w-[100%]'>
+              <Box className="lg:block md:block sm:hidden">
+                <CommentComponent audioId={audio.id!} langDictionary={langDictionary} />
+              </Box>
+              <Box className="mt-1">
+                <MobileCommentComponent audioId={audio.id!} langDictionary={langDictionary} />
+              </Box>
+            </Box>
           </Box>
 
           <div className="absolute text-sm top-0 z-10 w-full h-[60px] py-4 px-3">

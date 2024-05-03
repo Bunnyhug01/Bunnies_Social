@@ -135,7 +135,7 @@ export default function UploadZone({ setFile, acceptedfileType, type, reference,
         <Box sx={{width: 'auto', height: 350, marginTop: 2}}>
           <div className='relative'>
             {type.fileType === 'video' && !type.isThumbnail
-              ? <video src={preview as string} autoPlay loop controls muted className="w-full h-full" /> 
+              ? <video src={preview as string} autoPlay loop controls muted className="w-full h-full max-h-[350px]" /> 
               : (type.fileType === 'audio' && !type.isThumbnail
                   ? <audio src={preview as string} controls className='absolute top-40 w-full' />
                   : <img src={preview as string} alt="" className="w-full h-full max-h-[350px]" /> 

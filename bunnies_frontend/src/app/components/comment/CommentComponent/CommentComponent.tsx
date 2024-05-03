@@ -3,9 +3,10 @@ import { Box, TextField, Button, List, ListItem, ListItemText, IconButton, Avata
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ReplyIcon from '@mui/icons-material/Reply';
-import { Comment, createComment, deleteComment, getComments, replyComment, updateComment } from '@/app/firebase/comment';
-import { UserIdInfo, UserName } from '../../user/user';
+import { Comment, createComment, deleteComment, getComments, replyComment, updateComment, updateReply } from '@/app/firebase/comment';
+import { UserIdInfo, UserLogo, UserName } from '../../user/user';
 import { auth } from '@/app/firebase/firebase';
+import { useParams } from "next/navigation";
 
 interface Props {
   videoId?: string,
@@ -15,6 +16,10 @@ interface Props {
 }
 
 const CommentComponent = ({ videoId, imageId, audioId, langDictionary }: Props) => {
+  const params  = useParams();
+  const user = localStorage.getItem('user')
+  const lang: string = (params.lang).toString()
+
   const [commentText, setCommentText] = useState<string>('');
   const [editText, setEditText] = useState<string>('');
   const [comments, setComments] = useState<Comment[]>([]);
@@ -34,64 +39,95 @@ const CommentComponent = ({ videoId, imageId, audioId, langDictionary }: Props) 
   }, [videoId, imageId, audioId])
   
   const handleAddComment = () => {
-    if (commentText.trim() !== '') {
 
-      if (videoId !== undefined) {
-        createComment({text: commentText.trim(), videoId: videoId}).then((newComment) => {
-          setComments([...comments, newComment]);
-        })
-      }
-        
-      if (imageId !== undefined) {
-        createComment({text: commentText.trim(), imageId: imageId}).then((newComment) => {
-          setComments([...comments, newComment]);
-        })
-      }
+    if (user && auth.currentUser?.emailVerified) {
+      if (commentText.trim() !== '') {
 
-      if (audioId !== undefined) {
-        createComment({text: commentText.trim(), audioId: audioId}).then((newComment) => {
-          setComments([...comments, newComment]);
-        })
+        if (videoId !== undefined) {
+          createComment({text: commentText.trim(), videoId: videoId}).then((newComment) => {
+            setComments([...comments, newComment]);
+          })
+        }
+          
+        if (imageId !== undefined) {
+          createComment({text: commentText.trim(), imageId: imageId}).then((newComment) => {
+            setComments([...comments, newComment]);
+          })
+        }
+  
+        if (audioId !== undefined) {
+          createComment({text: commentText.trim(), audioId: audioId}).then((newComment) => {
+            setComments([...comments, newComment]);
+          })
+        }
+          
+        setCommentText('');
       }
-        
-      setCommentText('');
+    } else {
+      window.location.replace(`/${lang}/sign-in`)
     }
+
   };
 
-  const handleEditComment = (id: string) => {
+  const handleEditComment = (id: string, replyId?: string) => {
     const editedComments = comments.map((comment) => {
       if (comment.id === id) {
-        updateComment(id, {text: commentText.trim()})
-        comment.text = commentText.trim();
+        if (replyId) {
+          updateReply(id, replyId, {text: editText})
+          comment.replies.map((reply) => {
+            if (reply.id === replyId) {
+              reply.text = editText
+            }
+          })
+        } else {
+          updateComment(id, {text: editText})
+          comment.text = editText;
+        }
+        
       }
       return comment;
     });
     setComments(editedComments);
     setEditingCommentId(null);
+    setEditText('')
     setCommentText('');
   };
 
   const handleReplyComment = (id: string) => {
-    setReplyingToCommentId(id);
+
+    if (user && auth.currentUser?.emailVerified) {
+      setReplyingToCommentId(id);
+    } else {
+      window.location.replace(`/${lang}/sign-in`)
+    }
+    
   };
 
   const handleReplyReply = (id: string) => {
     setReplyingToReplyId(id);
   };
 
-  const handleReplyKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleReplyKeyPress = async (event: React.KeyboardEvent<HTMLInputElement>) => {
+    
     if (event.key === 'Enter') {
+
+      const updatedCommentIndex = comments.findIndex(comment => comment.id === replyingToCommentId);
+      const updatedComments = [...comments];
 
       if (videoId !== undefined) {
         createComment({text: replyText.trim(), videoId: videoId}).then((newComment) => {
           
           if (replyingToReplyId) {
-            replyComment(replyingToCommentId!, newComment, replyingToReplyId)
+            replyComment(replyingToCommentId!, newComment, replyingToReplyId).then((comment) => {
+              updatedComments[updatedCommentIndex] = { ...updatedComments[updatedCommentIndex], ...comment };
+              setComments(updatedComments);
+            })
           } else {
-            replyComment(replyingToCommentId!, newComment)
+            replyComment(replyingToCommentId!, newComment).then((comment) => {
+              updatedComments[updatedCommentIndex] = { ...updatedComments[updatedCommentIndex], ...comment };
+              setComments(updatedComments);
+            })
           }
-          
-          setComments([...comments, newComment]);
         })
       }
         
@@ -99,12 +135,16 @@ const CommentComponent = ({ videoId, imageId, audioId, langDictionary }: Props) 
         createComment({text: replyText.trim(), imageId: imageId}).then((newComment) => {
           
           if (replyingToReplyId) {
-            replyComment(replyingToCommentId!, newComment, replyingToReplyId)
+            replyComment(replyingToCommentId!, newComment, replyingToReplyId).then((comment) => {
+              updatedComments[updatedCommentIndex] = { ...updatedComments[updatedCommentIndex], ...comment };
+              setComments(updatedComments);
+            })
           } else {
-            replyComment(replyingToCommentId!, newComment)
+            replyComment(replyingToCommentId!, newComment).then((comment) => {
+              updatedComments[updatedCommentIndex] = { ...updatedComments[updatedCommentIndex], ...comment };
+              setComments(updatedComments);
+            })
           }
-
-          setComments([...comments, newComment]);
         })
       }
 
@@ -112,18 +152,23 @@ const CommentComponent = ({ videoId, imageId, audioId, langDictionary }: Props) 
         createComment({text: replyText.trim(), audioId: audioId}).then((newComment) => {
           
           if (replyingToReplyId) {
-            replyComment(replyingToCommentId!, newComment, replyingToReplyId)
+            replyComment(replyingToCommentId!, newComment, replyingToReplyId).then((comment) => {
+              updatedComments[updatedCommentIndex] = { ...updatedComments[updatedCommentIndex], ...comment };
+              setComments(updatedComments);
+            })
           } else {
-            replyComment(replyingToCommentId!, newComment)
+            replyComment(replyingToCommentId!, newComment).then((comment) => {
+              updatedComments[updatedCommentIndex] = { ...updatedComments[updatedCommentIndex], ...comment };
+              setComments(updatedComments);
+            })
           }
-
-          setComments([...comments, newComment]);
         })
       }
 
       setReplyingToCommentId(null);
       setReplyText('');
     }
+
   };
 
   const handleDeleteComment = (id: string, {replyId, parentReplyId, replies}: {replyId?: string , parentReplyId?: string, replies?: Comment[]}) => {
@@ -140,9 +185,6 @@ const CommentComponent = ({ videoId, imageId, audioId, langDictionary }: Props) 
     });
   };
   
-  useEffect(() => {
-    console.log(comments)
-  }, [comments])
 
   return (
     <Box>
@@ -159,8 +201,6 @@ const CommentComponent = ({ videoId, imageId, audioId, langDictionary }: Props) 
         }}
         fullWidth
         margin="normal"
-        multiline
-        maxRows={4}
       />
       <List>
         {comments.map((comment) => (
@@ -168,7 +208,7 @@ const CommentComponent = ({ videoId, imageId, audioId, langDictionary }: Props) 
 
             <ListItem alignItems="flex-start">
               <UserIdInfo id={comment.owner}>
-                <Avatar alt="Avatar" />
+                <UserLogo />
                 <Box ml={2} flex={1}>
                   <Box display="flex" alignItems="center">
                     <Typography variant="subtitle1" fontWeight="bold">
@@ -179,9 +219,9 @@ const CommentComponent = ({ videoId, imageId, audioId, langDictionary }: Props) 
                     </Typography>
                   </Box>
                   
-                  { editText
+                  { editText && comment.id === editingCommentId
                     ? <TextField
-                        placeholder="Редактирование"
+                        placeholder={langDictionary["edit_comment"]}
                         variant="outlined"
                         value={editText}
                         onChange={(e) => setEditText(e.target.value)}
@@ -199,7 +239,7 @@ const CommentComponent = ({ videoId, imageId, audioId, langDictionary }: Props) 
                     comment.replies
                     ? <>
                         <Button onClick={() => handleToggleReplies(comment.id!)}>
-                          {showReplies[comment.id!] ? 'Скрыть ответы' : 'Показать ответы'}
+                          {showReplies[comment.id!] ? langDictionary["close_replies"] : langDictionary["show_replies"]}
                         </Button>
                       </>
                     : null
@@ -238,7 +278,7 @@ const CommentComponent = ({ videoId, imageId, audioId, langDictionary }: Props) 
 
                       <ListItem alignItems="flex-start">
                         <UserIdInfo id={replyComment.owner}>
-                          <Avatar alt="Avatar" />
+                          <UserLogo />
                           <Box ml={2} flex={1}>
                             <Box display="flex" alignItems="center">
                               <Typography variant="subtitle1" fontWeight="bold">
@@ -248,15 +288,15 @@ const CommentComponent = ({ videoId, imageId, audioId, langDictionary }: Props) 
                                 {replyComment.date}
                               </Typography>
                             </Box>
-                            { editText
+                            { editText && replyComment.id === editingCommentId
                               ? <TextField
-                                  placeholder="Редактирование"
+                                  placeholder={langDictionary["edit_comment"]}
                                   variant="outlined"
                                   value={editText}
                                   onChange={(e) => setEditText(e.target.value)}
                                   onKeyPress={(e) => {
                                     if (e.key === 'Enter') {
-                                      handleEditComment(editingCommentId!);
+                                      handleEditComment(comment.id!, editingCommentId!);
                                     }
                                   }}
                                   fullWidth
@@ -268,7 +308,7 @@ const CommentComponent = ({ videoId, imageId, audioId, langDictionary }: Props) 
                               replyComment.replies
                               ? <>
                                   <Button onClick={() => handleToggleReplies(replyComment.id!)}>
-                                    {showReplies[replyComment.id!] ? 'Скрыть ответы' : 'Показать ответы'}
+                                    {showReplies[replyComment.id!] ? langDictionary["close_replies"] : langDictionary["show_replies"]}
                                   </Button>
                                 </>
                               : null
@@ -281,8 +321,11 @@ const CommentComponent = ({ videoId, imageId, audioId, langDictionary }: Props) 
                             ? <>
                                 <IconButton onClick={() => {
                                   setEditingCommentId(replyComment.id!);
-                                  setCommentText(replyComment.text);
-                                }}>
+                                  !editText
+                                    ? setEditText(replyComment.text)
+                                    : setEditText('') 
+                                  }}
+                                >
                                   <EditIcon />
                                 </IconButton>
                                 <IconButton onClick={() => handleDeleteComment(comment.id!, {replyId: replyComment.id!})}>
@@ -291,18 +334,18 @@ const CommentComponent = ({ videoId, imageId, audioId, langDictionary }: Props) 
                               </>
                             : null
                           }
-                          <IconButton
+                          {/* <IconButton
                             onClick={() => {
                               handleReplyComment(comment.id!)
                               handleReplyReply(replyComment.id!)
                             }}
                           >
                             <ReplyIcon />
-                          </IconButton>
+                          </IconButton> */}
                         </Box>
                       </ListItem>
                       
-                      {replyingToCommentId === replyComment.id && (
+                      {/* {replyingToCommentId === replyComment.id && (
                         <ListItem>
                           <TextField
                             placeholder="Ответ на комментарий"
@@ -314,7 +357,7 @@ const CommentComponent = ({ videoId, imageId, audioId, langDictionary }: Props) 
                             margin="normal"
                           />
                         </ListItem>
-                      )}
+                      )} */}
 
                   </div>
                   
@@ -325,7 +368,7 @@ const CommentComponent = ({ videoId, imageId, audioId, langDictionary }: Props) 
             {replyingToCommentId === comment.id && (
               <ListItem>
                 <TextField
-                  placeholder="Ответ на комментарий"
+                  placeholder={langDictionary["comment_reply"]}
                   variant="outlined"
                   value={replyText}
                   onChange={(e) => setReplyText(e.target.value)}

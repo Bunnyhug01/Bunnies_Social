@@ -10,12 +10,8 @@ import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import { Divider } from '@mui/material';
-import { VideoTags, VideoUploadDate } from '../video/video';
-import { Video } from '@/app/firebase/video';
-import { Audio } from '@/app/firebase/audio';
-import { Image } from '@/app/firebase/image';
-import { AudioTags, AudioUploadDate } from '../audio/audio';
-import { ImageTags, ImageUploadDate } from '../image/image';
+import CommentComponent from '../CommentComponent/CommentComponent';
+
 
 const drawerBleeding = 56;
 
@@ -25,9 +21,9 @@ interface Props {
    * You won't need it on your project.
    */
   window?: () => Window;
-  video?: Video;
-  audio?: Audio;
-  image?: Image;
+  videoId?: string,
+  imageId?: string,
+  audioId?: string,
   langDictionary: any;
 }
 
@@ -51,8 +47,8 @@ const Puller = styled(Box)(({ theme }) => ({
   left: 'calc(50% - 15px)',
 }));
 
-export default function MobileDescription(props: Props) {
-  const { window, video, image, audio, langDictionary } = props;
+export default function MobileCommentComponent(props: Props) {
+  const { window, videoId, imageId, audioId, langDictionary } = props;
   const [open, setOpen] = React.useState(false);
   const [hidden, setHidden] = React.useState(true);
 
@@ -72,7 +68,6 @@ export default function MobileDescription(props: Props) {
       overflow: 'visible',
     },
   });
-  
 
   return (
     <Root
@@ -91,16 +86,9 @@ export default function MobileDescription(props: Props) {
           }}
         >
           <Box className="mx-4">
-          <Typography sx={{fontWeight: 'bold', fontSize: 14}}>{(video) ? (video.views) : ((audio) ? (audio.views) : (image?.views))} {langDictionary['views']}</Typography>
+            <Typography sx={{fontWeight: 'bold', fontSize: 14}}>{langDictionary['comments']}</Typography>
           </Box>
 
-          <Box className="mx-4">
-            <Typography sx={{fontWeight: 'bold', fontSize: 14}}>
-              {
-                (video) ? <VideoUploadDate /> : ((audio) ? <AudioUploadDate /> : <ImageUploadDate />)
-              }
-            </Typography>
-          </Box>
           <ExpandMoreIcon
             sx={{pointerEvents: "auto"}}
           />
@@ -134,7 +122,7 @@ export default function MobileDescription(props: Props) {
           }}
         >
           <Puller />
-          <Typography sx={{ p: 2, color: 'text.secondary' }}>{langDictionary['description']}</Typography>
+          <Typography sx={{ p: 2, color: 'text.secondary' }}>{langDictionary['comments']}</Typography>
         </StyledBox>
         <Divider />
         <StyledBox
@@ -145,18 +133,10 @@ export default function MobileDescription(props: Props) {
             height: '100%',
             overflow: 'auto',
           }}
+          className='scrollbar-none'
         >
-          <Box>
-            {
-              (video) ? <VideoTags /> : ((audio) ? <AudioTags /> : <ImageTags />)
-            }
-          </Box>
+          <CommentComponent videoId={videoId} langDictionary={langDictionary} />
 
-          <Typography sx={{marginTop: '10px'}}>
-            {
-              (video) ? (video.details) : ((audio) ? (audio.details) : (image?.details))
-            }
-          </Typography>
         </StyledBox>
       </SwipeableDrawerStyled>
     </Root>

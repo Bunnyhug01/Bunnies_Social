@@ -113,7 +113,7 @@ export default function AudioInformation({ audio, langDictionary } : Props) {
 
   return (
     <Box>
-      <Box className="flex items-center lg:w-[100%] md:w-[100%] sm:w-[100%] h-[80px] py-4 px-8 sm:px-4">
+      <Box className="flex items-center lg:w-[100%] md:w-[100%] sm:w-[100%] h-[80px] py-4 px-8 sm:px-4 sm:mt-4">
 
         <Box>
           <Box className="inline-block">

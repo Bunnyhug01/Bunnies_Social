@@ -81,6 +81,11 @@ export function UserDetailsVar() {
     return user.details
 }
 
+export function UserHasPreferencesVar() {
+    const user = useContext(UserContext)!!
+    return user.isPreferencesEnabled
+}
+
 export function UserSubscribers({}) {
     const user = useContext(UserContext)!!
     return (

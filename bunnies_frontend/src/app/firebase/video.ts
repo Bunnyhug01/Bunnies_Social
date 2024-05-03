@@ -2,7 +2,7 @@ import { error } from "console";
 import { auth, database } from "./firebase";
 import { ref, push, get, child, remove, update, limitToLast, query, orderByChild, equalTo } from "firebase/database";
 import getDate from "../utils/getDate";
-import { Dislikes, History, Likes } from "./user";
+import { Dislikes, History, Likes, getMe, hasPreferences } from "./user";
 
 export interface VideoCreateRequest {
   title: string,
@@ -261,7 +261,45 @@ export function getRecommendations(currentVideoId: string): Promise<Video[]> {
       const videos = snapshot.val()
       delete videos[currentVideoId]
 
-      return videos
+      return hasPreferences().then((isPreferences) => {
+        if (isPreferences) {
+          const recommendedVideos:any = []
+
+          const videosWithScore = Object.entries(videos).map(([id, video]) => ({
+            video,
+            score: 0
+          }));
+    
+          return getMe().then((user) => {
+            videosWithScore.map((videoWithScore: any) => {
+              user.subscriptions?.map((subscription) => {
+                if (subscription === videoWithScore.video.owner) {
+                  videoWithScore.score += 1
+                }
+              })
+    
+              user.preferences?.map((preference) => {
+                if (videoWithScore.video.tags.includes(preference.tag)) {
+                  videoWithScore.score += preference.viewCount
+                }
+              })
+    
+            });
+    
+            videosWithScore.sort((a, b) => b.score - a.score);
+    
+            videosWithScore.map((videoWithScore: any) => {
+              recommendedVideos.push(videoWithScore.video)
+            })
+    
+            return recommendedVideos
+    
+          })
+        } else {
+          return Object.values(videos)
+        }
+      })
+
     } else {
       return null
     }

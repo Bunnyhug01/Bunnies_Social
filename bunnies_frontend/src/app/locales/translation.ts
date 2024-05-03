@@ -82,6 +82,13 @@ const translation:any = {
         "select_banner": "Select a banner for your account",
         "joined": "Joined",
         "user_mainPage": "Main Page",
+        "edit_comment": "Edit",
+        "show_replies": "Show replies",
+        "close_replies": "Close replies",
+        "comment_reply": "Comment reply",
+        "comments": "Comments",
+        "enable_recommendations": "Enable recommendations",
+        "disable_recommendations": "Disable recommendations",
     },
 
     "ru": {
@@ -166,6 +173,13 @@ const translation:any = {
         "select_banner": "Выберите шапку для вашего аккаунта",
         "joined": "Присоединился",
         "user_mainPage": "Главная страница",
+        "edit_comment": "Редактирование",
+        "show_replies": "Показать ответы",
+        "close_replies": "Скрыть ответы",
+        "comment_reply": "Ответ на комментарий",
+        "comments": "Комментарии",
+        "enable_recommendations": "Включить рекомендации",
+        "disable_recommendations": "Выключить рекомендации",
     }
 }
 
