@@ -7,11 +7,9 @@ import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
-import Badge from '@mui/material/Badge';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import SwipeableTemporaryDrawer from '../SwipeableTemporaryDrawer/SwipeableTemporaryDrawer';
 import { LightMode, DarkMode } from '@mui/icons-material';
@@ -25,6 +23,7 @@ import LanguageMenu from '../LanguageMenu/LanguageMenu';
 import { MyLogo, UserHasPreferencesVar, UserIdInfo, UserMeInfo } from '../user/user';
 import { disablePreferences, enablePreferences, hasPreferences, signUserOut } from '@/app/firebase/user';
 import { auth } from '@/app/firebase/firebase';
+import Notifications from '../Notifications/Notifications';
 
 
 interface Props {
@@ -220,6 +219,9 @@ export default function Header({searchHandler, ColorModeContext, text, language}
                 </IconButton>
                 <Typography>{language.langDictionary['theme']}</Typography>
             </MenuItem>
+            
+            <Notifications type='menu' langDictionary={language.langDictionary} />
+
             <MenuItem onClick={handleProfileMenuOpen}>
                 <IconButton
                     size="large"
@@ -274,6 +276,8 @@ export default function Header({searchHandler, ColorModeContext, text, language}
 
                         <LanguageMenu type='button' language={{langDictionary: language.langDictionary, lang: language.lang}} />
                         
+                        <Notifications type='button' langDictionary={language.langDictionary} />
+
                         <IconButton
                             size="large"
                             edge="end"

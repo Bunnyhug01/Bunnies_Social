@@ -2,7 +2,7 @@ import { error } from "console";
 import { auth, database } from "./firebase";
 import { ref, push, get, child, remove, update, equalTo, limitToLast, orderByChild, query } from "firebase/database";
 import getDate from "../utils/getDate";
-import { Dislikes, History, Likes } from "./user";
+import { Dislikes, History, Likes, getMe, hasPreferences } from "./user";
 
 export interface AudioCreateRequest {
   title: string,
@@ -243,11 +243,11 @@ export function addView(id: string): void {
 });
 }
 
-export function addToHistory(audioId: string): void {
+export function addToHistory(audioId: string, owner?: string): void {
 
   get(child(ref(database), `users/${auth.currentUser?.uid}/history/`)).then((snapshot) => {
     const history:History[] = snapshot.val() ? snapshot.val() : []
-    history.push({audio: audioId})
+    history.push({audio: audioId, owner: owner ? owner : ''})
     update(ref(database, `users/${auth.currentUser?.uid}/`), {history: history})
   })
 
@@ -256,10 +256,69 @@ export function addToHistory(audioId: string): void {
 export function getRecommendations(currentAudioId: string): Promise<Audio[]> {
   return get(child(ref(database), 'audios/')).then((snapshot) => {
     if (snapshot.exists()) {
-      const audio = snapshot.val()
-      delete audio[currentAudioId]
+      const audios = snapshot.val()
+      delete audios[currentAudioId]
 
-      return audio
+      return hasPreferences().then((isPreferences) => {
+        if (isPreferences) {
+          const recommendedAudios:any = []
+
+          const audiosWithScore = Object.entries(audios).map(([id, audio]) => ({
+            audio,
+            score: 0
+          }));
+    
+          return getMe().then((user) => {
+            audiosWithScore.map((audioWithScore: any) => {
+              user.subscriptions?.map((subscription) => {
+                if (subscription === audioWithScore.audio.owner) {
+                  audioWithScore.score += 10
+                }
+              })
+              
+              user.preferences?.map((preference) => {
+                if (audioWithScore.audio.tags?.includes(preference.tag)) {
+                  const timeDiff = Math.abs(new Date().getTime() - new Date(preference.date).getTime());
+                  const diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24)); 
+                  
+                  if (diffDays === 0 || diffDays <= 7) {
+                    audioWithScore.score += preference.viewCount
+                  }
+                  else if (diffDays > 7 && diffDays <= 30) {
+                    audioWithScore.score += preference.viewCount / 2
+                  }
+                  else if (diffDays > 30) {
+                    audioWithScore.score += 0.05
+                  }
+                }
+              })
+
+              user.history.map((record) => {
+                if (record.audio) {
+                  if (audioWithScore.audio.owner === record.owner) {
+                    audioWithScore.score += 5
+                  }
+                }
+              })
+
+              audioWithScore.score += audioWithScore.audio.likes
+
+            });
+    
+            audiosWithScore.sort((a, b) => b.score - a.score);
+
+            audiosWithScore.map((audioWithScore: any) => {
+              recommendedAudios.push(audioWithScore.audio)
+            })
+    
+            return recommendedAudios
+    
+          })
+        } else {
+          return Object.values(audios)
+        }
+      })
+
     } else {
       return null
     }

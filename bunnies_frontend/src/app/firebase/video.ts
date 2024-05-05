@@ -245,11 +245,11 @@ export function addView(id: string): void {
 });
 }
 
-export function addToHistory(videoId: string): void {
+export function addToHistory(videoId: string, owner?: string): void {
 
   get(child(ref(database), `users/${auth.currentUser?.uid}/history/`)).then((snapshot) => {
     const history:History[] = snapshot.val() ? snapshot.val() : []
-    history.push({video: videoId})
+    history.push({video: videoId, owner: owner ? owner : ''})
     update(ref(database, `users/${auth.currentUser?.uid}/`), {history: history})
   })
 
@@ -274,20 +274,41 @@ export function getRecommendations(currentVideoId: string): Promise<Video[]> {
             videosWithScore.map((videoWithScore: any) => {
               user.subscriptions?.map((subscription) => {
                 if (subscription === videoWithScore.video.owner) {
-                  videoWithScore.score += 1
+                  videoWithScore.score += 10
                 }
               })
-    
+              
               user.preferences?.map((preference) => {
-                if (videoWithScore.video.tags.includes(preference.tag)) {
-                  videoWithScore.score += preference.viewCount
+                if (videoWithScore.video.tags?.includes(preference.tag)) {
+                  const timeDiff = Math.abs(new Date().getTime() - new Date(preference.date).getTime());
+                  const diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24)); 
+                  
+                  if (diffDays === 0 || diffDays <= 7) {
+                    videoWithScore.score += preference.viewCount
+                  }
+                  else if (diffDays > 7 && diffDays <= 30) {
+                    videoWithScore.score += preference.viewCount / 2
+                  }
+                  else if (diffDays > 30) {
+                    videoWithScore.score += 0.05
+                  }
                 }
               })
-    
+
+              user.history.map((record) => {
+                if (record.video) {
+                  if (videoWithScore.video.owner === record.owner) {
+                    videoWithScore.score += 5
+                  }
+                }
+              })
+
+              videoWithScore.score += videoWithScore.video.likes
+
             });
     
             videosWithScore.sort((a, b) => b.score - a.score);
-    
+
             videosWithScore.map((videoWithScore: any) => {
               recommendedVideos.push(videoWithScore.video)
             })

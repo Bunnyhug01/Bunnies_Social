@@ -89,6 +89,7 @@ const translation:any = {
         "comments": "Comments",
         "enable_recommendations": "Enable recommendations",
         "disable_recommendations": "Disable recommendations",
+        "notifications": "Notifications",
     },
 
     "ru": {
@@ -180,6 +181,7 @@ const translation:any = {
         "comments": "Комментарии",
         "enable_recommendations": "Включить рекомендации",
         "disable_recommendations": "Выключить рекомендации",
+        "notifications": "Оповещения",
     }
 }
 

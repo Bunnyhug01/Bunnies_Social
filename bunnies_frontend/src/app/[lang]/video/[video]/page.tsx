@@ -53,7 +53,7 @@ function VideoPage() {
       addView(video.id!)
 
       if (user && auth.currentUser?.emailVerified) {
-        addToHistory(video.id!)
+        addToHistory(video.id!, video.owner)
 
         hasPreferences().then((isPreferences) => {
           if (isPreferences) {

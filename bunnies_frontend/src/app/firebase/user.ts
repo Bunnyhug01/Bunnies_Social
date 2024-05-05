@@ -44,7 +44,8 @@ export interface User {
 export interface History {
     video?: string,
     image?: string,
-    audio?: string
+    audio?: string,
+    owner?: string,
 }
 
 export interface Likes {
@@ -62,6 +63,7 @@ export interface Dislikes {
 export interface Preferences {
     tag: string,
     viewCount: number,
+    date: Date,
 }
 
 export async function createUser({ id, username, email, password }: UserAuthRequest) {
@@ -383,13 +385,13 @@ export async function addPreferences(tags: string[]) {
                         preferences[existingPreferenceIndex].viewCount++;
                     } else {
                         // Добавляем новый тег
-                        preferences.push({ tag, viewCount: 1 });
+                        preferences.push({ tag, viewCount: 1, date: new Date()});
                     }
                 });
     
             } else {
                 tags.map((tag) => {
-                    preferences.push({tag: tag, viewCount: 1})
+                    preferences.push({tag: tag, viewCount: 1, date: new Date()})
                 })
             }
     

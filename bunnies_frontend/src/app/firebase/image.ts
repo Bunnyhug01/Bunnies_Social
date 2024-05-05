@@ -1,7 +1,7 @@
 import { auth, database } from "./firebase";
 import { ref, push, get, child, remove, update, limitToLast, query, equalTo, orderByChild } from "firebase/database";
 import getDate from "../utils/getDate";
-import { Dislikes, History, Likes } from "./user";
+import { Dislikes, History, Likes, getMe, hasPreferences } from "./user";
 
 
 export interface ImageCreateRequest {
@@ -235,27 +235,86 @@ export function addView(id: string): void {
 });
 }
 
-export function addToHistory(imageId: string): void {
+export function addToHistory(imageId: string, owner?: string): void {
 
     get(child(ref(database), `users/${auth.currentUser?.uid}/history/`)).then((snapshot) => {
       const history:History[] = snapshot.val() ? snapshot.val() : []
-      history.push({image: imageId})
+      history.push({image: imageId, owner: owner ? owner : ''})
       update(ref(database, `users/${auth.currentUser?.uid}/`), {history: history})
     })
   
 }
 
 export function getRecommendations(currentImageId: string): Promise<Image[]> {
-    return get(child(ref(database), 'images/')).then((snapshot) => {
-      if (snapshot.exists()) {
-        const images = snapshot.val()
-        delete images[currentImageId]
-  
-        return images
-      } else {
-        return null
-      }
-    }).catch((error) => {
-      console.error(error);
-  });
+  return get(child(ref(database), 'images/')).then((snapshot) => {
+    if (snapshot.exists()) {
+      const images = snapshot.val()
+      delete images[currentImageId]
+
+      return hasPreferences().then((isPreferences) => {
+        if (isPreferences) {
+          const recommendedImages:any = []
+
+          const imagesWithScore = Object.entries(images).map(([id, image]) => ({
+            image,
+            score: 0
+          }));
+    
+          return getMe().then((user) => {
+            imagesWithScore.map((imageWithScore: any) => {
+              user.subscriptions?.map((subscription) => {
+                if (subscription === imageWithScore.image.owner) {
+                  imageWithScore.score += 10
+                }
+              })
+              
+              user.preferences?.map((preference) => {
+                if (imageWithScore.image.tags?.includes(preference.tag)) {
+                  const timeDiff = Math.abs(new Date().getTime() - new Date(preference.date).getTime());
+                  const diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24)); 
+                  
+                  if (diffDays === 0 || diffDays <= 7) {
+                    imageWithScore.score += preference.viewCount
+                  }
+                  else if (diffDays > 7 && diffDays <= 30) {
+                    imageWithScore.score += preference.viewCount / 2
+                  }
+                  else if (diffDays > 30) {
+                    imageWithScore.score += 0.05
+                  }
+                }
+              })
+
+              user.history.map((record) => {
+                if (record.image) {
+                  if (imageWithScore.image.owner === record.owner) {
+                    imageWithScore.score += 5
+                  }
+                }
+              })
+
+              imageWithScore.score += imageWithScore.image.likes
+
+            });
+    
+            imagesWithScore.sort((a, b) => b.score - a.score);
+
+            imagesWithScore.map((imageWithScore: any) => {
+              recommendedImages.push(imageWithScore.image)
+            })
+            
+            return recommendedImages
+    
+          })
+        } else {
+          return Object.values(images)
+        }
+      })
+
+    } else {
+      return null
+    }
+  }).catch((error) => {
+    console.error(error);
+});
 }

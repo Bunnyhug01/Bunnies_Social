@@ -53,7 +53,7 @@ function AudioPage() {
       addView(audio.id!)
 
       if (user && auth.currentUser?.emailVerified) {
-        addToHistory(audio.id!)
+        addToHistory(audio.id!, audio.owner)
 
         hasPreferences().then((isPreferences) => {
           if (isPreferences) {
@@ -73,7 +73,7 @@ function AudioPage() {
   useEffect(() => {
     if (searchText === undefined || searchText === '') {
       getRecommendations(audioId).then((audioArray) => {
-        setRecommendation(Object.values(audioArray))
+        setRecommendation(audioArray)
       })
     } else {
       // search(searchText).then((videoArray) => {

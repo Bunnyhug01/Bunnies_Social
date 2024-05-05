@@ -51,7 +51,7 @@ function ImagePage() {
       addView(image.id!)
 
       if (user && auth.currentUser?.emailVerified) {
-        addToHistory(image.id!)
+        addToHistory(image.id!, image.owner)
 
         hasPreferences().then((isPreferences) => {
           if (isPreferences) {
@@ -70,7 +70,7 @@ function ImagePage() {
   useEffect(() => {
     if (searchText === undefined || searchText === '') {
       getRecommendations(imageId).then((imageArray) => {
-        setRecommendation(Object.values(imageArray))
+        setRecommendation(imageArray)
       })
     } else {
       // search(searchText).then((videoArray) => {
