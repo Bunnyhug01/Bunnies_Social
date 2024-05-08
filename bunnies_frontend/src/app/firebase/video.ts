@@ -61,17 +61,33 @@ export async function getOneVideo(id: string): Promise<Video> {
     });
 }
 
-export async function getUserLastVideos(userId: string, count: number): Promise<Video[]> {
-  return get(query(ref(database, 'videos'), orderByChild('owner'), equalTo(userId), limitToLast(count))).then((snapshot) => {
+export async function getLastVideos(count: number): Promise<Video[]> {
+  return get(query(ref(database, 'videos'), limitToLast(count))).then((snapshot) => {
     const videos: Video[] = []
     snapshot.forEach((childSnapshot) => {
-      videos.push(childSnapshot.val())
+      const video: Video = childSnapshot.val()
+      if (!video.isPrivate) {
+        videos.push(video)
+      }
     })
     return videos
   })
 }
 
-export function createVideo({title, details, videoUrl, logoUrl, isPrivate, tags}: VideoCreateRequest): void {
+export async function getUserLastVideos(userId: string, count: number): Promise<Video[]> {
+  return get(query(ref(database, 'videos'), orderByChild('owner'), equalTo(userId), limitToLast(count))).then((snapshot) => {
+    const videos: Video[] = []
+    snapshot.forEach((childSnapshot) => {
+      const video: Video = childSnapshot.val()
+      if (!video.isPrivate || (video.isPrivate && video.owner === auth.currentUser?.uid)) {
+        videos.push(video)
+      }
+    })
+    return videos
+  })
+}
+
+export function createVideo({title, details, videoUrl, logoUrl, isPrivate, tags}: VideoCreateRequest): string {
   
   const video: Video = {
     title: title,
@@ -96,6 +112,8 @@ export function createVideo({title, details, videoUrl, logoUrl, isPrivate, tags}
     videos.push(videoId!)
     update(ref(database, `users/${auth.currentUser?.uid}/`), {videos: videos})
   })
+
+  return videoId!
 }
 
 export function updateVideo(id: string, {title, details, videoUrl, logoUrl, isPrivate, tags}: VideoUpdateRequest) {

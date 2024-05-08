@@ -61,17 +61,33 @@ export async function getOneAudio(id: string): Promise<Audio> {
     });
 }
 
-export async function getUserLastAudios(userId: string, count: number): Promise<Audio[]> {
-  return get(query(ref(database, 'audios'), orderByChild('owner'), equalTo(userId), limitToLast(count))).then((snapshot) => {
+export async function getLastAudios(count: number): Promise<Audio[]> {
+  return get(query(ref(database, 'audios'), limitToLast(count))).then((snapshot) => {
     const audios: Audio[] = []
     snapshot.forEach((childSnapshot) => {
-      audios.push(childSnapshot.val())
+      const audio: Audio = childSnapshot.val()
+      if (!audio.isPrivate) {
+        audios.push(audio)
+      }
     })
     return audios
   })
 }
 
-export function createAudio({title, details, audioUrl, logoUrl, isPrivate, tags}: AudioCreateRequest): void {
+export async function getUserLastAudios(userId: string, count: number): Promise<Audio[]> {
+  return get(query(ref(database, 'audios'), orderByChild('owner'), equalTo(userId), limitToLast(count))).then((snapshot) => {
+    const audios: Audio[] = []
+    snapshot.forEach((childSnapshot) => {
+      const audio: Audio = childSnapshot.val()
+      if (!audio.isPrivate || (audio.isPrivate && audio.owner === auth.currentUser?.uid)) {
+        audios.push(audio)
+      }
+    })
+    return audios
+  })
+}
+
+export function createAudio({title, details, audioUrl, logoUrl, isPrivate, tags}: AudioCreateRequest): string {
   
   const audio: Audio = {
     title: title,
@@ -95,6 +111,8 @@ export function createAudio({title, details, audioUrl, logoUrl, isPrivate, tags}
     audio.push(audioId!)
     update(ref(database, `users/${auth.currentUser?.uid}/`), {audios: audio})
   })
+
+  return audioId!
 }
 
 export function updateAudio(id: string, {title, details, audioUrl, logoUrl, isPrivate, tags}: AudioUpdateRequest) {

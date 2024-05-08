@@ -12,6 +12,8 @@ import { VideoCreateRequest, createVideo } from "@/app/firebase/video";
 import { AudioCreateRequest, createAudio } from "@/app/firebase/audio";
 import { ImageCreateRequest, createImage } from "@/app/firebase/image";
 import TagsInput from "../TagsInput/TagsInput";
+import { User, addNotification, getMe, hasUserNotifications } from "@/app/firebase/user";
+import { useParams } from "next/navigation";
 
 
 interface Props {
@@ -21,6 +23,8 @@ interface Props {
 
 
 export default function Upload({ type, langDictionary } : Props) {
+  const params  = useParams();
+  const lang: string = (params.lang).toString()
   
   const [mediaFileUpload, setMediaFileUpload] = useState<File|null>(null);
   const [thumbnailUpload, setThumbnailUpload] = useState<File|null>(null);
@@ -123,6 +127,9 @@ export default function Upload({ type, langDictionary } : Props) {
 
     const isPrivate = privacy === 'private'
 
+    let id:string = ''
+    let type:string = ''
+
     if (fileType === 'video') {
         
         const video: VideoCreateRequest = {
@@ -133,8 +140,9 @@ export default function Upload({ type, langDictionary } : Props) {
             isPrivate: isPrivate,
             tags: tags,
         }
-
-        createVideo(video)
+        
+        id = createVideo(video)
+        type = langDictionary['video']
     }
     else if (fileType === 'image') {
 
@@ -146,7 +154,8 @@ export default function Upload({ type, langDictionary } : Props) {
             tags: tags,
         }
 
-        createImage(image)
+        id = createImage(image)
+        type = langDictionary['image']
 
     }
     else if (fileType === 'audio') {
@@ -160,28 +169,44 @@ export default function Upload({ type, langDictionary } : Props) {
             tags: tags,
         }
 
-        createAudio(audio)
-
+        id = createAudio(audio)
+        type = langDictionary['audio']
     }
+
+    getMe().then((user: User) => {
+        user.subscribers?.map((subscriber: string) => {
+            hasUserNotifications(subscriber).then((isNotifications) => {
+                if (isNotifications) {
+                    addNotification(
+                        subscriber,
+                        {
+                            text: `${langDictionary['user']} "${user.username}" ${langDictionary['uploaded']} ${type} "${formElements.title.value}"`,
+                            srcUrl: `/${lang}/${fileType}/${id}`
+                        }
+                    )
+                }
+            })
+        })
+    })
 
     setMediaFileUpload(null)
     setThumbnailUpload(null)
-  
+    
     setMediaFileRef("")
     setThumbnailRef("")
-  
+    
     setIsThumbnail(false)
-  
+    
     setMediaFileLoadProgress(0)
     setThumbnailLoadProgress(0)
-  
+    
     setFileType("")
     
     setUploadingCancellation(false)
-  
+    
     setPrivacy('')
     setTags([])
-    
+
   }
   
   return (

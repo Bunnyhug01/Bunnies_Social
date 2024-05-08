@@ -21,7 +21,7 @@ import Dictaphone from '../Dictaphone/Dictaphone';
 import LanguageMenu from '../LanguageMenu/LanguageMenu';
 
 import { MyLogo, UserHasPreferencesVar, UserIdInfo, UserMeInfo } from '../user/user';
-import { disablePreferences, enablePreferences, hasPreferences, signUserOut } from '@/app/firebase/user';
+import { disableNotifications, disablePreferences, enableNotifications, enablePreferences, hasNotifications, hasPreferences, signUserOut } from '@/app/firebase/user';
 import { auth } from '@/app/firebase/firebase';
 import Notifications from '../Notifications/Notifications';
 
@@ -51,6 +51,7 @@ export default function Header({searchHandler, ColorModeContext, text, language}
     React.useState<null | HTMLElement>(null);
 
     const [isPreferences, setIsPreferences] = React.useState<boolean>(false);
+    const [isNotifications, setIsNotifications] = React.useState<boolean>(false);
 
     const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -89,6 +90,16 @@ export default function Header({searchHandler, ColorModeContext, text, language}
         }
     }
 
+    const handleNotifications = () => {
+        if (isNotifications) {
+            disableNotifications()
+            setIsNotifications(false)
+        } else {
+            enableNotifications()
+            setIsNotifications(true)
+        }
+    }
+
     React.useEffect(() => {
         
         hasPreferences().then((isPreferences) => {
@@ -99,7 +110,15 @@ export default function Header({searchHandler, ColorModeContext, text, language}
             }
         })
 
-    }, [])
+        hasNotifications().then((isNotifications) => {
+            if (isNotifications) {
+                setIsNotifications(true)
+            } else {
+                setIsNotifications(false)
+            }
+        })
+
+    }, [auth.currentUser?.uid])
 
     const menuId = 'primary-search-account-menu';
     const renderMenu = (
@@ -131,6 +150,7 @@ export default function Header({searchHandler, ColorModeContext, text, language}
                                 {language.langDictionary['channel']}
                             </MenuItem>
                         </Link>
+
                         <MenuItem
                             onClick={() => {
                                 handleMenuClose()
@@ -143,6 +163,20 @@ export default function Header({searchHandler, ColorModeContext, text, language}
                                 : language.langDictionary['enable_recommendations']
                             }
                         </MenuItem>
+
+                        <MenuItem
+                            onClick={() => {
+                                handleMenuClose()
+                                handleNotifications()
+                            }}
+                        >
+                            {
+                                isNotifications
+                                ? language.langDictionary['disable_notifications']
+                                : language.langDictionary['enable_notifications']
+                            }
+                        </MenuItem>
+
                         <Link href={`/${language.lang}/sign-in`} style={{ textDecoration: 'none' }}>
                             <MenuItem
                                 onClick={() => {
@@ -220,7 +254,11 @@ export default function Header({searchHandler, ColorModeContext, text, language}
                 <Typography>{language.langDictionary['theme']}</Typography>
             </MenuItem>
             
-            <Notifications type='menu' langDictionary={language.langDictionary} />
+            {
+                user && auth.currentUser?.emailVerified
+                ? <Notifications type='menu' langDictionary={language.langDictionary} />
+                : null
+            }
 
             <MenuItem onClick={handleProfileMenuOpen}>
                 <IconButton
@@ -276,7 +314,11 @@ export default function Header({searchHandler, ColorModeContext, text, language}
 
                         <LanguageMenu type='button' language={{langDictionary: language.langDictionary, lang: language.lang}} />
                         
-                        <Notifications type='button' langDictionary={language.langDictionary} />
+                        {
+                            user && auth.currentUser?.emailVerified
+                            ? <Notifications type='button' langDictionary={language.langDictionary} />
+                            : null
+                        }
 
                         <IconButton
                             size="large"

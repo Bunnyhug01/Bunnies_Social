@@ -39,8 +39,9 @@ export function Videos() {
   useEffect(() => {
 
     if (searchText === undefined || searchText === '') {
-      getAllVideos().then((videoArray:any) => {
-        setData(Object.values(videoArray))
+      getAllVideos().then((videoArray: Video[]) => {
+        const videos = Object.values(videoArray).filter((video: Video) => !video.isPrivate)
+        setData(videos)
       })
     } else {
       searchVideo(searchText).then((videoArray: Video[]) => {

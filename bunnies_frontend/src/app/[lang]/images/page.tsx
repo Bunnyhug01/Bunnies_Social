@@ -40,8 +40,9 @@ export function Images() {
 
 
     if (searchText === undefined || searchText === '') {
-        getAllImages().then((audioArray:any) => {
-            setData(Object.values(audioArray))
+        getAllImages().then((imageArray: Image[]) => {
+          const images = Object.values(imageArray).filter((image: Image) => !image.isPrivate)
+          setData(images)
         })
     } else {
       searchImage(searchText).then((imageArray: Image[]) => {

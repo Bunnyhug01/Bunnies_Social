@@ -39,8 +39,9 @@ export function Audios() {
   useEffect(() => {
 
     if (searchText === undefined || searchText === '') {
-        getAllAudios().then((audioArray:any) => {
-            setData(Object.values(audioArray))
+        getAllAudios().then((audioArray: Audio[]) => {
+          const audios = Object.values(audioArray).filter((audio: Audio) => !audio.isPrivate)
+          setData(audios)
         })
     } else {
       searchAudio(searchText).then((audioArray: Audio[]) => {

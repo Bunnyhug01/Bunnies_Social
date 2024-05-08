@@ -7,6 +7,7 @@ import { Comment, createComment, deleteComment, getComments, replyComment, updat
 import { UserIdInfo, UserLogo, UserName } from '../../user/user';
 import { auth } from '@/app/firebase/firebase';
 import { useParams } from "next/navigation";
+import { User, addNotification, getMe, hasUserNotifications } from '@/app/firebase/user';
 
 interface Props {
   videoId?: string,
@@ -165,6 +166,42 @@ const CommentComponent = ({ videoId, imageId, audioId, langDictionary }: Props) 
         })
       }
 
+      const replyingComment: Comment | undefined = comments.find(comment => comment.id === replyingToCommentId);
+      const commentText: string = replyingComment?.text.slice(0, 10) + (replyingComment?.text.length! > 10 ? '...' : '')
+      const currentUser: User = await getMe()
+
+      hasUserNotifications(replyingComment!.owner).then((isNotifications) => {
+        if (isNotifications) {
+          
+          if (videoId !== undefined) {
+            addNotification(
+              replyingComment!.owner,
+              {
+                text: `${langDictionary['user']} "${currentUser.username}" ${langDictionary['replied_to_comment']} "${commentText}"`,
+                srcUrl: `/${lang}/video/${videoId}`
+              })
+          }
+
+          if (imageId !== undefined) {
+            addNotification(
+              replyingComment!.owner,
+              {
+                text: `${langDictionary['user']} "${currentUser.username}" ${langDictionary['replied_to_comment']} "${commentText}"`,
+                srcUrl: `/${lang}/image/${imageId}`
+              })
+          }
+
+          if (audioId !== undefined) {
+            addNotification(
+              replyingComment!.owner,
+              {
+                text: `${langDictionary['user']} "${currentUser.username}" ${langDictionary['replied_to_comment']} "${commentText}"`,
+                srcUrl: `/${lang}/audio/${audioId}`
+              })
+          }
+        }
+      })
+      
       setReplyingToCommentId(null);
       setReplyText('');
     }

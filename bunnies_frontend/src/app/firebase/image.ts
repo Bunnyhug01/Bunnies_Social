@@ -58,17 +58,33 @@ export async function getOneImage(id: string): Promise<Image> {
     });
 }
 
-export async function getUserLastImages(userId:string, count: number): Promise<Image[]> {
-  return get(query(ref(database, 'images'), orderByChild('owner'), equalTo(userId), limitToLast(count))).then((snapshot) => {
+export async function getLastImages(count: number): Promise<Image[]> {
+  return get(query(ref(database, 'images'), limitToLast(count))).then((snapshot) => {
     const images: Image[] = []
     snapshot.forEach((childSnapshot) => {
-      images.push(childSnapshot.val())
+      const image: Image = childSnapshot.val()
+      if (!image.isPrivate) {
+        images.push(image)
+      }
     })
     return images
   })
 }
 
-export function createImage({title, details, imageUrl, isPrivate, tags}: ImageCreateRequest): void {
+export async function getUserLastImages(userId:string, count: number): Promise<Image[]> {
+  return get(query(ref(database, 'images'), orderByChild('owner'), equalTo(userId), limitToLast(count))).then((snapshot) => {
+    const images: Image[] = []
+    snapshot.forEach((childSnapshot) => {
+      const image: Image = childSnapshot.val()
+      if (!image.isPrivate || (image.isPrivate && image.owner === auth.currentUser?.uid)) {
+        images.push(image)
+      }
+    })
+    return images
+  })
+}
+
+export function createImage({title, details, imageUrl, isPrivate, tags}: ImageCreateRequest): string {
   
   const image: Image = {
     title: title,
@@ -91,6 +107,8 @@ export function createImage({title, details, imageUrl, isPrivate, tags}: ImageCr
     images.push(imageId!)
     update(ref(database, `users/${auth.currentUser?.uid}/`), {images: images})
   })
+
+  return imageId!
 }
 
 export function updateImage(id: string, {title, details, imageUrl, isPrivate, tags}: ImageUpdateRequest) {

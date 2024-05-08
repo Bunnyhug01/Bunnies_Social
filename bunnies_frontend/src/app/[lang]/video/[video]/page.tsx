@@ -107,7 +107,9 @@ function VideoPage() {
           bgcolor: 'background.default',
           color: 'text.primary',
           flexGrow: 1, p: 3,
-        }}>
+        }}
+        className='sm:overflow-hidden md:overflow-visible lg:overflow-visible'
+      >
         
         
         {/* Main Container */}

@@ -16,6 +16,7 @@ const TagsInput = ({ langDictionary, tags, setTags }: Props) => {
 
   const handleInputKeyPress = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter' && inputValue.trim() !== '') {
+      event.preventDefault()
       addTag(inputValue.trim());
       setInputValue('');
     }
@@ -38,7 +39,7 @@ const TagsInput = ({ langDictionary, tags, setTags }: Props) => {
         variant="outlined"
         value={inputValue}
         onChange={handleInputChange}
-        onKeyPress={handleInputKeyPress}
+        onKeyDown={handleInputKeyPress}
         fullWidth
         margin="normal"
       />

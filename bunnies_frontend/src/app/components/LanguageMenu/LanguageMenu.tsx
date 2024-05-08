@@ -82,6 +82,9 @@ export default function LanguageMenu({ type, language }: Props) {
         <Link href={`/ru${pathname}`}>
           <MenuItem onClick={handleClose}>{language.langDictionary['russian']}</MenuItem>
         </Link>
+        <Link href={`/by${pathname}`}>
+          <MenuItem onClick={handleClose}>{language.langDictionary['belarusian']}</MenuItem>
+        </Link>
       </Menu>
     </Box>
   );

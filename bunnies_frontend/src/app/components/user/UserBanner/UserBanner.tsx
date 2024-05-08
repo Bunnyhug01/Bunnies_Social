@@ -14,7 +14,7 @@ export default function UserBanner({ image, video }: Props) {
         {   !video
             ?
                 <img
-                    src={image ? image?.imageUrl : 'https://img.freepik.com/premium-vector/draw-banner-cute-bunny-easter-spring_45130-1604.jpg'}
+                    src={image ? image?.imageUrl : 'https://firebasestorage.googleapis.com/v0/b/bunnies-social.appspot.com/o/default%2Fdraw-banner-cute-bunny-easter-spring.jpg?alt=media&token=54c1577c-dd0a-4f4d-8727-b848dbb29cb3'}
                     alt={image?.title}
                     className='w-full h-full object-cover'
                 />

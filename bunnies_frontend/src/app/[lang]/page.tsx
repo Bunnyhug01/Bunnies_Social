@@ -18,11 +18,11 @@ import VideoList from '../components/video/VideoList/VideoList';
 import translation from '../locales/translation';
 import getUsersLanguage from '../locales/getUsersLanguage';
 import { UserAuthRequest, hasLike } from '../firebase/user';
-import { VideoUpdateRequest, VideoCreateRequest, getAllVideos, createVideo, addView, Video } from '../firebase/video';
+import { VideoUpdateRequest, VideoCreateRequest, getAllVideos, createVideo, addView, Video, getLastVideos } from '../firebase/video';
 import { auth } from '../firebase/firebase';
 import { searchAudio, searchImage, searchVideo } from '../firebase/search';
-import { Audio, AudioCreateRequest, createAudio, getAllAudios } from '../firebase/audio';
-import { Image, ImageCreateRequest, createImage, getAllImages } from '../firebase/image';
+import { Audio, AudioCreateRequest, createAudio, getAllAudios, getLastAudios } from '../firebase/audio';
+import { Image, ImageCreateRequest, createImage, getAllImages, getLastImages } from '../firebase/image';
 import AudioList from '../components/audio/AudioList/AudioList';
 import ImageList from '../components/image/ImageList/ImageList';
 
@@ -46,15 +46,15 @@ export function Home() {
   
   useEffect(() => {
     if (searchText === undefined || searchText === '') {
-      getAllVideos().then((videoArray:any) => {
+      getLastVideos(3).then((videoArray:any) => {
         setVideos(Object.values(videoArray))
       })
 
-      getAllAudios().then((audioArray:any) => {
+      getLastAudios(4).then((audioArray:any) => {
         setAudios(Object.values(audioArray))
       })
 
-      getAllImages().then((imageArray:any) => {
+      getLastImages(4).then((imageArray:any) => {
         setImages(Object.values(imageArray))
       })
 
@@ -86,64 +86,6 @@ export function Home() {
       localStorage.setItem('redirected', 'true');
     }
   }, []);
-
-  useEffect(() => {
-
-    const video: VideoCreateRequest = {
-      title: 'TestVid',
-      details: '1',
-      videoUrl: 'https://firebasestorage.googleapis.com/v0/b/bunnies-social.appspot.com/o/videos%2FKen%20Ashcorp%20The%20Bunny%20Song%20VeggieTales%20cover.mp4?alt=media&token=51dbc3c8-27c3-47a9-8762-a5ba46acf210',
-      logoUrl: 'https://firebasestorage.googleapis.com/v0/b/bunnies-social.appspot.com/o/images%2FKen%20Ashcorp.png?alt=media&token=88962fca-3b2f-4a8f-b9ce-a1cbdde976bb',
-      isPrivate: false,
-      tags: [],
-    }
-
-    const updVideo: VideoUpdateRequest = {
-      title: "Fourth",
-      isPrivate: false
-    }
-
-    const authUser: UserAuthRequest = {
-      email: 'test@test.com',
-      password: '123jhgjgh4gjghjhgjfdhfggfj'
-    }
-
-
-    const audio: AudioCreateRequest = {
-      title: 'PvP',
-      details: 'Ken Ashcorp',
-      audioUrl: 'https://firebasestorage.googleapis.com/v0/b/bunnies-social.appspot.com/o/audio%2FKen%20Ashcorp%20-PvP.mp3?alt=media&token=d7c13391-4e4c-40e5-9dfc-6aa5de1917f5',
-      logoUrl: 'https://firebasestorage.googleapis.com/v0/b/bunnies-social.appspot.com/o/images%2Fpvp.jpg?alt=media&token=eb5c1bea-8ba5-4f87-9067-3fb86b056bd6',
-      isPrivate: false,
-      tags: [],
-    }
-
-    const image: ImageCreateRequest = {
-      title: 'Zone-Tan',
-      details: 'Zone-Tan holding a mug',
-      imageUrl: 'https://firebasestorage.googleapis.com/v0/b/bunnies-social.appspot.com/o/images%2Flinker_zone-tan-holding-a-mug.jpg?alt=media&token=13ba22a0-f8a9-4b35-bbec-30cbe35dd864',
-      // imageUrl: 'https://firebasestorage.googleapis.com/v0/b/bunnies-social.appspot.com/o/images%2Flinkerluis_uno.jpg?alt=media&token=a766bca3-f409-4265-ad58-5588c3cd45aa',
-      // imageUrl: 'https://firebasestorage.googleapis.com/v0/b/bunnies-social.appspot.com/o/images%2Flinker_zone-tan-animator.gif?alt=media&token=f6b9075c-86e9-4ea7-bcd9-88d486d8dddc',
-      isPrivate: false,
-      tags: [],
-    }
-
-    // createImage(image)
-    // getAllAudios().then((result:any) => {console.log(Object.values(result))})
-    // createAudio(audio)
-    // getAllVideos().then((result:any) => {console.log(Object.values(result))})
-    // getOneVideo('-NoX1H0RbN_FYz-YMenW').then((result) => {console.log(result)})
-    // deleteVideo('--NocMy6zBiWvwI1a7Njr-YMenW')
-    // updateVideo('-NocNS3F_YGacJHFeir5', updVideo)
-    // addLike('-NocNS3F_YGacJHFeir5')
-    // createVideo(video)
-    // addView('-NqJDXK0wFAZvWLb6RNK')
-    // signUp(authUser)
-    // signIn(authUser)
-    // signUserOut()
-    // hasLike('-Nrq86OD9cNtMx-MWBKi')
-    
-  }, [])
 
   return(
     <Box

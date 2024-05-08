@@ -28,6 +28,7 @@ import AudioList from '@/app/components/audio/AudioList/AudioList';
 import VideoList from '@/app/components/video/VideoList/VideoList';
 import ImageList from '@/app/components/image/ImageList/ImageList';
 import UserList from '@/app/components/user/UserList/UserList';
+import { auth } from '@/app/firebase/firebase';
 
 
 interface TabPanelProps {
@@ -116,8 +117,10 @@ export function UserPage() {
 
       getUser(userId).then((user) => {
         user.videos?.map((videoId) => {
-          getOneVideo(videoId).then((video) => {
-            setVideos([...videos, video])
+          getOneVideo(videoId).then((video: Video) => {
+            if (!video.isPrivate || (video.isPrivate && video.owner === auth.currentUser?.uid)) {
+              setVideos([...videos, video])
+            }
           })
         })
       })
@@ -125,7 +128,9 @@ export function UserPage() {
       getUser(userId).then((user) => {
         user.images?.map((imageId) => {
           getOneImage(imageId).then((image) => {
-            setImages([...images, image])
+            if (!image.isPrivate || (image.isPrivate && image.owner === auth.currentUser?.uid)) {
+              setImages([...images, image])
+            }
           })
         })
       })
@@ -133,7 +138,9 @@ export function UserPage() {
       getUser(userId).then((user) => {
         user.audios?.map((audioId) => {
           getOneAudio(audioId).then((audio) => {
-            setAudios([...audios, audio])
+            if (!audio.isPrivate || (audio.isPrivate && audio.owner === auth.currentUser?.uid)) {
+              setAudios([...audios, audio])
+            }
           })
         })
       })
@@ -225,7 +232,7 @@ export function UserPage() {
                   {lastVideos.map((video) => (
                     <Link 
                       key={video.id}
-                      href={`${lang}/video/${video.id}`}
+                      href={`/${lang}/video/${video.id}`}
                     >
                       <VideoList video={video} langDictionary={langDictionary} />
                     </Link>
@@ -249,7 +256,7 @@ export function UserPage() {
               {lastImages.map((image) => (
                 <Link 
                   key={image.id}
-                  href={`${lang}/image/${image.id}`}
+                  href={`/${lang}/image/${image.id}`}
                 >
                   <ImageList image={image} langDictionary={langDictionary} />
                 </Link>
@@ -273,7 +280,7 @@ export function UserPage() {
               {lastAudios.map((audio) => (
                 <Link 
                   key={audio.id}
-                  href={`${lang}/audio/${audio.id}`}
+                  href={`/${lang}/audio/${audio.id}`}
                   className='max-w-[15vw]'
                 >
                   <AudioList audio={audio} langDictionary={langDictionary} />
@@ -302,7 +309,7 @@ export function UserPage() {
                 {videos.map((video) => (
                   <Link 
                     key={video.id}
-                    href={`${lang}/video/${video.id}`}
+                    href={`/${lang}/video/${video.id}`}
                   >
                     <VideoList video={video} langDictionary={langDictionary} />
                   </Link>
@@ -330,7 +337,7 @@ export function UserPage() {
               {images.map((image) => (
                 <Link 
                   key={image.id}
-                  href={`${lang}/image/${image.id}`}
+                  href={`/${lang}/image/${image.id}`}
                 >
                   <ImageList image={image} langDictionary={langDictionary} />
                 </Link>
@@ -358,7 +365,7 @@ export function UserPage() {
               {audios.map((audio) => (
                 <Link 
                   key={audio.id}
-                  href={`${lang}/audio/${audio.id}`}
+                  href={`/${lang}/audio/${audio.id}`}
                   className='max-w-[15vw]'
                 >
                   <AudioList audio={audio} langDictionary={langDictionary} />

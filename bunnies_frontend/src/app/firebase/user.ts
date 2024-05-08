@@ -1,9 +1,10 @@
 import { createUserWithEmailAndPassword, sendEmailVerification, signOut } from "firebase/auth";
 import { auth, database } from "./firebase";
 import { signInWithEmailAndPassword } from "firebase/auth/cordova";
-import { ref, push, child, get, set, update } from "firebase/database";
+import { ref, push, child, get, set, update, onValue, remove } from "firebase/database";
 import getDate from "../utils/getDate";
 import deleteFile from "./deleteFile";
+import { Dispatch, SetStateAction } from "react";
 
 
 export interface UserAuthRequest {
@@ -38,7 +39,9 @@ export interface User {
     date: string,
     details?: string,
     preferences?: Preferences[],
-    isPreferencesEnabled?: boolean
+    isPreferencesEnabled?: boolean,
+    notifications?: Notifications[],
+    isNotificationsEnabled?: boolean
 }
 
 export interface History {
@@ -66,6 +69,12 @@ export interface Preferences {
     date: Date,
 }
 
+export interface Notifications {
+    id?: string,
+    text: string,
+    srcUrl: string,
+}
+
 export async function createUser({ id, username, email, password }: UserAuthRequest) {
 
     const user: User = {
@@ -83,7 +92,8 @@ export async function createUser({ id, username, email, password }: UserAuthRequ
         comments: [],
         date: getDate(),
         details: '',
-        isPreferencesEnabled: false
+        isPreferencesEnabled: false,
+        isNotificationsEnabled: false
     }
     
     update(ref(database, `users/`), {[id!]: user});
@@ -398,4 +408,72 @@ export async function addPreferences(tags: string[]) {
             update(ref(database, `users/${auth.currentUser?.uid}/`), {preferences: preferences})
         })
     }
+}
+
+export async function enableNotifications() {
+    update(ref(database, `users/${auth.currentUser?.uid}/`), {isNotificationsEnabled: true})
+}
+
+export async function disableNotifications() {
+    update(ref(database, `users/${auth.currentUser?.uid}/`), {isNotificationsEnabled: false})
+}
+
+export async function hasNotifications():Promise<boolean> {
+    return get(child(ref(database), `users/${auth.currentUser?.uid}/isNotificationsEnabled`)).then((snapshot) => {
+        if (snapshot.exists()) {
+            
+            if (snapshot.val()) {
+                return true
+            }
+            else {
+                return false
+            }
+
+        } else {
+            return false
+        }
+    })
+}
+
+export async function hasUserNotifications(userId: string) {
+    return get(child(ref(database), `users/${userId}/isNotificationsEnabled`)).then((snapshot) => {
+        if (snapshot.exists()) {
+
+            if (snapshot.val()) {
+                return true
+            }
+            else {
+                return false
+            }
+
+        } else {
+            return false
+        }
+    })
+}
+
+export async function addNotification(userId: string, {text, srcUrl}: Notifications)  {
+
+    const notification: Notifications = {
+        text: text,
+        srcUrl: srcUrl
+    }
+    
+    const notificationId = push(ref(database, `users/${userId}/notifications/`), notification).key;
+    update(ref(database, `users/${userId}/notifications/${notificationId}/`), {id: notificationId})
+    
+}
+
+export async function deleteNotification(id: string) {
+    remove(ref(database, `users/${auth.currentUser?.uid}/notifications/${id}`))
+}
+
+export async function getNotifications(setNotifications: Dispatch<SetStateAction<Notifications[]>>) {
+    const notificationsRef = ref(database, `users/${auth.currentUser?.uid}/notifications/`)
+
+    onValue(notificationsRef, (snapshot) => {
+        if (snapshot.exists()) {
+            setNotifications(Object.values(snapshot.val()))
+        }
+    })   
 }

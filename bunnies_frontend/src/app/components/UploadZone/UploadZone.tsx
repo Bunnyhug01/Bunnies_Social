@@ -41,10 +41,10 @@ export default function UploadZone({ setFile, acceptedfileType, type, reference,
     : (acceptedfileType === 'audio'
       ? ['audio/*']
       : (acceptedfileType === 'image'
-        ? ['image/png' , 'image/jpeg']
+        ? ['image/png' , 'image/jpeg', 'image/gif']
         : (acceptedfileType === 'no audio'
-          ? ['video/mp4', 'image/png' , 'image/jpeg']
-          : ['video/mp4', 'audio/*', 'image/png' , 'image/jpeg']
+          ? ['video/mp4', 'image/png' , 'image/jpeg', 'image/gif']
+          : ['video/mp4', 'audio/*', 'image/png' , 'image/jpeg', 'image/gif']
       )))
  
   const onDrop = useCallback((acceptedFiles: Array<File>) => {

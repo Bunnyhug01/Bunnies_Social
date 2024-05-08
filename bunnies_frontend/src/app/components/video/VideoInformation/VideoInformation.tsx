@@ -1,5 +1,5 @@
 import { ThumbUp, ThumbDown } from "@mui/icons-material";
-import { Box, Button, IconButton, Typography } from "@mui/material";
+import { Box, Button, IconButton, Link, Typography } from "@mui/material";
 
 import UserIcon from "../../user/UserIcon/UserIcon";
 import MobileDescription from "../../MobileDescription/MobileDescription";
@@ -116,9 +116,11 @@ export default function VideoInformation({ video, langDictionary } : Props) {
       <Box className="flex items-center lg:w-[100%] md:w-[100%] sm:w-[100%] h-[80px] py-4 px-8 sm:px-4">
 
         <Box>
-          <Box className="inline-block">
-            <UserIcon userId={video.owner} langDictionary={langDictionary} />
-          </Box>
+          <Link href={`/${lang}/user/${video.owner}`} style={{ textDecoration: 'none' }}>
+            <Box className="inline-block">
+              <UserIcon userId={video.owner} langDictionary={langDictionary} />
+            </Box>
+          </Link>
           
           <Box className="inline-block">
 
