@@ -16,6 +16,7 @@ import RecommendedList from "../../components/video/RecommendedList/RecommendedL
 import translation from '@/app/locales/translation';
 import { getMe } from '@/app/firebase/user';
 import { Video, getOneVideo } from '@/app/firebase/video';
+import { searchVideo, searchImage, searchAudio, searchUser } from '@/app/firebase/search';
 
 export function UserVideos() {
 
@@ -27,7 +28,7 @@ export function UserVideos() {
     notFound()
 
   const [data, setData] = useState<Video[]>([])
-
+  const [options, setOptions] = useState({})
 
   const [searchText, setSearchText] = useState<string|undefined>(undefined);
   const searchHandler = useCallback((e: React.FormEvent<HTMLInputElement>) => {
@@ -52,9 +53,20 @@ export function UserVideos() {
       )
   
     } else {
-      // searchInOwner(searchText).then((videoArray) => {
-      //   setData(videoArray)
-      // })
+      Promise.all([
+        searchVideo(searchText),
+        searchImage(searchText),
+        searchAudio(searchText),
+        searchUser(searchText)
+      ]).then(([videos, images, audios, users]: any) => {
+        const options = {
+          videos: videos,
+          images: images,
+          audios: audios,
+          users: users
+        }
+        setOptions(options)
+      })
     }
   
   }, [searchText])
@@ -71,7 +83,7 @@ export function UserVideos() {
       <Header
         searchHandler={searchHandler}
         ColorModeContext={ColorModeContext}
-        text={{searchText: searchText, setSearchText: setSearchText}}
+        text={{searchText: searchText, setSearchText: setSearchText, options: options}}
         language={{langDictionary: langDictionary, lang: lang}}
       />
             

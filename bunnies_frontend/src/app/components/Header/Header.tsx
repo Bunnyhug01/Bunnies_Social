@@ -21,9 +21,12 @@ import Dictaphone from '../Dictaphone/Dictaphone';
 import LanguageMenu from '../LanguageMenu/LanguageMenu';
 
 import { MyLogo, UserHasPreferencesVar, UserIdInfo, UserMeInfo } from '../user/user';
-import { disableNotifications, disablePreferences, enableNotifications, enablePreferences, hasNotifications, hasPreferences, signUserOut } from '@/app/firebase/user';
+import { User, disableNotifications, disablePreferences, enableNotifications, enablePreferences, hasNotifications, hasPreferences, signUserOut } from '@/app/firebase/user';
 import { auth } from '@/app/firebase/firebase';
 import Notifications from '../Notifications/Notifications';
+import { Video } from '@/app/firebase/video';
+import { Image } from '@/app/firebase/image';
+import { Audio } from '@/app/firebase/audio';
 
 
 interface Props {
@@ -33,7 +36,13 @@ interface Props {
     }>
     text?: {
         searchText?: string,
-        setSearchText: React.Dispatch<React.SetStateAction<string | undefined>>
+        setSearchText: React.Dispatch<React.SetStateAction<string | undefined>>,
+        options: {
+            videos?: Video[],
+            images?: Image[],
+            audios?: Audio[],
+            users?:  User[]
+        }
     },
     language: {
         langDictionary: Record<string, string>,
@@ -290,7 +299,12 @@ export default function Header({searchHandler, ColorModeContext, text, language}
                     <SwipeableTemporaryDrawer language={{langDictionary: language.langDictionary, lang: language.lang}} />
                     <Logo />
 
-                    <SearchBox onChange={searchHandler} text={text} langDictionary={language.langDictionary} />
+                    <SearchBox
+                        onChange={searchHandler}
+                        text={text}
+                        language={{langDictionary: language.langDictionary, lang: language.lang}}
+                    />
+                    
                     <Dictaphone setDictaphoneInput={text?.setSearchText} lang={language.lang} />
 
                     <Box sx={{ flexGrow: 1 }} />

@@ -17,12 +17,10 @@ import VideoList from '../components/video/VideoList/VideoList';
 
 import translation from '../locales/translation';
 import getUsersLanguage from '../locales/getUsersLanguage';
-import { UserAuthRequest, hasLike } from '../firebase/user';
-import { VideoUpdateRequest, VideoCreateRequest, getAllVideos, createVideo, addView, Video, getLastVideos } from '../firebase/video';
-import { auth } from '../firebase/firebase';
-import { searchAudio, searchImage, searchVideo } from '../firebase/search';
-import { Audio, AudioCreateRequest, createAudio, getAllAudios, getLastAudios } from '../firebase/audio';
-import { Image, ImageCreateRequest, createImage, getAllImages, getLastImages } from '../firebase/image';
+import { Video, getLastVideos } from '../firebase/video';
+import { searchAudio, searchImage, searchUser, searchVideo } from '../firebase/search';
+import { Audio, getLastAudios } from '../firebase/audio';
+import { Image, getLastImages } from '../firebase/image';
 import AudioList from '../components/audio/AudioList/AudioList';
 import ImageList from '../components/image/ImageList/ImageList';
 
@@ -38,6 +36,8 @@ export function Home() {
   const [videos, setVideos] = useState<Video[]>([])
   const [images, setImages] = useState<Image[]>([])
   const [audios, setAudios] = useState<Audio[]>([])
+
+  const [options, setOptions] = useState({})
 
   const [searchText, setSearchText] = useState<string|undefined>('');
   const searchHandler = useCallback((e: React.FormEvent<HTMLInputElement>) => {
@@ -59,16 +59,20 @@ export function Home() {
       })
 
     } else {
-      searchVideo(searchText).then((videoArray: Video[]) => {
-        setVideos(videoArray)
-      })
 
-      searchImage(searchText).then((imageArray: Image[]) => {
-        setImages(imageArray)
-      })
-
-      searchAudio(searchText).then((audioArray: Audio[]) => {
-        setAudios(audioArray)
+      Promise.all([
+        searchVideo(searchText),
+        searchImage(searchText),
+        searchAudio(searchText),
+        searchUser(searchText)
+      ]).then(([videos, images, audios, users]: any) => {
+        const options = {
+          videos: videos,
+          images: images,
+          audios: audios,
+          users: users
+        }
+        setOptions(options)
       })
     }
 
@@ -100,7 +104,7 @@ export function Home() {
       <Header
         searchHandler={searchHandler}
         ColorModeContext={ColorModeContext}
-        text={{searchText: searchText, setSearchText: setSearchText}}
+        text={{searchText: searchText, setSearchText: setSearchText, options: options}}
         language={{langDictionary: langDictionary, lang: lang}}
       />
       
@@ -126,7 +130,6 @@ export function Home() {
             </Link>
           ))}
         </Box>
-
 
 
         <Box className="flex items-center">

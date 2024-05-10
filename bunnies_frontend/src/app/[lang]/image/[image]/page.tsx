@@ -21,6 +21,7 @@ import { Image, addToHistory, addView, getOneImage, getRecommendations } from '@
 import ImageContainer from '@/app/components/image/ImageContainer/ImageContainer';
 import ImageRecommendedList from '@/app/components/image/ImageRecommendedList/ImageRecommendedList';
 import { addPreferences, hasPreferences } from '@/app/firebase/user';
+import { searchVideo, searchImage, searchAudio, searchUser } from '@/app/firebase/search';
 
 
 function ImagePage() {
@@ -38,6 +39,8 @@ function ImagePage() {
   const [recommendation, setRecommendation] = useState<Image[]>([])
 
   const [image, setImage] = useState<Image>()
+
+  const [options, setOptions] = useState({})
 
   const [searchText, setSearchText] = useState<string|undefined>(undefined);
   const searchHandler = useCallback((e: React.FormEvent<HTMLInputElement>) => {
@@ -73,9 +76,20 @@ function ImagePage() {
         setRecommendation(imageArray)
       })
     } else {
-      // search(searchText).then((videoArray) => {
-      //   setRecommendation(videoArray)
-      // })
+      Promise.all([
+        searchVideo(searchText),
+        searchImage(searchText),
+        searchAudio(searchText),
+        searchUser(searchText)
+      ]).then(([videos, images, audios, users]: any) => {
+        const options = {
+          videos: videos,
+          images: images,
+          audios: audios,
+          users: users
+        }
+        setOptions(options)
+      })
     }
 
   }, [searchText])
@@ -95,7 +109,7 @@ function ImagePage() {
       <Header
         searchHandler={searchHandler}
         ColorModeContext={ColorModeContext}
-        text={{searchText: searchText, setSearchText: setSearchText}}
+        text={{searchText: searchText, setSearchText: setSearchText, options: options}}
         language={{langDictionary: langDictionary, lang: lang}}
       />
       

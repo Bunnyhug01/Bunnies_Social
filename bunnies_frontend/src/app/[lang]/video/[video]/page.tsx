@@ -23,6 +23,7 @@ import { addToHistory, addView, getOneVideo, getRecommendations, Video } from '@
 import { auth } from '@/app/firebase/firebase';
 import CommentComponent from '../../../components/comment/CommentComponent/CommentComponent';
 import { addPreferences, hasPreferences } from '@/app/firebase/user';
+import { searchVideo, searchImage, searchAudio, searchUser } from '@/app/firebase/search';
 
 
 function VideoPage() {
@@ -40,6 +41,7 @@ function VideoPage() {
   const [recommendation, setRecommendation] = useState<Video[]>([])
 
   const [video, setVideo] = useState<Video>()
+  const [options, setOptions] = useState({})
 
   const [searchText, setSearchText] = useState<string|undefined>(undefined);
   const searchHandler = useCallback((e: React.FormEvent<HTMLInputElement>) => {
@@ -75,9 +77,20 @@ function VideoPage() {
         setRecommendation(videoArray)
       })
     } else {
-      // search(searchText).then((videoArray) => {
-      //   setRecommendation(videoArray)
-      // })
+      Promise.all([
+        searchVideo(searchText),
+        searchImage(searchText),
+        searchAudio(searchText),
+        searchUser(searchText)
+      ]).then(([videos, images, audios, users]: any) => {
+        const options = {
+          videos: videos,
+          images: images,
+          audios: audios,
+          users: users
+        }
+        setOptions(options)
+      })
     }
 
   }, [searchText])
@@ -97,7 +110,7 @@ function VideoPage() {
       <Header
         searchHandler={searchHandler}
         ColorModeContext={ColorModeContext}
-        text={{searchText: searchText, setSearchText: setSearchText}}
+        text={{searchText: searchText, setSearchText: setSearchText, options: options}}
         language={{langDictionary: langDictionary, lang: lang}}
       />
       

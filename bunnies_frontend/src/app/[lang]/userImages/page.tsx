@@ -16,6 +16,7 @@ import translation from '@/app/locales/translation';
 import { getMe } from '@/app/firebase/user';
 import { Image, getOneImage } from '@/app/firebase/image';
 import ImageRecommendedList from '@/app/components/image/ImageRecommendedList/ImageRecommendedList';
+import { searchVideo, searchImage, searchAudio, searchUser } from '@/app/firebase/search';
 
 export function UserImages() {
 
@@ -27,7 +28,7 @@ export function UserImages() {
     notFound()
 
   const [data, setData] = useState<Image[]>([])
-
+  const [options, setOptions] = useState({})
 
   const [searchText, setSearchText] = useState<string|undefined>(undefined);
   const searchHandler = useCallback((e: React.FormEvent<HTMLInputElement>) => {
@@ -52,9 +53,20 @@ export function UserImages() {
       )
   
     } else {
-      // searchInOwner(searchText).then((videoArray) => {
-      //   setData(videoArray)
-      // })
+      Promise.all([
+        searchVideo(searchText),
+        searchImage(searchText),
+        searchAudio(searchText),
+        searchUser(searchText)
+      ]).then(([videos, images, audios, users]: any) => {
+        const options = {
+          videos: videos,
+          images: images,
+          audios: audios,
+          users: users
+        }
+        setOptions(options)
+      })
     }
   
   }, [searchText])
@@ -71,7 +83,7 @@ export function UserImages() {
       <Header
         searchHandler={searchHandler}
         ColorModeContext={ColorModeContext}
-        text={{searchText: searchText, setSearchText: setSearchText}}
+        text={{searchText: searchText, setSearchText: setSearchText, options: options}}
         language={{langDictionary: langDictionary, lang: lang}}
       />
             

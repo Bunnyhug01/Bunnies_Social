@@ -16,6 +16,7 @@ import translation from '@/app/locales/translation';
 import { getMe } from '@/app/firebase/user';
 import { Audio, getOneAudio } from '@/app/firebase/audio';
 import AudioRecommendedList from '@/app/components/audio/AudioRecommendedList/AudioRecommendedList';
+import { searchVideo, searchImage, searchAudio, searchUser } from '@/app/firebase/search';
 
 export function UserAudios() {
 
@@ -27,7 +28,7 @@ export function UserAudios() {
     notFound()
 
   const [data, setData] = useState<Audio[]>([])
-
+  const [options, setOptions] = useState({})
 
   const [searchText, setSearchText] = useState<string|undefined>(undefined);
   const searchHandler = useCallback((e: React.FormEvent<HTMLInputElement>) => {
@@ -52,9 +53,20 @@ export function UserAudios() {
       )
   
     } else {
-      // searchInOwner(searchText).then((videoArray) => {
-      //   setData(videoArray)
-      // })
+      Promise.all([
+        searchVideo(searchText),
+        searchImage(searchText),
+        searchAudio(searchText),
+        searchUser(searchText)
+      ]).then(([videos, images, audios, users]: any) => {
+        const options = {
+          videos: videos,
+          images: images,
+          audios: audios,
+          users: users
+        }
+        setOptions(options)
+      })
     }
   
   }, [searchText])
@@ -71,7 +83,7 @@ export function UserAudios() {
       <Header
         searchHandler={searchHandler}
         ColorModeContext={ColorModeContext}
-        text={{searchText: searchText, setSearchText: setSearchText}}
+        text={{searchText: searchText, setSearchText: setSearchText, options: options}}
         language={{langDictionary: langDictionary, lang: lang}}
       />
             

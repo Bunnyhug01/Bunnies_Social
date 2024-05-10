@@ -24,6 +24,7 @@ import { Image, getOneImage } from '@/app/firebase/image';
 import { Audio, getOneAudio } from '@/app/firebase/audio';
 import AudioRecommendedList from '@/app/components/audio/AudioRecommendedList/AudioRecommendedList';
 import ImageRecommendedList from '@/app/components/image/ImageRecommendedList/ImageRecommendedList';
+import { searchVideo, searchImage, searchAudio, searchUser } from '@/app/firebase/search';
 
 export function History() {
 
@@ -37,6 +38,8 @@ export function History() {
   const [videos, setVideos] = useState<Video[]>([])
   const [images, setImages] = useState<Image[]>([])
   const [audios, setAudios] = useState<Audio[]>([])
+
+  const [options, setOptions] = useState({})
 
   const [searchText, setSearchText] = useState<string|undefined>(undefined);
   const searchHandler = useCallback((e: React.FormEvent<HTMLInputElement>) => {
@@ -83,9 +86,20 @@ export function History() {
     })
 
     } else {
-      // searchInHistory(searchText).then((videoArray) => {
-      //   setData(videoArray)
-      // })
+      Promise.all([
+        searchVideo(searchText),
+        searchImage(searchText),
+        searchAudio(searchText),
+        searchUser(searchText)
+      ]).then(([videos, images, audios, users]: any) => {
+        const options = {
+          videos: videos,
+          images: images,
+          audios: audios,
+          users: users
+        }
+        setOptions(options)
+      })
     }
 
   }, [searchText])
@@ -102,7 +116,7 @@ export function History() {
       <Header
         searchHandler={searchHandler}
         ColorModeContext={ColorModeContext}
-        text={{searchText: searchText, setSearchText: setSearchText}}
+        text={{searchText: searchText, setSearchText: setSearchText, options: options}}
         language={{langDictionary: langDictionary, lang: lang}}
       />
             

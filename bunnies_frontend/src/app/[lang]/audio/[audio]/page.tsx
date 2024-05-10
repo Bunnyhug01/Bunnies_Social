@@ -22,6 +22,7 @@ import { Audio, addToHistory, addView, getOneAudio, getRecommendations } from '@
 import AudioContainer from '@/app/components/audio/AudioContainer/AudioContainer';
 import AudioRecommendedList from '@/app/components/audio/AudioRecommendedList/AudioRecommendedList';
 import { addPreferences, hasPreferences } from '@/app/firebase/user';
+import { searchVideo, searchImage, searchAudio, searchUser } from '@/app/firebase/search';
 
 
 function AudioPage() {
@@ -39,6 +40,8 @@ function AudioPage() {
   const [recommendation, setRecommendation] = useState<Audio[]>([])
 
   const [audio, setAudio] = useState<Audio>()
+
+  const [options, setOptions] = useState({})
 
   const [searchText, setSearchText] = useState<string|undefined>(undefined);
   const searchHandler = useCallback((e: React.FormEvent<HTMLInputElement>) => {
@@ -76,9 +79,20 @@ function AudioPage() {
         setRecommendation(audioArray)
       })
     } else {
-      // search(searchText).then((videoArray) => {
-      //   setRecommendation(videoArray)
-      // })
+      Promise.all([
+        searchVideo(searchText),
+        searchImage(searchText),
+        searchAudio(searchText),
+        searchUser(searchText)
+      ]).then(([videos, images, audios, users]: any) => {
+        const options = {
+          videos: videos,
+          images: images,
+          audios: audios,
+          users: users
+        }
+        setOptions(options)
+      })
     }
 
   }, [searchText])
@@ -98,7 +112,7 @@ function AudioPage() {
       <Header
         searchHandler={searchHandler}
         ColorModeContext={ColorModeContext}
-        text={{searchText: searchText, setSearchText: setSearchText}}
+        text={{searchText: searchText, setSearchText: setSearchText, options: options}}
         language={{langDictionary: langDictionary, lang: lang}}
       />
       

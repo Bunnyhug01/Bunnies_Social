@@ -29,6 +29,7 @@ import VideoList from '@/app/components/video/VideoList/VideoList';
 import ImageList from '@/app/components/image/ImageList/ImageList';
 import UserList from '@/app/components/user/UserList/UserList';
 import { auth } from '@/app/firebase/firebase';
+import { searchVideo, searchImage, searchAudio, searchUser } from '@/app/firebase/search';
 
 
 interface TabPanelProps {
@@ -88,6 +89,8 @@ export function UserPage() {
 
   const [subscribers, setSubscribers] = useState<User[]>([])
   const [subscriptions, setSubscriptions] = useState<User[]>([])
+
+  const [options, setOptions] = useState({})
 
   const [searchText, setSearchText] = useState<string|undefined>(undefined);
   const searchHandler = useCallback((e: React.FormEvent<HTMLInputElement>) => {
@@ -162,9 +165,20 @@ export function UserPage() {
       })
   
     } else {
-      // searchInOwner(searchText).then((videoArray) => {
-      //   setData(videoArray)
-      // })
+      Promise.all([
+        searchVideo(searchText),
+        searchImage(searchText),
+        searchAudio(searchText),
+        searchUser(searchText)
+      ]).then(([videos, images, audios, users]: any) => {
+        const options = {
+          videos: videos,
+          images: images,
+          audios: audios,
+          users: users
+        }
+        setOptions(options)
+      })
     }
   
   }, [searchText])
@@ -181,7 +195,7 @@ export function UserPage() {
       <Header
         searchHandler={searchHandler}
         ColorModeContext={ColorModeContext}
-        text={{searchText: searchText, setSearchText: setSearchText}}
+        text={{searchText: searchText, setSearchText: setSearchText, options: options}}
         language={{langDictionary: langDictionary, lang: lang}}
       />
             

@@ -16,7 +16,7 @@ import translation from '../../locales/translation';
 import getUsersLanguage from '../../locales/getUsersLanguage';
 import { UserAuthRequest } from '../../firebase/user';
 import { auth } from '../../firebase/firebase';
-import { searchImage } from '../../firebase/search';
+import { searchAudio, searchImage, searchUser, searchVideo } from '../../firebase/search';
 import { Image, getAllImages } from '@/app/firebase/image';
 import ImageList from '@/app/components/image/ImageList/ImageList';
 
@@ -30,6 +30,7 @@ export function Images() {
     notFound()
 
   const [data, setData] = useState<Image[]>([])
+  const [options, setOptions] = useState({})
 
   const [searchText, setSearchText] = useState<string|undefined>(undefined);
   const searchHandler = useCallback((e: React.FormEvent<HTMLInputElement>) => {
@@ -45,8 +46,19 @@ export function Images() {
           setData(images)
         })
     } else {
-      searchImage(searchText).then((imageArray: Image[]) => {
-        setData(imageArray)
+      Promise.all([
+        searchVideo(searchText),
+        searchImage(searchText),
+        searchAudio(searchText),
+        searchUser(searchText)
+      ]).then(([videos, images, audios, users]: any) => {
+        const options = {
+          videos: videos,
+          images: images,
+          audios: audios,
+          users: users
+        }
+        setOptions(options)
       })
     }
 
@@ -64,7 +76,7 @@ export function Images() {
       <Header
         searchHandler={searchHandler}
         ColorModeContext={ColorModeContext}
-        text={{searchText: searchText, setSearchText: setSearchText}}
+        text={{searchText: searchText, setSearchText: setSearchText, options: options}}
         language={{langDictionary: langDictionary, lang: lang}}
       />
       

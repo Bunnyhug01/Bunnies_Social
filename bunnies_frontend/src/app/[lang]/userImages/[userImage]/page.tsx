@@ -18,6 +18,7 @@ import deleteFile from '@/app/firebase/deleteFile';
 import { Image, ImageUpdateRequest, deleteImage, getOneImage, updateImage } from '@/app/firebase/image';
 import { ImageInfo, UserImageLogo } from '@/app/components/image/image';
 import { auth } from '@/app/firebase/firebase';
+import { searchVideo, searchImage, searchAudio, searchUser } from '@/app/firebase/search';
 
 export function UserImage() {
   const params  = useParams();
@@ -43,6 +44,7 @@ export function UserImage() {
   };
 
   const [image, setImage] = useState<Image>()
+  const [options, setOptions] = useState({})
 
   const [ifNotFound, setIfNotFound] = useState<boolean>(false)
   const [ifDeleted, setIfDeleted] = useState<boolean>(false)
@@ -96,16 +98,32 @@ export function UserImage() {
   }
 
   useEffect(() => {
-
-    if (user && auth.currentUser?.emailVerified) {
-      getOneImage(imageId).then((image) => {
-        setImage(image)
-      }).catch(response => {
-        if(response.status == 404)
-          setIfNotFound(true)
-      })
+    if (searchText === undefined || searchText === '') {
+      if (user && auth.currentUser?.emailVerified) {
+        getOneImage(imageId).then((image) => {
+          setImage(image)
+        }).catch(response => {
+          if(response.status == 404)
+            setIfNotFound(true)
+        })
+      } else {
+        redirect(`/${lang}/sign-in`)
+      }
     } else {
-      redirect(`/${lang}/sign-in`)
+      Promise.all([
+        searchVideo(searchText),
+        searchImage(searchText),
+        searchAudio(searchText),
+        searchUser(searchText)
+      ]).then(([videos, images, audios, users]: any) => {
+        const options = {
+          videos: videos,
+          images: images,
+          audios: audios,
+          users: users
+        }
+        setOptions(options)
+      })
     }
 
   },[])
@@ -135,7 +153,7 @@ export function UserImage() {
       <Header
         searchHandler={searchHandler}
         ColorModeContext={ColorModeContext}
-        text={{searchText: searchText, setSearchText: setSearchText}}
+        text={{searchText: searchText, setSearchText: setSearchText, options: options}}
         language={{langDictionary: langDictionary, lang: lang}}
       />
       

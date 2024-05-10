@@ -18,7 +18,7 @@ import getUsersLanguage from '../../locales/getUsersLanguage';
 import { UserAuthRequest } from '../../firebase/user';
 import { getAllVideos, Video } from '../../firebase/video';
 import { auth } from '../../firebase/firebase';
-import { searchVideo } from '../../firebase/search';
+import { searchAudio, searchImage, searchUser, searchVideo } from '../../firebase/search';
 
 
 export function Videos() {
@@ -30,6 +30,7 @@ export function Videos() {
     notFound()
 
   const [data, setData] = useState<Video[]>([])
+  const [options, setOptions] = useState({})
 
   const [searchText, setSearchText] = useState<string|undefined>(undefined);
   const searchHandler = useCallback((e: React.FormEvent<HTMLInputElement>) => {
@@ -44,8 +45,19 @@ export function Videos() {
         setData(videos)
       })
     } else {
-      searchVideo(searchText).then((videoArray: Video[]) => {
-        setData(videoArray)
+      Promise.all([
+        searchVideo(searchText),
+        searchImage(searchText),
+        searchAudio(searchText),
+        searchUser(searchText)
+      ]).then(([videos, images, audios, users]: any) => {
+        const options = {
+          videos: videos,
+          images: images,
+          audios: audios,
+          users: users
+        }
+        setOptions(options)
       })
     }
 
@@ -63,7 +75,7 @@ export function Videos() {
       <Header
         searchHandler={searchHandler}
         ColorModeContext={ColorModeContext}
-        text={{searchText: searchText, setSearchText: setSearchText}}
+        text={{searchText: searchText, setSearchText: setSearchText, options: options}}
         language={{langDictionary: langDictionary, lang: lang}}
       />
       

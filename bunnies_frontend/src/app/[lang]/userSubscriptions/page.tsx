@@ -14,6 +14,7 @@ import { ColorModeContext, getDesignTokens } from "../../styles/designTokens";
 import translation from '@/app/locales/translation';
 import { User, getMe, getUser } from '@/app/firebase/user';
 import UserList from '@/app/components/user/UserList/UserList';
+import { searchVideo, searchImage, searchAudio, searchUser } from '@/app/firebase/search';
 
 export function UserSubscriptions() {
 
@@ -25,7 +26,7 @@ export function UserSubscriptions() {
     notFound()
 
   const [data, setData] = useState<User[]>([])
-
+  const [options, setOptions] = useState({})
 
   const [searchText, setSearchText] = useState<string|undefined>(undefined);
   const searchHandler = useCallback((e: React.FormEvent<HTMLInputElement>) => {
@@ -50,9 +51,20 @@ export function UserSubscriptions() {
       )
   
     } else {
-      // searchInOwner(searchText).then((videoArray) => {
-      //   setData(videoArray)
-      // })
+      Promise.all([
+        searchVideo(searchText),
+        searchImage(searchText),
+        searchAudio(searchText),
+        searchUser(searchText)
+      ]).then(([videos, images, audios, users]: any) => {
+        const options = {
+          videos: videos,
+          images: images,
+          audios: audios,
+          users: users
+        }
+        setOptions(options)
+      })
     }
   
   }, [searchText])
@@ -69,7 +81,7 @@ export function UserSubscriptions() {
       <Header
         searchHandler={searchHandler}
         ColorModeContext={ColorModeContext}
-        text={{searchText: searchText, setSearchText: setSearchText}}
+        text={{searchText: searchText, setSearchText: setSearchText, options: options}}
         language={{langDictionary: langDictionary, lang: lang}}
       />
             
