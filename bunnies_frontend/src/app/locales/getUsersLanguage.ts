@@ -3,11 +3,14 @@ export default function getUsersLanguage() {
     navigator.languages && navigator.languages.length
       ? navigator.languages[0]
       : navigator.language;
-    
+
     const lang:string = 
-    userLocale !== 'ru'
+    userLocale === 'en'
       ? 'en'
-      : userLocale
+      : (userLocale === 'ru'
+        ? 'ru'
+        : userLocale
+      )
 
     return lang
 }
