@@ -1,11 +1,10 @@
 'use client'
 
-import Link from 'next/link'
 import { notFound, useParams, useRouter } from 'next/navigation';
 
 import React, { useCallback, useEffect, useState } from "react";
 
-import { Box, ThemeProvider, Typography, createTheme } from "@mui/material";
+import { Box, Link, ThemeProvider, Typography, createTheme } from "@mui/material";
 import OndemandVideoIcon from '@mui/icons-material/OndemandVideo';
 
 import Header from "../../components/Header/Header";
@@ -97,6 +96,7 @@ export function Videos() {
               <Link 
                 key={video.id}
                 href={`/${lang}/video/${video.id}`}
+                underline='none'
               >
                 <VideoList video={video} langDictionary={langDictionary} />
               </Link>

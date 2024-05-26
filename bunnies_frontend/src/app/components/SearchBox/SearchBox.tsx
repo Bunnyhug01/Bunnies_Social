@@ -140,7 +140,7 @@ export default function SearchBox({onChange, text, language} : Props) {
             </Link>
           )
         }}
-        sx={{width: '238px'}}
+        sx={{width: {lg: '268px', md: '268px', sm: '268px', xs: '160px'}}}
         renderInput={(params) => (
             <TextField
               {...params}

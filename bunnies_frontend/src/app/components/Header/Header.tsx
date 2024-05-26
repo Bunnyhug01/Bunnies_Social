@@ -297,7 +297,7 @@ export default function Header({searchHandler, ColorModeContext, text, language}
             <AppBar sx={{ bgcolor: 'background.default' }} elevation={0} style={{position: 'fixed'}}>
                 <Toolbar sx={{ bgcolor: 'background.default' }}>
                     <SwipeableTemporaryDrawer language={{langDictionary: language.langDictionary, lang: language.lang}} />
-                    <Logo />
+                    <Logo lang={language.lang} />
 
                     <SearchBox
                         onChange={searchHandler}

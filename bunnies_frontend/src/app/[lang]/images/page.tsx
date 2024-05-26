@@ -1,11 +1,10 @@
 'use client'
 
-import Link from 'next/link'
 import { notFound, useParams, useRouter } from 'next/navigation';
 
 import React, { useCallback, useEffect, useState } from "react";
 
-import { Box, ThemeProvider, Typography, createTheme } from "@mui/material";
+import { Box, Link, ThemeProvider, Typography, createTheme } from "@mui/material";
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
 
 import Header from "../../components/Header/Header";
@@ -98,6 +97,7 @@ export function Images() {
               <Link 
                 key={image.id}
                 href={`/${lang}/image/${image.id}`}
+                underline='none'
               >
                 <ImageList image={image} langDictionary={langDictionary} />
               </Link>

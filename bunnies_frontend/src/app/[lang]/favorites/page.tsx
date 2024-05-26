@@ -1,11 +1,10 @@
 'use client'
 
-import Link from 'next/link'
 import { useParams, notFound } from 'next/navigation';
 
 import React, { useCallback, useEffect, useState } from "react";
 
-import { Box, ThemeProvider, Typography, createTheme } from "@mui/material";
+import { Box, Link, ThemeProvider, Typography, createTheme } from "@mui/material";
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import OndemandVideoIcon from '@mui/icons-material/OndemandVideo';
 import ImageIcon from '@mui/icons-material/Image';
@@ -151,6 +150,7 @@ export function Favorites() {
             <Link 
               key={video.id}
               href={`/${lang}/video/${video.id}`}
+              underline='none'
             >
               <RecommendedList video={video} langDictionary={langDictionary} />
             </Link>
@@ -174,6 +174,7 @@ export function Favorites() {
               <Link 
                 key={image.id}
                 href={`/${lang}/image/${image.id}`}
+                underline='none'
               >
                 <ImageRecommendedList image={image} langDictionary={langDictionary} />
               </Link>
@@ -199,6 +200,7 @@ export function Favorites() {
               <Link 
                 key={audio.id}
                 href={`/${lang}/audio/${audio.id}`}
+                underline='none'
               >
                 <AudioRecommendedList audio={audio} langDictionary={langDictionary} />
               </Link>

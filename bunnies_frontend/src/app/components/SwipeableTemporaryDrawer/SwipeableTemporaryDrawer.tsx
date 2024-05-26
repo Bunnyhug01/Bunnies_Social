@@ -62,7 +62,7 @@ export default function SwipeableTemporaryDrawer({ language }: Props) {
       onKeyDown={toggleDrawer(anchor, false)}
     >
       <Toolbar>
-        <Logo drawer={true} />
+        <Logo drawer={true} lang={language.lang} />
       </Toolbar>
 
       <Divider />

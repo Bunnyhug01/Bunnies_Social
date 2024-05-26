@@ -1,11 +1,10 @@
 'use client'
 
-import Link from 'next/link'
 import { useParams, notFound } from 'next/navigation';
 
 import React, { useCallback, useEffect, useState } from "react";
 
-import { Box, Tab, Tabs, ThemeProvider, Typography, createTheme } from "@mui/material";
+import { Box, Link, Tab, Tabs, ThemeProvider, Typography, createTheme } from "@mui/material";
 import OndemandVideoIcon from '@mui/icons-material/OndemandVideo';
 import ImageIcon from '@mui/icons-material/Image';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
@@ -247,6 +246,7 @@ export function UserPage() {
                     <Link 
                       key={video.id}
                       href={`/${lang}/video/${video.id}`}
+                      underline='none'
                     >
                       <VideoList video={video} langDictionary={langDictionary} />
                     </Link>
@@ -271,6 +271,7 @@ export function UserPage() {
                 <Link 
                   key={image.id}
                   href={`/${lang}/image/${image.id}`}
+                  underline='none'
                 >
                   <ImageList image={image} langDictionary={langDictionary} />
                 </Link>
@@ -295,6 +296,7 @@ export function UserPage() {
                 <Link 
                   key={audio.id}
                   href={`/${lang}/audio/${audio.id}`}
+                  underline='none'
                   className='max-w-[15vw]'
                 >
                   <AudioList audio={audio} langDictionary={langDictionary} />
@@ -324,6 +326,7 @@ export function UserPage() {
                   <Link 
                     key={video.id}
                     href={`/${lang}/video/${video.id}`}
+                    underline='none'
                   >
                     <VideoList video={video} langDictionary={langDictionary} />
                   </Link>
@@ -352,6 +355,7 @@ export function UserPage() {
                 <Link 
                   key={image.id}
                   href={`/${lang}/image/${image.id}`}
+                  underline='none'
                 >
                   <ImageList image={image} langDictionary={langDictionary} />
                 </Link>
@@ -380,6 +384,7 @@ export function UserPage() {
                 <Link 
                   key={audio.id}
                   href={`/${lang}/audio/${audio.id}`}
+                  underline='none'
                   className='max-w-[15vw]'
                 >
                   <AudioList audio={audio} langDictionary={langDictionary} />

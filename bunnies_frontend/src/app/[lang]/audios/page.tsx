@@ -1,11 +1,10 @@
 'use client'
 
-import Link from 'next/link'
 import { notFound, useParams, useRouter } from 'next/navigation';
 
 import React, { useCallback, useEffect, useState } from "react";
 
-import { Box, ThemeProvider, Typography, createTheme } from "@mui/material";
+import { Box, Link, ThemeProvider, Typography, createTheme } from "@mui/material";
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
 
 import Header from "../../components/Header/Header";
@@ -98,6 +97,8 @@ export function Audios() {
               <Link 
                 key={audio.id}
                 href={`/${lang}/audio/${audio.id}`}
+                underline='none'
+                className='max-w-[15vw]'
               >
                 <AudioList audio={audio} langDictionary={langDictionary} />
               </Link>

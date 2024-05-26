@@ -1,5 +1,4 @@
-import Link from 'next/link'
-import { Box, Button } from '@mui/material'
+import { Box, Button, Link } from '@mui/material'
 import React, { useEffect } from 'react'
 import { UserDate, UserDetails, UserIdInfo, UserLogoChannel, UserName, UserSubscribers } from '../user'
 import { auth } from '@/app/firebase/firebase'
@@ -60,6 +59,7 @@ export default function UserList({ id, langDictionary }: Props) {
             <Link 
                 key={id}
                 href={`/${lang}/user/${id}`}
+                underline='none'
             >
                 <UserLogoChannel />
             </Link>

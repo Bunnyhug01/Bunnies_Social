@@ -6,15 +6,16 @@ import { IconButton, Typography } from '@mui/material';
 
 interface Props {
     drawer?:boolean;
+    lang: string;
 }
 
 
-export default function Logo({drawer = false}: Props) : JSX.Element {
+export default function Logo({drawer = false, lang}: Props) : JSX.Element {
     const display = drawer ? {md: 'flex'} : {xs: 'none', md: 'flex'};
 
     return (
         <>
-            <Link href='/'>
+            <Link href={`/${lang}`}>
                 <IconButton
                     disableRipple
                     sx={{'&:hover': {
