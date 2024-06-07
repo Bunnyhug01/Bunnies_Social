@@ -62,7 +62,7 @@ export async function getOneVideo(id: string): Promise<Video> {
 }
 
 export async function getLastVideos(count: number): Promise<Video[]> {
-  return get(query(ref(database, 'videos'), limitToLast(count))).then((snapshot) => {
+  return get(query(ref(database, 'videos'), limitToLast(count + 1))).then((snapshot) => {
     const videos: Video[] = []
     snapshot.forEach((childSnapshot) => {
       const video: Video = childSnapshot.val()
@@ -75,7 +75,7 @@ export async function getLastVideos(count: number): Promise<Video[]> {
 }
 
 export async function getUserLastVideos(userId: string, count: number): Promise<Video[]> {
-  return get(query(ref(database, 'videos'), orderByChild('owner'), equalTo(userId), limitToLast(count))).then((snapshot) => {
+  return get(query(ref(database, 'videos'), orderByChild('owner'), equalTo(userId), limitToLast(count + 1))).then((snapshot) => {
     const videos: Video[] = []
     snapshot.forEach((childSnapshot) => {
       const video: Video = childSnapshot.val()
@@ -148,6 +148,10 @@ export function updateVideo(id: string, {title, details, videoUrl, logoUrl, isPr
 
 export function deleteVideo(id: string): void {
   remove(ref(database, `videos/${id}`))
+
+  removeVideoFromHistory(id)
+  removeLike(id)
+  removeDisLike(id)
 
   get(child(ref(database), `users/${auth.currentUser?.uid}/videos/`)).then((snapshot) => {
     const videos:string[] = snapshot.val()
@@ -273,6 +277,19 @@ export function addToHistory(videoId: string, owner?: string): void {
 
 }
 
+export async function removeVideoFromHistory(videoId: string) {
+  get(child(ref(database), `users/${auth.currentUser?.uid}/history/`)).then((snapshot) => {
+    snapshot.forEach((childSnapshot) => {
+        const historyData = childSnapshot.val();
+
+        if ('video' in historyData && historyData.video === videoId) {
+          remove(child(ref(database), `users/${auth.currentUser?.uid}/history/${childSnapshot.key}`))
+        }
+          
+      });
+  });
+};
+
 export function getRecommendations(currentVideoId: string): Promise<Video[]> {
   return get(child(ref(database), 'videos/')).then((snapshot) => {
     if (snapshot.exists()) {
@@ -328,14 +345,17 @@ export function getRecommendations(currentVideoId: string): Promise<Video[]> {
             videosWithScore.sort((a, b) => b.score - a.score);
 
             videosWithScore.map((videoWithScore: any) => {
-              recommendedVideos.push(videoWithScore.video)
+              if (!videoWithScore.video.isPrivate) {
+                recommendedVideos.push(videoWithScore.video)
+              }
             })
     
             return recommendedVideos
     
           })
         } else {
-          return Object.values(videos)
+          const publicVideos:Video[] = Object.values(videos)
+          return publicVideos.filter((video) => !video.isPrivate)
         }
       })
 

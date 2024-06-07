@@ -72,11 +72,8 @@ function VideoPage() {
   },[])
   
   useEffect(() => {
-    if (searchText === undefined || searchText === '') {
-      getRecommendations(videoId).then((videoArray) => {
-        setRecommendation(videoArray)
-      })
-    } else {
+    if (searchText !== undefined && searchText !== '') {
+
       Promise.all([
         searchVideo(searchText),
         searchImage(searchText),
@@ -94,6 +91,12 @@ function VideoPage() {
     }
 
   }, [searchText])
+
+  useEffect(() => {
+    getRecommendations(videoId).then((videoArray) => {
+      setRecommendation(videoArray)
+    })
+  }, [])
   
   useEffect(() => {
     if (ifNotFound)

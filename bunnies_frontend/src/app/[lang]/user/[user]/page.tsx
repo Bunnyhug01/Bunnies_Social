@@ -103,67 +103,8 @@ export function UserPage() {
   };
     
   useEffect(() => {
-    if (searchText === undefined || searchText === '') {
-      
-      getUserLastVideos(userId, videosCount).then((lastVideosArray) => {
-        setLastVideos(lastVideosArray)
-      })
-
-      getUserLastImages(userId, imagesCount).then((lastImagesArray) => {
-        setLastImages(lastImagesArray)
-      })
-
-      getUserLastAudios(userId, audiosCount).then((lastAudiosArray) => {
-        setLastAudios(lastAudiosArray)
-      })
-
-      getUser(userId).then((user) => {
-        user.videos?.map((videoId) => {
-          getOneVideo(videoId).then((video: Video) => {
-            if (!video.isPrivate || (video.isPrivate && video.owner === auth.currentUser?.uid)) {
-              setVideos([...videos, video])
-            }
-          })
-        })
-      })
-
-      getUser(userId).then((user) => {
-        user.images?.map((imageId) => {
-          getOneImage(imageId).then((image) => {
-            if (!image.isPrivate || (image.isPrivate && image.owner === auth.currentUser?.uid)) {
-              setImages([...images, image])
-            }
-          })
-        })
-      })
-
-      getUser(userId).then((user) => {
-        user.audios?.map((audioId) => {
-          getOneAudio(audioId).then((audio) => {
-            if (!audio.isPrivate || (audio.isPrivate && audio.owner === auth.currentUser?.uid)) {
-              setAudios([...audios, audio])
-            }
-          })
-        })
-      })
-
-      getUser(userId).then((user) => {
-        user.subscribers?.map((subscriberId) => {
-          getUser(subscriberId).then((subscriber) => {
-            setSubscribers([...subscribers, subscriber])
-          })
-        })
-      })
-
-      getUser(userId).then((user) => {
-        user.subscriptions?.map((subscriptionId) => {
-          getUser(subscriptionId).then((subscription) => {
-            setSubscriptions([...subscriptions, subscription])
-          })
-        })
-      })
-  
-    } else {
+    if (searchText !== undefined && searchText !== '') {
+        
       Promise.all([
         searchVideo(searchText),
         searchImage(searchText),
@@ -182,6 +123,65 @@ export function UserPage() {
   
   }, [searchText])
 
+  useEffect(() => {
+    getUserLastVideos(userId, videosCount).then((lastVideosArray) => {
+      setLastVideos(lastVideosArray)
+    })
+
+    getUserLastImages(userId, imagesCount).then((lastImagesArray) => {
+      setLastImages(lastImagesArray)
+    })
+
+    getUserLastAudios(userId, audiosCount).then((lastAudiosArray) => {
+      setLastAudios(lastAudiosArray)
+    })
+
+    getUser(userId).then((user) => {
+      user.videos?.map((videoId) => {
+        getOneVideo(videoId).then((video: Video) => {
+          if (!video.isPrivate || (video.isPrivate && video.owner === auth.currentUser?.uid)) {
+            setVideos((prev)=>[...prev, video])
+          }
+        })
+      })
+    })
+
+    getUser(userId).then((user) => {
+      user.images?.map((imageId) => {
+        getOneImage(imageId).then((image) => {
+          if (!image.isPrivate || (image.isPrivate && image.owner === auth.currentUser?.uid)) {
+            setImages((prev)=>[...prev, image])
+          }
+        })
+      })
+    })
+
+    getUser(userId).then((user) => {
+      user.audios?.map((audioId) => {
+        getOneAudio(audioId).then((audio) => {
+          if (!audio.isPrivate || (audio.isPrivate && audio.owner === auth.currentUser?.uid)) {
+            setAudios((prev)=>[...prev, audio])
+          }
+        })
+      })
+    })
+
+    getUser(userId).then((user) => {
+      user.subscribers?.map((subscriberId) => {
+        getUser(subscriberId).then((subscriber) => {
+          setSubscribers((prev)=>[...prev, subscriber])
+        })
+      })
+    })
+
+    getUser(userId).then((user) => {
+      user.subscriptions?.map((subscriptionId) => {
+        getUser(subscriptionId).then((subscription) => {
+          setSubscriptions((prev)=>[...prev, subscription])
+        })
+      })
+    })
+  }, [])
 
   return(
     <Box

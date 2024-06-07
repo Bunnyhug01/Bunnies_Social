@@ -62,7 +62,7 @@ export async function getOneAudio(id: string): Promise<Audio> {
 }
 
 export async function getLastAudios(count: number): Promise<Audio[]> {
-  return get(query(ref(database, 'audios'), limitToLast(count))).then((snapshot) => {
+  return get(query(ref(database, 'audios'), limitToLast(count + 1))).then((snapshot) => {
     const audios: Audio[] = []
     snapshot.forEach((childSnapshot) => {
       const audio: Audio = childSnapshot.val()
@@ -75,7 +75,7 @@ export async function getLastAudios(count: number): Promise<Audio[]> {
 }
 
 export async function getUserLastAudios(userId: string, count: number): Promise<Audio[]> {
-  return get(query(ref(database, 'audios'), orderByChild('owner'), equalTo(userId), limitToLast(count))).then((snapshot) => {
+  return get(query(ref(database, 'audios'), orderByChild('owner'), equalTo(userId), limitToLast(count + 1))).then((snapshot) => {
     const audios: Audio[] = []
     snapshot.forEach((childSnapshot) => {
       const audio: Audio = childSnapshot.val()
@@ -147,6 +147,10 @@ export function updateAudio(id: string, {title, details, audioUrl, logoUrl, isPr
 
 export function deleteAudio(id: string): void {
   remove(ref(database, `audios/${id}`))
+
+  removeAudioFromHistory(id)
+  removeLike(id)
+  removeDisLike(id)
 
   get(child(ref(database), `users/${auth.currentUser?.uid}/audios/`)).then((snapshot) => {
     const audios:string[] = snapshot.val()
@@ -271,6 +275,19 @@ export function addToHistory(audioId: string, owner?: string): void {
 
 }
 
+export async function removeAudioFromHistory(audioId: string) {
+  get(child(ref(database), `users/${auth.currentUser?.uid}/history/`)).then((snapshot) => {
+    snapshot.forEach((childSnapshot) => {
+        const historyData = childSnapshot.val();
+
+        if ('audio' in historyData && historyData.audio === audioId) {
+          remove(child(ref(database), `users/${auth.currentUser?.uid}/history/${childSnapshot.key}`))
+        }
+          
+      });
+  });
+};
+
 export function getRecommendations(currentAudioId: string): Promise<Audio[]> {
   return get(child(ref(database), 'audios/')).then((snapshot) => {
     if (snapshot.exists()) {
@@ -326,14 +343,17 @@ export function getRecommendations(currentAudioId: string): Promise<Audio[]> {
             audiosWithScore.sort((a, b) => b.score - a.score);
 
             audiosWithScore.map((audioWithScore: any) => {
-              recommendedAudios.push(audioWithScore.audio)
+              if (!audioWithScore.audio.isPrivate) {
+                recommendedAudios.push(audioWithScore.audio)
+              }
             })
     
             return recommendedAudios
     
           })
         } else {
-          return Object.values(audios)
+          const publicAudios:Audio[] = Object.values(audios)
+          return publicAudios.filter((audio) => !audio.isPrivate)
         }
       })
 

@@ -46,22 +46,41 @@ export function History() {
   }, [])
     
   useEffect(() => {
-    if (searchText === undefined || searchText === '') {
+    if (searchText !== undefined && searchText !== '') {
 
-      getMe().then((user) => 
-        user.history.map((history) => history.video)
-      ).then((videoIdArray) => {
-        for (const videoId of videoIdArray) {
-          if (videoId) {
-            getOneVideo(videoId!).then((video) => {
-              setVideos((prev)=>[...prev, video])
-            })
-          }
+      Promise.all([
+        searchVideo(searchText),
+        searchImage(searchText),
+        searchAudio(searchText),
+        searchUser(searchText)
+      ]).then(([videos, images, audios, users]: any) => {
+        const options = {
+          videos: videos,
+          images: images,
+          audios: audios,
+          users: users
         }
+        setOptions(options)
       })
-      
-      getMe().then((user) => 
-      user.history.map((history) => history.image) 
+    }
+
+  }, [searchText])
+
+  useEffect(() => {
+    getMe().then((user) => 
+      user.history.map((history) => history.video)
+    ).then((videoIdArray) => {
+      for (const videoId of videoIdArray) {
+        if (videoId) {
+          getOneVideo(videoId!).then((video) => {
+            setVideos((prev)=>[...prev, video])
+          })
+        }
+      }
+    })
+    
+    getMe().then((user) => 
+    user.history.map((history) => history.image) 
     ).then((imageIdArray) => {
       for (const imageId of imageIdArray) {
         if (imageId) {
@@ -83,26 +102,7 @@ export function History() {
         }
       }
     })
-
-    } else {
-      Promise.all([
-        searchVideo(searchText),
-        searchImage(searchText),
-        searchAudio(searchText),
-        searchUser(searchText)
-      ]).then(([videos, images, audios, users]: any) => {
-        const options = {
-          videos: videos,
-          images: images,
-          audios: audios,
-          users: users
-        }
-        setOptions(options)
-      })
-    }
-
-  }, [searchText])
-
+  }, [])
 
   return(
     <Box

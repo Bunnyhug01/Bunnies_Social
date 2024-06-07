@@ -39,12 +39,8 @@ export function Images() {
   useEffect(() => {
 
 
-    if (searchText === undefined || searchText === '') {
-        getAllImages().then((imageArray: Image[]) => {
-          const images = Object.values(imageArray).filter((image: Image) => !image.isPrivate)
-          setData(images)
-        })
-    } else {
+    if (searchText !== undefined && searchText !== '') {
+
       Promise.all([
         searchVideo(searchText),
         searchImage(searchText),
@@ -63,6 +59,12 @@ export function Images() {
 
   }, [searchText])
 
+  useEffect(() => {
+    getAllImages().then((imageArray: Image[]) => {
+      const images = Object.values(imageArray).filter((image: Image) => !image.isPrivate)
+      setData(images)
+    })
+  }, [])
 
   return(
     <Box

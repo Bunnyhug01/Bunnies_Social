@@ -36,23 +36,8 @@ export function UserImages() {
   }, [])
     
   useEffect(() => {
-    if (searchText === undefined || searchText === '') {
-        
-      getMe().then((user) => 
-        user.images!.map((imageId) => 
-            {
-              if (imageId) {
-                  getOneImage(imageId)
-                  .then((image) => {
-                    setData((prev)=>[...prev, image])
-                  }
-                )
-              }
-            }
-        )
-      )
-  
-    } else {
+    if (searchText !== undefined && searchText !== '') {
+
       Promise.all([
         searchVideo(searchText),
         searchImage(searchText),
@@ -71,6 +56,23 @@ export function UserImages() {
   
   }, [searchText])
 
+  useEffect(() => {
+    getMe().then((user) => 
+      user.images!.map((imageId) => 
+          {
+            if (imageId) {
+                getOneImage(imageId)
+                .then((image) => {
+                  if (image) {
+                    setData((prev)=>[...prev, image])
+                  }
+                }
+              )
+            }
+          }
+      )
+    )
+  }, [])
 
   return(
     <Box

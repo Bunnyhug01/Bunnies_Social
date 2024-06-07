@@ -44,20 +44,7 @@ export function Home() {
   }, [])
   
   useEffect(() => {
-    if (searchText === undefined || searchText === '') {
-      getLastVideos(3).then((videoArray:any) => {
-        setVideos(Object.values(videoArray))
-      })
-
-      getLastAudios(4).then((audioArray:any) => {
-        setAudios(Object.values(audioArray))
-      })
-
-      getLastImages(4).then((imageArray:any) => {
-        setImages(Object.values(imageArray))
-      })
-
-    } else {
+    if (searchText !== undefined && searchText !== '') {
 
       Promise.all([
         searchVideo(searchText),
@@ -77,6 +64,19 @@ export function Home() {
 
   }, [searchText])
 
+  useEffect(() => {
+    getLastVideos(3).then((videoArray:any) => {
+      setVideos(Object.values(videoArray))
+    })
+
+    getLastAudios(4).then((audioArray:any) => {
+      setAudios(Object.values(audioArray))
+    })
+
+    getLastImages(4).then((imageArray:any) => {
+      setImages(Object.values(imageArray))
+    })
+  }, [])
 
   const router = useRouter();
 

@@ -59,7 +59,7 @@ export async function getOneImage(id: string): Promise<Image> {
 }
 
 export async function getLastImages(count: number): Promise<Image[]> {
-  return get(query(ref(database, 'images'), limitToLast(count))).then((snapshot) => {
+  return get(query(ref(database, 'images'), limitToLast(count + 1))).then((snapshot) => {
     const images: Image[] = []
     snapshot.forEach((childSnapshot) => {
       const image: Image = childSnapshot.val()
@@ -72,7 +72,7 @@ export async function getLastImages(count: number): Promise<Image[]> {
 }
 
 export async function getUserLastImages(userId:string, count: number): Promise<Image[]> {
-  return get(query(ref(database, 'images'), orderByChild('owner'), equalTo(userId), limitToLast(count))).then((snapshot) => {
+  return get(query(ref(database, 'images'), orderByChild('owner'), equalTo(userId), limitToLast(count + 1))).then((snapshot) => {
     const images: Image[] = []
     snapshot.forEach((childSnapshot) => {
       const image: Image = childSnapshot.val()
@@ -139,6 +139,10 @@ export function updateImage(id: string, {title, details, imageUrl, isPrivate, ta
 
 export function deleteImage(id: string): void {
   remove(ref(database, `images/${id}`))
+
+  removeImageFromHistory(id)
+  removeLike(id)
+  removeDisLike(id)
 
   get(child(ref(database), `users/${auth.currentUser?.uid}/images/`)).then((snapshot) => {
     const images:string[] = snapshot.val()
@@ -263,6 +267,19 @@ export function addToHistory(imageId: string, owner?: string): void {
   
 }
 
+export async function removeImageFromHistory(imageId: string) {
+  get(child(ref(database), `users/${auth.currentUser?.uid}/history/`)).then((snapshot) => {
+    snapshot.forEach((childSnapshot) => {
+        const historyData = childSnapshot.val();
+
+        if ('image' in historyData && historyData.image === imageId) {
+          remove(child(ref(database), `users/${auth.currentUser?.uid}/history/${childSnapshot.key}`))
+        }
+          
+      });
+  });
+};
+
 export function getRecommendations(currentImageId: string): Promise<Image[]> {
   return get(child(ref(database), 'images/')).then((snapshot) => {
     if (snapshot.exists()) {
@@ -318,14 +335,17 @@ export function getRecommendations(currentImageId: string): Promise<Image[]> {
             imagesWithScore.sort((a, b) => b.score - a.score);
 
             imagesWithScore.map((imageWithScore: any) => {
-              recommendedImages.push(imageWithScore.image)
+              if (!imageWithScore.image.isPrivate) {
+                recommendedImages.push(imageWithScore.image)
+              }
             })
             
             return recommendedImages
     
           })
         } else {
-          return Object.values(images)
+          const publicImages:Image[] = Object.values(images)
+          return publicImages.filter((image) => !image.isPrivate)
         }
       })
 

@@ -45,45 +45,8 @@ export function Favorites() {
   }, [])
     
   useEffect(() => {
-    if (searchText === undefined || searchText === '') {
-        
-      getMe().then((user) => 
-        user.likes.map((likes) => likes.video)
-      ).then((videoIdArray) => {
-        for (const videoId of videoIdArray) {
-          if (videoId) {
-            getOneVideo(videoId!).then((video) => {
-              setVideos((prev)=>[...prev, video])
-            })
-          }
-        }
-      })
-
-      getMe().then((user) => 
-        user.likes.map((likes) => likes.image)
-      ).then((imageIdArray) => {
-        for (const imageId of imageIdArray) {
-          if (imageId) {
-            getOneImage(imageId!).then((image) => {
-              setImages((prev)=>[...prev, image])
-            })
-          }
-        }
-      })
-
-      getMe().then((user) => 
-        user.likes.map((likes) => likes.audio)
-      ).then((audioIdArray) => {
-        for (const audioId of audioIdArray) {
-          if (audioId) {
-            getOneAudio(audioId!).then((audio) => {
-              setAudios((prev)=>[...prev, audio])
-            })
-          }
-        }
-      })
-  
-    } else {
+    if (searchText !== undefined && searchText !== '') {
+          
       Promise.all([
         searchVideo(searchText),
         searchImage(searchText),
@@ -102,6 +65,43 @@ export function Favorites() {
   
   }, [searchText])
 
+  useEffect(() => {
+    getMe().then((user) => 
+      user.likes.map((likes) => likes.video)
+    ).then((videoIdArray) => {
+      for (const videoId of videoIdArray) {
+        if (videoId) {
+          getOneVideo(videoId!).then((video) => {
+            setVideos((prev)=>[...prev, video])
+          })
+        }
+      }
+    })
+
+    getMe().then((user) => 
+      user.likes.map((likes) => likes.image)
+    ).then((imageIdArray) => {
+      for (const imageId of imageIdArray) {
+        if (imageId) {
+          getOneImage(imageId!).then((image) => {
+            setImages((prev)=>[...prev, image])
+          })
+        }
+      }
+    })
+
+    getMe().then((user) => 
+      user.likes.map((likes) => likes.audio)
+    ).then((audioIdArray) => {
+      for (const audioId of audioIdArray) {
+        if (audioId) {
+          getOneAudio(audioId!).then((audio) => {
+            setAudios((prev)=>[...prev, audio])
+          })
+        }
+      }
+    })
+  }, [])
 
   return(
     <Box

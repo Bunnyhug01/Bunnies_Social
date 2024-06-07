@@ -98,18 +98,8 @@ export function UserVideo() {
   }
 
   useEffect(() => {
-    if (searchText === undefined || searchText === '') {
-      if (user && auth.currentUser?.emailVerified) {
-        getOneVideo(videoId).then((video) => {
-          setVideo(video)
-        }).catch(response => {
-          if(response.status == 404)
-            setIfNotFound(true)
-        })
-      } else {
-        redirect(`/${lang}/sign-in`)
-      }
-    } else {
+    if (searchText !== undefined && searchText !== '') {
+
       Promise.all([
         searchVideo(searchText),
         searchImage(searchText),
@@ -127,6 +117,19 @@ export function UserVideo() {
     }
 
   },[])
+
+  useEffect(() => {
+    if (user && auth.currentUser?.emailVerified) {
+      getOneVideo(videoId).then((video) => {
+        setVideo(video)
+      }).catch(response => {
+        if(response.status == 404)
+          setIfNotFound(true)
+      })
+    } else {
+      redirect(`/${lang}/sign-in`)
+    }
+  }, [])
 
   useEffect(() => {
     if (ifNotFound)

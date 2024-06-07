@@ -128,7 +128,6 @@ export default function Upload({ type, langDictionary } : Props) {
     const isPrivate = privacy === 'private'
 
     let id:string = ''
-    let type:string = ''
 
     if (fileType === 'video') {
         
@@ -142,7 +141,6 @@ export default function Upload({ type, langDictionary } : Props) {
         }
         
         id = createVideo(video)
-        type = langDictionary['video']
     }
     else if (fileType === 'image') {
 
@@ -155,8 +153,6 @@ export default function Upload({ type, langDictionary } : Props) {
         }
 
         id = createImage(image)
-        type = langDictionary['image']
-
     }
     else if (fileType === 'audio') {
 
@@ -170,7 +166,6 @@ export default function Upload({ type, langDictionary } : Props) {
         }
 
         id = createAudio(audio)
-        type = langDictionary['audio']
     }
 
     getMe().then((user: User) => {
@@ -180,7 +175,7 @@ export default function Upload({ type, langDictionary } : Props) {
                     addNotification(
                         subscriber,
                         {
-                            text: `${langDictionary['user']} "${user.username}" ${langDictionary['uploaded']} ${type} "${formElements.title.value}"`,
+                            text: `user "${user.username}" uploaded ${fileType} "${formElements.title.value}"`,
                             srcUrl: `/${lang}/${fileType}/${id}`
                         }
                     )

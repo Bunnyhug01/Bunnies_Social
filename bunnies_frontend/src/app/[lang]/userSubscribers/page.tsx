@@ -34,23 +34,8 @@ export function UserSubscribers() {
   }, [])
     
   useEffect(() => {
-    if (searchText === undefined || searchText === '') {
-        
-      getMe().then((user) => 
-        user.subscribers!.map((subscriberId) =>
-        {
-            if (subscriberId) {
-              getUser(subscriberId)
-                .then((subscriber) => {
-                  setData((prev)=>[...prev, subscriber])
-                }
-              )
-            }
-        }
-        )
-      )
-  
-    } else {
+    if (searchText !== undefined && searchText !== '') {
+          
       Promise.all([
         searchVideo(searchText),
         searchImage(searchText),
@@ -69,6 +54,21 @@ export function UserSubscribers() {
   
   }, [searchText])
 
+  useEffect(() => {
+    getMe().then((user) => 
+      user.subscribers!.map((subscriberId) =>
+      {
+          if (subscriberId) {
+            getUser(subscriberId)
+              .then((subscriber) => {
+                setData((prev)=>[...prev, subscriber])
+              }
+            )
+          }
+      }
+      )
+    )
+  }, [])
 
   return(
     <Box

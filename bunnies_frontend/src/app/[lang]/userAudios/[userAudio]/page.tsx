@@ -98,18 +98,8 @@ export function UserAudio() {
 
   useEffect(() => {
 
-    if (searchText === undefined || searchText === '') {
-      if (user && auth.currentUser?.emailVerified) {
-        getOneAudio(audioId).then((audio) => {
-          setAudio(audio)
-        }).catch(response => {
-          if(response.status == 404)
-            setIfNotFound(true)
-        })
-      } else {
-        redirect(`/${lang}/sign-in`)
-      }
-    } else {
+    if (searchText !== undefined && searchText !== '') {
+
       Promise.all([
         searchVideo(searchText),
         searchImage(searchText),
@@ -127,6 +117,19 @@ export function UserAudio() {
     }
 
   },[])
+
+  useEffect(() => {
+    if (user && auth.currentUser?.emailVerified) {
+      getOneAudio(audioId).then((audio) => {
+        setAudio(audio)
+      }).catch(response => {
+        if(response.status == 404)
+          setIfNotFound(true)
+      })
+    } else {
+      redirect(`/${lang}/sign-in`)
+    }
+  }, [])
 
   useEffect(() => {
     if (ifNotFound)

@@ -74,11 +74,8 @@ function AudioPage() {
   },[])
   
   useEffect(() => {
-    if (searchText === undefined || searchText === '') {
-      getRecommendations(audioId).then((audioArray) => {
-        setRecommendation(audioArray)
-      })
-    } else {
+    if (searchText !== undefined && searchText !== '') {
+
       Promise.all([
         searchVideo(searchText),
         searchImage(searchText),
@@ -96,6 +93,12 @@ function AudioPage() {
     }
 
   }, [searchText])
+
+  useEffect(() => {
+    getRecommendations(audioId).then((audioArray) => {
+      setRecommendation(audioArray)
+    })
+  }, [])
   
   useEffect(() => {
     if (ifNotFound)

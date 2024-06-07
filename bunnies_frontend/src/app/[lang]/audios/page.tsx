@@ -38,12 +38,8 @@ export function Audios() {
   
   useEffect(() => {
 
-    if (searchText === undefined || searchText === '') {
-        getAllAudios().then((audioArray: Audio[]) => {
-          const audios = Object.values(audioArray).filter((audio: Audio) => !audio.isPrivate)
-          setData(audios)
-        })
-    } else {
+    if (searchText !== undefined && searchText !== '') {
+
       Promise.all([
         searchVideo(searchText),
         searchImage(searchText),
@@ -63,6 +59,12 @@ export function Audios() {
 
   }, [searchText])
 
+  useEffect(() => {
+    getAllAudios().then((audioArray: Audio[]) => {
+      const audios = Object.values(audioArray).filter((audio: Audio) => !audio.isPrivate)
+      setData(audios)
+    })
+  }, [])
   
   return(
     <Box

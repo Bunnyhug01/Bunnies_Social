@@ -10,6 +10,7 @@ import { UserIdInfo, UserLogo } from "../user/user";
 import OndemandVideoIcon from '@mui/icons-material/OndemandVideo';
 import ImageIcon from '@mui/icons-material/Image';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
+import { useEffect } from "react";
 
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
@@ -77,7 +78,7 @@ interface Props {
 
 
 export default function SearchBox({onChange, text, language} : Props) {
-
+  
   const allOptions = (text!.options && Object.keys(text!.options).length > 0) ? [
     ...text!.options.videos!.map((video: Video, index: number) => ({ ...video, type: 'video', key: `video_${index}` })),
     ...text!.options.images!.map((image: Image, index: number) => ({ ...image, type: 'image', key: `image_${index}` })),
@@ -94,8 +95,6 @@ export default function SearchBox({onChange, text, language} : Props) {
     return '';
   }
   
-  console.log(allOptions)
-
   return (
     <Search sx={{bgcolor: 'background.additional'}}>
       <SearchIconWrapper>
@@ -106,6 +105,7 @@ export default function SearchBox({onChange, text, language} : Props) {
         id="free-solo-2-demo"
         disableClearable
         options={allOptions}
+        inputValue={text?.searchText}
         getOptionLabel={(option: any) => {
           if (option.type === 'video') return option.title;
           if (option.type === 'image') return option.title;

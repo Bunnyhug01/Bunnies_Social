@@ -223,7 +223,7 @@ const translation:any = {
         "next_button": "Далей",
         "file_upload": "Загрузка файла",
         "file_uploading_progress": "Прагрэс загрузкі файла",
-        "details": "Подрабязнасці",
+        "details": "Падрабязнасці",
         "title": "Назва",
         "description": "Апісанне",
         "privacy": "Прыватнасць",

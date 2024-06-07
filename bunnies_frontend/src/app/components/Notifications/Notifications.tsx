@@ -104,7 +104,17 @@ export default function Notifications({ type, langDictionary }: Props) {
                   href={notification.srcUrl}
                   style={{ textDecoration: 'none' }}
                 >
-                  <Box onClick={handleClose}>{notification.text}</Box>
+                  <Box onClick={handleClose}>
+                    {
+                      notification.text
+                      .replace("user", langDictionary['user'])
+                      .replace("replied_to_comment", langDictionary['replied_to_comment'])
+                      .replace("uploaded", langDictionary['uploaded'])
+                      .replace(notification.srcUrl.slice(4, notification.srcUrl.lastIndexOf("/")),
+                      langDictionary[notification.srcUrl.slice(4, notification.srcUrl.lastIndexOf("/"))])
+                      .replace("выява", "выяву")
+                    }
+                  </Box>
                 </Link>
                 <IconButton
                   color="error"

@@ -177,7 +177,7 @@ const CommentComponent = ({ videoId, imageId, audioId, langDictionary }: Props) 
             addNotification(
               replyingComment!.owner,
               {
-                text: `${langDictionary['user']} "${currentUser.username}" ${langDictionary['replied_to_comment']} "${commentText}"`,
+                text: `user "${currentUser.username}" replied_to_comment "${commentText}"`,
                 srcUrl: `/${lang}/video/${videoId}`
               })
           }
@@ -186,7 +186,7 @@ const CommentComponent = ({ videoId, imageId, audioId, langDictionary }: Props) 
             addNotification(
               replyingComment!.owner,
               {
-                text: `${langDictionary['user']} "${currentUser.username}" ${langDictionary['replied_to_comment']} "${commentText}"`,
+                text: `user "${currentUser.username}" replied_to_comment "${commentText}"`,
                 srcUrl: `/${lang}/image/${imageId}`
               })
           }
@@ -195,7 +195,7 @@ const CommentComponent = ({ videoId, imageId, audioId, langDictionary }: Props) 
             addNotification(
               replyingComment!.owner,
               {
-                text: `${langDictionary['user']} "${currentUser.username}" ${langDictionary['replied_to_comment']} "${commentText}"`,
+                text: `user "${currentUser.username}" replied_to_comment "${commentText}"`,
                 srcUrl: `/${lang}/audio/${audioId}`
               })
           }

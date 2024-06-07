@@ -36,23 +36,8 @@ export function UserAudios() {
   }, [])
     
   useEffect(() => {
-    if (searchText === undefined || searchText === '') {
-        
-      getMe().then((user) => 
-        user.audios!.map((audioId) =>
-            {
-              if (audioId) {
-                  getOneAudio(audioId)
-                  .then((audio) => {
-                    setData((prev)=>[...prev, audio])
-                  }
-                )
-              }
-            }
-        )
-      )
-  
-    } else {
+    if (searchText !== undefined && searchText !== '') {
+          
       Promise.all([
         searchVideo(searchText),
         searchImage(searchText),
@@ -71,6 +56,23 @@ export function UserAudios() {
   
   }, [searchText])
 
+  useEffect(() => {
+    getMe().then((user) => 
+      user.audios!.map((audioId) =>
+          {
+            if (audioId) {
+                getOneAudio(audioId)
+                .then((audio) => {
+                  if (audio) {
+                    setData((prev)=>[...prev, audio])
+                  }
+                }
+              )
+            }
+          }
+      )
+    )
+  }, [])
 
   return(
     <Box
